@@ -3,13 +3,14 @@
 %PURPOSE: To extract the timing of key events in each trial of a ViRMEn maze-based task.
 %
 %AUTHOR: MJ Siniscalchi, Princeton Neuroscience Institute, 220415
-%   revised for tactile stimuli, 230608
+%   revised for tactile stimuli, 230608 & 240108
 %
 %INPUT ARGUMENTS:
 %   Structure array 'trials', containing fields:
 %       'start', time at the start of each trial relative to ViRMEn startup
 %       'position', an Nx3 matrix of virtual position in X, Y, and theta
-%       'cuePos', a 1x2 cell array containing the y-position of left and right cues, respectively
+%       'cuePos', a 1x2 cell array containing the y-position of left and right towers, respectively
+%       'PuffPos', a 1x2 cell array containing the y-position of left and right puffs, respectively
 %       'time', time of each iteration relative to startup
 %       'iterations', total number of iterations from start to outcome in each trial
 %       'iCueEntry', the iteration corresponding to entry into the cue region
@@ -20,10 +21,9 @@
 %OUTPUTS:
 %   Struct array 'eventTimes', of length equal to the number of trials and containing fields:
 %       'start',
-%       'cue'
-%       'outcome'
-%       'cueEntry'
-%       'turnEntry'
+%       'towers', struct containing fields, 'left','right','all'
+%       'puffs', struct containing fields, 'left','right','all'
+%       'outcome','cueEntry','turnEntry'
 %
 %---------------------------------------------------------------------------------------------------
 
@@ -31,7 +31,10 @@ function eventTimes = getTrialEventTimes(log, blockIdx)
 
 trials = log.block(blockIdx).trial;
 eventTimes(numel(trials),1) = struct(...
-    'start',[],'cues',[],'firstCue',[],'lastCue',[],'outcome',[],...
+    'start',[],...
+    'leftTowers',[],'rightTowers',[],'leftPuffs',[],'rightPuffs',[],...
+    'firstTower',[],'lastTower',[],'firstPuff',[],'lastPuff',[],...
+    'outcome',[],...
     'cueEntry',[],'turnEntry',[],'armEntry',[]); % Initialize
 
 for i = 1:numel(trials)
@@ -39,9 +42,19 @@ for i = 1:numel(trials)
     eventTimes(i).start = getTrialIterationTime(log, blockIdx, i, 1); %Time of first iteration; needs correction in some cases because the reference time for trials(i).start changes after restarts, etc.
 
     %Visual and tactile cue onset times
-    eventTimes(i).towers = getCueOnsetTimes(trials(i).time, eventTimes(i).start, trials(i).cueOnset);
+    towerTimes = getCueOnsetTimes(trials(i).time, eventTimes(i).start, trials(i).cueOnset);
+    eventTimes(i).towers = towerTimes.all;
+    eventTimes(i).leftTowers = towerTimes.left;
+    eventTimes(i).rightTowers = towerTimes.right;
+    eventTimes(i).firstTower = towerTimes.all(1);
+    eventTimes(i).lastTower = towerTimes.all(end);
     if isfield(trials,"puffOnset")
-        eventTimes(i).puffs = getCueOnsetTimes(trials(i).time, eventTimes(i).start, trials(i).puffOnset);
+        puffTimes = getCueOnsetTimes(trials(i).time, eventTimes(i).start, trials(i).puffOnset);
+        eventTimes(i).puffs = puffTimes.all;
+        eventTimes(i).leftPuffs = puffTimes.left; %Superfluous unless AoE is used
+        eventTimes(i).rightPuffs = puffTimes.right;
+        eventTimes(i).firstPuff = puffTimes.all(1);
+        eventTimes(i).lastPuff = puffTimes.all(end);
     end
 
     %Outcome onset times

@@ -25,8 +25,8 @@ expData = struct('sub_dir',[],'subjectID',[],'mainMaze',[],...
 % Session metadata
 i=1;
 
-expData(i).sub_dir = '230911-m103-test'; 
-expData(i).subjectID = "mjs20_103";
+expData(i).sub_dir = '230922-m105-maze7-test'; 
+expData(i).subjectID = "mjs20_105";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 

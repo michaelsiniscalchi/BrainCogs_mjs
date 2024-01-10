@@ -20,7 +20,7 @@ if any([C.combined_data, C.cellF, F.FOV_mean_projection])
         %  ***To Do: Make an independent function for this repo, or copy from iCorre.***
         [~, paths] = iCorreFilePaths( dirs.data, expData(i).sub_dir, []);
         expData(i).raw_path = paths.raw;
-        expData(i).reg_path = paths.registered{1}; %GCaMP channel=1
+        expData(i).reg_path = paths.registered; %GCaMP channel=1
         
         %expData(i).mat_path = expData(idx).mat_path(:);
         %expData = get_imgPathnames(dirs,expData,i); %Get pathnames to raw, registered, and matfiles

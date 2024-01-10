@@ -114,7 +114,9 @@ for i = 1:numel(subjects)
         %Initialize trial variables aggregated from logs
         blockIdx = nan(1,numel([logs.block.trial]));
         [duration, response_time, pSkid, stuck_time] = deal(nan(numel(blockIdx),1));
-        [position, velocity, collision_locations, stuck_locations] = deal(cell(numel(blockIdx),1));
+        [position, velocity,...
+            towerPositions, puffPositions,...
+            collision_locations, stuck_locations] = deal(cell(numel(blockIdx),1));
 
         %Initialize as one cell per block
         [theta_trajectory, x_trajectory, time_trajectory, positionRange] =...
@@ -251,7 +253,7 @@ for i = 1:numel(subjects)
                     && any([leftTowers(blockIdx==k), rightTowers(blockIdx==k)])
                 congruent(blockIdx==k) = ...
                     (leftPuffs(blockIdx==k)==leftTowers(blockIdx==k)) &...
-                    (rightPuffs(blockIdx==k)==rightTowers(blockIdx==k)); %should not incl any trials where nPuffs==0 or nTowers==0
+                    (rightPuffs(blockIdx==k)==rightTowers(blockIdx==k)); %Towers and puffs on same side of maze
             elseif isfield(maze(k),"alternateTrials")...  %references logs because rulewas not included as a variable in cfg.trialData
                     && str2double(maze(k).alternateTrials)
                 congruent(blockIdx==k) =...

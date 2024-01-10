@@ -176,4 +176,4 @@ end
 
 %% FIGURES
 
-figures_TaskLearning_VTA1(search_filter); %In a separate script for brevity.
+figures_Tactile2Visual_VTA(search_filter); %In a separate script for brevity.

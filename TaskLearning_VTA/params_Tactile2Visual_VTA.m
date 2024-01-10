@@ -1,9 +1,9 @@
 function [ calculate, summarize, figures, mat_file, params ] = params_Tactile2Visual_VTA( dirs, expData )
 
 %% CALCULATE OR RE-CALCULATE RESULTS
-calculate.combined_data             = true;  %Combine relevant behavioral and imaging data in one MAT file ; truncate if necessary
-calculate.cellF                     = true; %Extract cellf and neuropilf from ROIs, excluding overlapping regions and extremes of the FOV
-calculate.dFF                       = true; %Calculate dF/F, with optional neuropil subtraction
+calculate.combined_data             = false;  %Combine relevant behavioral and imaging data in one MAT file ; truncate if necessary
+calculate.cellF                     = false; %Extract cellf and neuropilf from ROIs, excluding overlapping regions and extremes of the FOV
+calculate.dFF                       = false; %Calculate dF/F, with optional neuropil subtraction
 calculate.align_signals             = true; %Interpolate dF/F and align to behavioral events
 calculate.trial_average_dFF         = true; %dF/F averaged over specified subsets of trials
 calculate.encoding_model            = false; %Encoding model
@@ -68,7 +68,7 @@ mat_file.figData.fovProj        = fullfile(dirs.figures,'FOV mean projections','
 params.fluo.exclBorderWidth     = 10; %For calc_cellF: n-pixel border of FOV to be excluded from analysis
 
 % Interpolation and alignment
-params.align.timeWindow     = [-1 3]; %Also used for bootavg, etc.
+params.align.timeWindow     = [-1 5]; %Also used for bootavg, etc.
 params.align.positionWindow = [-50 90]; %Also used for bootavg, etc.
 params.align.interdt        = []; %Query intervals for interpolation in seconds (must be <0.5x original dt; preferably much smaller.)
 params.align.binWidth       = 5; %Spatial bins in cm

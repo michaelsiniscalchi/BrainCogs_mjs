@@ -113,12 +113,16 @@ function [ logs, excludeBlocks ] = excludeBadBlocks( logs )
             "mjs20_411",datetime('13-Jun-2022'),[1];...   %Unsure why there are 2 blocks...
            
 %     case 'mjs_tactile2visual'
+            "mjs20_24",datetime('10-Jun-2023'), 'all';...   %Accidentally started on maze level 8
+            "mjs20_24",datetime('11-Jun-2023'), 'all';...   %Accidentally started on maze level 8
+            "mjs20_24",datetime('12-Jun-2023'), 'all';...   %Accidentally started on maze level 8
             "mjs20_24",datetime('30-Jul-2023'), 'all';...   %Accidentally started on maze level 8
             "mjs20_24",datetime('31-Jul-2023'), [1,2];...   %Accidentally started on maze level 8
             "mjs20_23",datetime('04-Aug-2023'), 'all';...   %Headplate holder arm twisted forward
             "mjs20_23",datetime('09-Aug-2023'), 1;...   %Headplate holder arm twisted forward (again!)  
             "mjs20_26",datetime('09-Aug-2023'), 'all';...   %Had already exceeded accuracy threshold of 80%
-            "mjs20_23",datetime('01-Sep-2023'), 'all'... %Extra training and reworked code to include iOutcome in log.block (and removed iBlank) 
+            "mjs20_23",datetime('01-Sep-2023'), 'all';... %Extra training and reworked code to include iOutcome in log.block (and removed iBlank) 
+            "mjs20_103",datetime('18-Sep-2023'), 'all'...   %Accidentally started on maze level 8
             };
 
 %Remove specified blocks prior to session data extraction
