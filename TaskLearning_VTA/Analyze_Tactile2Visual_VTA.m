@@ -1,9 +1,9 @@
 %---------------------------------------------------------------------------------------------------
-% analyze_TaskLearning_VTA1
+% Analyze_Tactile2Visual_VTA
 %
 % PURPOSE: To analyze simultaneous Ca++ imaging and virtual maze running behavior.
 %
-% AUTHOR: MJ Siniscalchi, Princeton Neuroscience Institute, 230918
+% AUTHOR: MJ Siniscalchi, Princeton Neuroscience Institute, 240111
 %
 % NOTES:
 %           * If neuropil (background) masks are not generated after cell selection in cellROI.m,
