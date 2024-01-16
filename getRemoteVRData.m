@@ -27,8 +27,9 @@ for i = 1:numel(subjects)
 
     %Load each matfile and aggregate into structure
     sessionDate = string(unique({data_files(:).session_date}));
+    key.session_date   = char(sessionDate); %Can also include key fields in ARG #3 for loading individual sessions
     for j = 1:numel(sessionDate)
-        [ dataPath, logs ] = loadRemoteVRFile(subjectID, sessionDate(j));
+        [ dataPath, logs ] = loadRemoteVRFile(key);
         if isempty(logs)
             continue
         end

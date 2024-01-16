@@ -56,6 +56,9 @@ if calculate.combined_data
         stackInfo = load(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'));
         subject.ID = expData(i).subjectID;
         key.session_date = datestr(stackInfo.startTime,'yyyy-mm-dd');
+        if isfield(expData,'session_number') && ~isempty(expData.session_number)
+            key.session_number = expData.session_number;
+        end
         behavior = getRemoteVRData( experiment, subject, key );
         behavior = restrictImgTrials(behavior, expData(i).mainMaze, expData(i).excludeBlock);
         %Synchronize imaging frames with behavioral time basis

@@ -30,8 +30,15 @@ i=1;
 % expData(i).npCorrFactor = 0.3;
 % i = i+1;
 
-expData(i).sub_dir = '230929-m103-maze7'; 
+expData(i).sub_dir = '230929-m103-maze7'; % 93% Accuracy; '231003-m103-maze7', 85%; '231005-m103-maze7', 67%
 expData(i).subjectID = "mjs20_103";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
+expData(i).sub_dir = '231003-m103-maze7'; % 93% Accuracy; '231003-m103-maze7', 85%; '231005-m103-maze7', 67%
+expData(i).subjectID = "mjs20_103";
+expData(i).session_number = 1; 
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
@@ -48,6 +55,7 @@ expData(i).npCorrFactor = 0.3;
 i = i+1;
 expData(i).sub_dir = '231017-m105-maze8'; 
 expData(i).subjectID = "mjs20_105";
+expData(i).session_number = 1;
 expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
 i = i+1;

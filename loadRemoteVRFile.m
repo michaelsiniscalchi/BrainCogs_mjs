@@ -1,17 +1,17 @@
-function [ path, log ] = loadRemoteVRFile( subjectID, sessionDate, sessionNumber)
+function [ path, log ] = loadRemoteVRFile( key )
 
 load_mat = false;
 if nargout > 1
     load_mat = true;
 end
 
-%Create key for fetch from DJ
-key = struct();
-key.subject_fullname = char(subjectID); %Must be char, even though annotation says 'string'
-key.session_date   = char(sessionDate);
-if nargin > 2
-    key.session_number   = sessionNumber;
-end
+% %Create key for fetch from DJ
+% key = struct();
+% key.subject_fullname = char(subjectID); %Must be char, even though annotation says 'string'
+% key.session_date   = char(sessionDate);
+% if nargin > 2
+%     key.session_number   = sessionNumber;
+% end
 
 %Load remote file(s)
 data_dir = fetch(acquisition.SessionStarted & key, 'new_remote_path_behavior_file');
