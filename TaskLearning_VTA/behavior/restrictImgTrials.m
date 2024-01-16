@@ -7,7 +7,7 @@ if any(behavior.trials.level~=mainMazeIdx)
 end
 
 %Following can be used to exclude blocks specified in expData;
-% currently, sessions/blocks are specified in getVRData > excludeBadBlocks
+% currently, sessions/blocks are specified in getVRData > excludeBadBlocks()
 if excludeBlock
     exclMask = ismember(behavior.trials.blockIdx,excludeBlock);
     behavior.trials.exclude(exclMask) = true; %'exclude' field used in getMasks()
