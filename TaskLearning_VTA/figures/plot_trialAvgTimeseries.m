@@ -14,8 +14,6 @@ function fig = plot_trialAvgTimeseries(panels,ax_titles,xLabel,yLabel)
 %   yLabel:       Character array for y-axis label.
 %
 %--------------------------------------------------------------------------
-
-x = panels(1).x;       %Timepoints, etc. for aligned signal (can also be used for spatial-position series)
 nPanels=numel(panels);  %Number of panels
 
 fig = figure;
@@ -23,6 +21,8 @@ ax = gobjects(nPanels,1);
 shadeAlpha = 0.2; %Transparency value for error shading
 for i = 1:nPanels
     nSignals = numel(panels(i).signal);
+    x = panels(i).x;       %Timepoints, etc. for aligned signal (can also be used for spatial-position series)
+    
     ax(i) = subplot(1,nPanels,i); hold on;
     
     % Fill area representing confidence intervals

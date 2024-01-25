@@ -36,7 +36,7 @@ end
 
 %Estimate grand mean and confidence interval
 bootAvg.subset_label = subset_label;
-bootAvg.signal = mean(bootRep,1,"omitnan"); %Use trial avg instead of boot avg
+bootAvg.signal = mean(bootRep,1,"omitnan"); %Or use trial avg instead of boot avg
 bootAvg.CI(1,:) = prctile(bootRep,50+CI/2,1);
 bootAvg.CI(2,:) = prctile(bootRep,50-CI/2,1);
 bootAvg.N = nTrials;
