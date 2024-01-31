@@ -6,7 +6,7 @@ dirs.raw = fullfile(root_dir,data_dir,'raw'); %Raw data directory
 dirs.source = fullfile(root_dir,data_dir,source_dir); %Default is 'raw', but can be changed to allow for seed/rigid registration->cropping->registration
 dirs.mat = fullfile(root_dir,data_dir,'mat'); %temporary MAT file for pixel data ('stack') and transformations
 dirs.registered = fullfile(root_dir,data_dir,'registered-chan1'); %Registered data directory for channel-1
-if ~exist(dirs.registered)
+if ~exist(dirs.registered,"dir")
     dirs.registered = fullfile(root_dir,data_dir,'registered-chan0'); %Registered data directory for channel-0 (1-color imaging)
 end
 
@@ -25,8 +25,8 @@ tiffs = dir(fullfile(dirs.source,'*.tif'));
 paths.source = string(fullfile({dirs.source}',{tiffs(:).name}'));
 
 %Registered Data from Channel 1 and/or 2, if existent
-    tiffs = dir(fullfile(dirs.registered,'*.tif'));
-    paths.registered = string(fullfile({dirs.registered}',{tiffs(:).name}'));
+tiffs = dir(fullfile(dirs.registered,'*.tif'));
+paths.registered = string(fullfile({dirs.registered}',{tiffs(:).name}'));
 
 
 %Metadata
