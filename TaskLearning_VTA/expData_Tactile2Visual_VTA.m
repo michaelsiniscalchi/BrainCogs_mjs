@@ -64,6 +64,12 @@ expData(i).subjectID = "mjs20_105";
 expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
 
+i = i+1;
+expData(i).sub_dir = '240130-m18-maze7'; 
+expData(i).subjectID = "mjs20_018";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+
 % 230929-m103-maze7
 
 % 231006-m105-maze7
