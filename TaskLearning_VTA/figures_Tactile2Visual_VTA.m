@@ -74,8 +74,6 @@ if figures.trial_average_dFF
         create_dirs(save_dir); %Create dir for these figures
         %Save figure for each cell plotting all combinations of choice x outcome
         comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
-        %FOR GRANT FIGS
-        comparisons = ["puff-onset","tower-onset"];
         for j = 1:numel(comparisons)
             panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
             event = [params.figs.bootAvg.panels(panelIdx(1)).trigger];
