@@ -8,20 +8,24 @@ fields.max = ["maxCorrectMoving","maxCorrectMoving_congruent","maxCorrectMoving_
 fields.other = ["median_velocity","median_pSkid","median_stuckTime","bias"];
 
 for i = 1:numel(subjects)
+    exclSessionIdx = false(size(subjects(i).sessions));
     for j = 1:numel(subjects(i).sessions)
+        
+        %Get main task rule (excl. isolated forced-choice blocks, etc.)
         S = subjects(i).sessions(j);
 
-        %Get main task rule (excl. isolated forced-choice blocks, etc.)
         ruleNames = ["visual","tactile","sensory","alternation"];
-        if all(S.taskRule=="forcedChoice")
+        inclBlockIdx = ismember(S.taskRule, ruleNames);
+        if ~isempty(S.taskRule) && all(S.taskRule=="forcedChoice")
             inclBlockIdx = S.taskRule=="forcedChoice" & S.nCompleted==max(S.nCompleted); %Just use majority block for shaping
-        elseif any(ismember(S.taskRule, ruleNames))
-            if any(S.taskRule=="visual") && any(S.taskRule=="tactile") %check for any mixed sessions and flag for block exclusion
-                warning(strjoin(["Session from " subjects(i).ID ", " string(S.session_date) "was mixed between rules. Check!"]));
-            end
-            inclBlockIdx = ismember(S.taskRule,["visual","tactile","sensory","alternation"]);
-        else
-            error('"taskRule" must be one of the following: "forcedChoice","visual","tactile","sensory","alternation".')
+        elseif any(S.taskRule=="visual") && any(S.taskRule=="tactile") %check for any mixed sessions and flag for block exclusion
+            warning(strjoin(["Session from " subjects(i).ID ", " string(S.session_date) "was mixed between rules. Check!"]));
+        elseif all(~inclBlockIdx)
+            disp('Warning: "taskRule" must be one of the following: "forcedChoice","visual","tactile","sensory","alternation"...');
+            disp('Excluding all blocks in');
+            disp(S.new_remote_path_behavior_file);
+            exclSessionIdx(j) = true;
+            continue
         end
 
         %Filter out excluded blocks
@@ -101,6 +105,12 @@ for i = 1:numel(subjects)
         subjects(i).trialData(j) = trialData;
         subjects(i).trials(j) = trials;
     end
+    %Exclude any sessions with no data (or different task, etc)
+    for f = ["logs","sessions","trialData","trials"]
+        subjects(i).(f) = subjects(i).(f)(~exclSessionIdx);
+    end
+
+
 end
 
 %Output modified structure

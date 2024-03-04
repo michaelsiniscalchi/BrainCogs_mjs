@@ -13,19 +13,23 @@ for i = 1:numel(subjects)
 
         %Get main task rule (excl. isolated forced-choice blocks, etc.)
         ruleNames = ["visual","tactile","sensory","alternation"];
-        if all(S.taskRule=="forcedChoice")
+        inclBlockIdx = ismember(S.taskRule, ruleNames);
+        exclSessionIdx = false(size(subjects(i).sessions));
+        if ~isempty(S.taskRule) && all(S.taskRule=="forcedChoice")
             inclBlockIdx = S.taskRule=="forcedChoice" & S.nCompleted==max(S.nCompleted); %Just use majority block for shaping
-        elseif any(ismember(S.taskRule, ruleNames))
-            if any(S.taskRule=="visual") && any(S.taskRule=="tactile") %check for any mixed sessions and flag for block exclusion
+        elseif any(S.taskRule=="visual") && any(S.taskRule=="tactile") %check for any mixed sessions and flag for block exclusion
                 warning(strjoin(["Session from " subjects(i).ID ", " string(S.session_date) "was mixed between rules. Check!"]));
-            end
-            inclBlockIdx = ismember(S.taskRule,["visual","tactile","sensory","alternation"]);
-        else
-            error('"taskRule" must be one of the following: "forcedChoice","visual","tactile","sensory","alternation".')
+        elseif all(~inclBlockIdx)
+            disp('Warning: "taskRule" must be one of the following: "forcedChoice","visual","tactile","sensory","alternation"...');
+            disp('Excluding all blocks in current session.');
+            exclSessionIdx(j) = true;
+            continue
         end
 
         %Filter out excluded blocks
-        inclBlockIdx = inclBlockIdx & ~S.excludeBlocks;
+        if ~isempty(S.excludeBlocks)
+            inclBlockIdx(S.excludeBlocks) = false;
+        end
 
         %No further processing for sessions with only one main block
         if isequal(inclBlockIdx,true)
@@ -99,6 +103,12 @@ for i = 1:numel(subjects)
         subjects(i).trialData(j) = trialData;
         subjects(i).trials(j) = trials;
     end
+    %Exclude any sessions with no data (or different task, etc)
+    for f = ["sessions","trialData","trials"]
+  subjects(i).(f) = subjects(i).(f)(~exclSessionIdx);
+    end
+   
+
 end
 
 %Output modified structure

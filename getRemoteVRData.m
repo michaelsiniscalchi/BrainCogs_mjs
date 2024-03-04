@@ -27,8 +27,8 @@ for i = 1:numel(subjects)
 
     %Load each matfile and aggregate into structure
     sessionDate = string(unique({data_files(:).session_date}));
-    key.session_date   = char(sessionDate); %Can also include key fields in ARG #3 for loading individual sessions
     for j = 1:numel(sessionDate)
+        key.session_date   = char(sessionDate(j)); %Can also include key fields in ARG #3 for loading individual sessions
         [ dataPath, logs ] = loadRemoteVRFile(key);
         if isempty(logs)
             continue
@@ -55,7 +55,7 @@ for i = 1:numel(subjects)
         trialData(numel(sessionDate),1) = struct(...
             'session_date', [],'eventTimes',struct(),...
             'towerPositions', [],'puffPositions', [],...
-            'duration',[],'response_time',[],...
+            'duration',[],'response_time',[],'response_delay',[],...
             'position',[],'velocity',[],'mean_velocity',[],...
             'x_trajectory',[],'theta_trajectory',[],'time_trajectory',[],'positionRange',[],...
             'collision_locations',[],'pSkid',[],'stuck_locations',[],'stuck_time',[]);
@@ -75,7 +75,8 @@ for i = 1:numel(subjects)
             'pCorrect', [], 'pCorrect_congruent',[], 'pCorrect_conflict',[],...
             'pOmit', [], 'pStuck', [],...
             'maxCorrectMoving',NaN,'maxCorrectMoving_congruent',NaN,'maxCorrectMoving_conflict',NaN,...
-            'median_velocity', [], 'median_pSkid',[],'median_stuckTime',[],...
+            'median_velocity', [], 'median_response_delay', [], 'median_delay_bias', [],...
+            'median_pSkid',[],'median_stuckTime',[],...
             'bias', [],...
             'excludeBlocks', [],...
             'new_remote_path_behavior_file', []);
@@ -114,7 +115,7 @@ for i = 1:numel(subjects)
 
         %Initialize trial variables aggregated from logs
         blockIdx = nan(1,numel([logs.block.trial]));
-        [duration, response_time, pSkid, stuck_time] = deal(nan(numel(blockIdx),1));
+        [duration, response_time, response_delay, pSkid, stuck_time] = deal(nan(numel(blockIdx),1));
         [position, velocity,...
             towerPositions, puffPositions,...
             collision_locations, stuck_locations] = deal(cell(numel(blockIdx),1));
@@ -139,12 +140,20 @@ for i = 1:numel(subjects)
 
             %Event times
             eventTimes(blockIdx==k,1) = getTrialEventTimes(logs, k); %Need logs and block idx for time, because restarts/new blocks cause divergent time references
-
+          
             %Cue positions
             [towerPositions(blockIdx==k,1), puffPositions(blockIdx==k,1)] = getCuePositions(logs, k);
 
-            %Time from trial start to choice & Duration including ITI
+            %Response time from trial start to choice (modified after generating trial masks) 
             response_time(blockIdx==k)  = arrayfun(@(idx) Trials(idx).time(Trials(idx).iterations), 1:numel(Trials));
+
+            %Response delay (latency from turn-entry to choice)
+%             if any([eventTimes(blockIdx==k).turnEntry])
+%                 response_delay(blockIdx==k)  = arrayfun(@(idx) ...
+%                     Trials(idx).time(Trials(idx).iterations)-Trials(idx).time(Trials(idx).iTurnEntry), 1:numel(Trials));
+%             end
+
+            %Duration including ITI
             duration(blockIdx==k)  = [Trials.duration];
 
             %Running velocity and position
@@ -201,7 +210,8 @@ for i = 1:numel(subjects)
             'towerPositions', {towerPositions},...
             'puffPositions', {puffPositions},...
             'duration', duration,...
-            'response_time', response_time,...
+            'response_time', response_time,... 
+            'response_delay', response_delay,... %Time from entry into turn region to choice entry 
             'position', {position},...
             'x_trajectory',x_trajectory,...
             'theta_trajectory',theta_trajectory,...
@@ -246,8 +256,6 @@ for i = 1:numel(subjects)
             omit(blockIdx==k) = [Trials.choice]==Choice.nil;
 
             %Trials where alternative rules agree or conflict
-            %congruent(blockIdx==k) = int8([Trials.trialType]) == int8(rightTowers(blockIdx==k))+1; %L,R choice enumeration = 1,2
-            %conflict(blockIdx==k) = ~congruent(blockIdx==k); %R,L choice enumeration = 1,2
             if isfield(Trials,"visualRule")...
                     && ~any([Trials.forcedChoice])... %Visual or Tactile rule
                     && any([leftPuffs(blockIdx==k), rightPuffs(blockIdx==k)])... %Block has both Visual and Tactile cues 
@@ -290,18 +298,25 @@ for i = 1:numel(subjects)
             'exclude',exclude,...
             'level',level,'blockIdx',blockIdx);
 
-        %---Session data------------------------------------------------------------------
+        %--- Modify trialData based on trials (trial masks) ----------------------------------------
+
+        %Response time          
+        trialData(j).response_time(~forward | omit) = NaN;
+
+        %Response delay (latency from turn-entry to choice)
+        if any([trialData(j).eventTimes.turnEntry])
+            turnTime = [trialData(j).eventTimes.turnEntry]-[trialData(j).eventTimes.start];
+            trialData(j).response_delay = trialData(j).response_time - turnTime';
+        end
+
+
+        %--- Session data ------------------------------------------------------------------
 
         %Block data
         [reward_scale, nTrials, nCompleted, nForward,...         %Initialize
             pCorrect, pCorrect_congruent, pCorrect_conflict, pOmit, pStuck,...
             median_velocity, median_pSkid, median_stuckTime] = deal([]);
         maxCorrectMoving = struct('all',[],'congruent',[],'conflict',[]);
-
-%Debug
-% if j==61
-%     dbstop
-% end
 
         ruleNames = ["forcedChoice","visualRule","tactileRule","alternateTrials"];
         rule = strings(1,numel(logs.block));
@@ -339,12 +354,17 @@ for i = 1:numel(subjects)
 
             median_velocity(k) = median(trialData(j).mean_velocity(fwdIdx,2)); %Median velocity across all completed trials (x,y,theta)
             median_pSkid(k) = median(trialData(j).pSkid(fwdIdx)); %Median proportion of maze where mouse skidded along walls
-            median_stuckTime(k) = median(trialData(j).stuck_time,'omitnan');
-
+            median_stuckTime(k) = median(trialData(j).stuck_time(fwdIdx),'omitnan');
+            
             %Choice bias
             leftError = sum(left(err & ~exclude & blockIdx==k))/sum(left(~exclude & blockIdx==k));
             rightError = sum(right(err & ~exclude & blockIdx==k))/sum(right(~exclude & blockIdx==k));
             bias(k) = rightError-leftError;
+
+            %Motor bias
+            median_response_delay = median(trialData(j).response_delay(fwdIdx));
+            median_delay_bias = median(trialData(j).response_delay(fwdIdx & right))...
+                - median(trialData(j).response_delay(fwdIdx & left));
 
             %Moving average correct rate
             tempCorrect = double(correct(blockIdx==k) & ~exclude(blockIdx==k));
@@ -383,6 +403,8 @@ for i = 1:numel(subjects)
             'maxCorrectMoving_congruent', [maxCorrectMoving.congruent],...
             'maxCorrectMoving_conflict', [maxCorrectMoving.conflict],...
             'median_velocity', median_velocity,... %Mean velocity across all completed trials (x,y,theta)
+            'median_response_delay', median_response_delay,... %Median delay between turn entry and choice
+            'median_delay_bias', median_delay_bias,... %Diff median delay R-L
             'median_pSkid', median_pSkid,... %Mean proportion of maze where mouse skidded along walls
             'median_stuckTime', median_stuckTime,...
             'bias', bias,...
@@ -390,6 +412,7 @@ for i = 1:numel(subjects)
             'new_remote_path_behavior_file', dataPath);
 
         clearvars eventTimes level bias;
+        key = rmfield(key,"session_date"); %remove session_date; else constrains fetch for next subject 
     end
 
     %Assign fields to current subject

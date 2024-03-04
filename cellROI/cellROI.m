@@ -1,6 +1,6 @@
 %%% cellROI v2
 % PURPOSE: Graphical user interface for selecting regions of interest (ROIs) from motion-corrected calcium imaging data.
-% AUTHORS: MJ Siniscalchi 181105; based on original version by AC Kwan.
+% AUTHORS: MJ Siniscalchi & AC Kwan 181105 
 %
 %***FUTURE EDITS:
 %-Use dispRelFluo function from selectROI() to implement neuropil masks...
@@ -847,8 +847,10 @@ for i = axis_ID %Set of int axes_IDs passed to function
     elseif strcmp(ax{i},'axes3') %Refresh axes3 (dF/F plot)
         cellf = NaN(size(handles.stack,3),1);
         if ~isempty(handles.curr_cellf)
-            cellf = handles.curr_cellf;
+            cellf = handles.curr_cellf; 
+            cellf = cellf - min(cellf); %Offset cellular fluorescence data by min(F) for approx dF/F0; F0 should be positive
         end
+        
         plot(handles.axes3,(1:length(cellf)),... %Plot cell dF/F
             (cellf-median(cellf)) / median(cellf),'k','LineWidth',1);
         axis(handles.axes3,'tight');
@@ -917,7 +919,7 @@ otherCellMask = logical(sum(handles.cellMasksAll(:,:,temp),3)); %Mask for all sa
 cellMask = handles.cellMasksAll(:,:,idx) & ~otherCellMask;
 surroundMask = circle{2} & ~(circle{1} | cellMask | otherCellMask); %Mask for circular region surrounding ROI, excluding inner circle and somata mask
 
-%Plot histogram of mean pixel intensity
+%Plot histogram of max pixel intensity
 cla(handles.axes4);
 hold(handles.axes4,'on');
 F_cellMask = mean(handles.max_proj(cellMask)); %Grand mean fluorescence within current ROI

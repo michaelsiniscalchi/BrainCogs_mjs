@@ -34,8 +34,8 @@ eventTimes(numel(trials),1) = struct(...
     'start',[],...
     'leftTowers',[],'rightTowers',[],'leftPuffs',[],'rightPuffs',[],...
     'firstTower',[],'lastTower',[],'firstPuff',[],'lastPuff',[],...
-    'outcome',[],...
-    'cueEntry',[],'turnEntry',[],'armEntry',[]); % Initialize
+    'cueEntry',[],'turnEntry',[],'armEntry',[],...
+    'choice',[],'outcome',[]); % Initialize
 
 for i = 1:numel(trials)
     %Trial start times
@@ -61,10 +61,10 @@ for i = 1:numel(trials)
     eventTimes(i).outcome =  eventTimes(i).start + trials(i).time(trials(i).iterations); %Use eventTimes.start (corrected) rather than raw 'start' times
 
     %Time of entry into cue region, turn region (easeway before arm entry), and arm region
-    fields = ["iCueEntry","iTurnEntry","iArmEntry"];
+    fields = ["iCueEntry","iTurnEntry","iArmEntry","iChoice","iOutcome"];
     for j = 1:numel(fields)
         eventTimes(i).([lower(fields{j}(2)) fields{j}(3:end)]) = NaN; %Initialize, eg 'eventTimes(i).turnEntry'
-        if trials(i).(fields(j)) %If boundary crossed in current trial
+        if isfield(trials,fields(j)) && trials(i).(fields(j)) %If boundary crossed in current trial, else remains NaN
             eventTimes(i).([lower(fields{j}(2)) fields{j}(3:end)]) = ...
                 eventTimes(i).start + trials(i).time(trials(i).(fields(j))); %Use eventTimes.start (corrected) rather than raw 'start' times
         end

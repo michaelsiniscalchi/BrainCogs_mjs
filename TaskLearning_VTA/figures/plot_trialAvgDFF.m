@@ -13,6 +13,7 @@ function figs = plot_trialAvgDFF( bootAvg, cellIDs, expID, panels )
 
 % Set up figure properties and restrict number of cells, if desired
 setup_figprops('timeseries')  %set up default figure plotting parameters
+% setup_figprops('placeholder'); %Customize for performance plots
 % event = fieldnames(bootAvg);
 % event = event{~ismember(event,{'t','position'})};
 % trialTypes = fieldnames(bootAvg.(event));
@@ -77,7 +78,7 @@ for i = 1:numel(cellIdx)
 
     figName = join([panels(j).comparison,'_', expID, '_cell', cellIDs{idx}],''); %Figure name
     figs(i).Name = figName;
-    figs(i).Position = [50,400,1200,500]; %LBWH
+    figs(i).Position = [50,400,600,280]; %LBWH
     figs(i).Visible = 'off';
 
 end

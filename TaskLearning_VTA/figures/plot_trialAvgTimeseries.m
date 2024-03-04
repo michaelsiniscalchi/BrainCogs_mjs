@@ -43,7 +43,8 @@ for i = 1:nPanels
     
     % Figure legend
     leg = legend(hObj,panels(i).legend_names);
-    leg.FontSize = 10;
+    leg.FontSize = 14;
+    leg.Location = 'bestoutside';
     leg.Box = 'off';
     leg.AutoUpdate = 'off';
     

@@ -15,18 +15,19 @@ colors = params.colors;
 prefix = 'Group';
 
 %Aggregate data
-nSensory = params.nSensory;
-% subjects = subjects(1:6); %Exclude M17...too few alternation sessions
+nPrior = params.nPriorSessions;
 for i = 1:numel(subjects)
     % Group according to different phases of training
-    sensoryIdx = [subjects(i).sessions.sessionType]=="Sensory"; % Sensory-guided sessions
-    altIdx = [subjects(i).sessions.sessionType]=="Alternation"; % Alternation sessions
-    sensorySessions{i} = find(sensoryIdx,nSensory,'last');
+    idx.visual = [subjects(i).sessions.taskRule]=="visual"; % Sensory-guided sessions
+    idx.tactile = [subjects(i).sessions.sessionType]=="tactile"; % Alternation sessions
+    
+    rule1 = [subjects(i).sessions.taskRule];        
+    sessions.rule1{i} = find(idx.(rule1),nPriorSessions,'last');
     altSessions{i} = find(altIdx);
 end
 
 %How to treat data from most experienced mice
-nAlternation = min(cellfun(@numel,altSessions)); %Use min number of sessions across mice
+nAdaptive = min(cellfun(@numel,altSessions)); %Use min number of sessions across mice
 if isnumeric(params.nAlternation)
     nAlternation = params.nAlternation;
 elseif strcmp(params.nAlternation,'max')

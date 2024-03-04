@@ -123,6 +123,12 @@ function [ logs, excludeBlocks ] = excludeBadBlocks( logs )
             "mjs20_26",datetime('09-Aug-2023'), 'all';...   %Had already exceeded accuracy threshold of 80%
             "mjs20_23",datetime('01-Sep-2023'), 'all';... %Extra training and reworked code to include iOutcome in log.block (and removed iBlank) 
             "mjs20_103",datetime('18-Sep-2023'), 'all';...   %Accidentally started on maze level 8
+
+
+            "mjs20_018",datetime('29-Nov-2023'), 'all';...   %M18 started on linear track
+            "mjs20_018",datetime('30-Nov-2023'), 'all';...   %linear track
+            "mjs20_018",datetime('28-Feb-2023'),     2;...   %M173 accidentally run as M18
+            "mjs20_179",datetime('07-Dec-2023'), 'all';...   %premature tactile rule--should have been lvl 6 L-maze
             }; 
 
 % "mjs20_103",datetime('03-Oct-2023'), 1;... %Restarted
