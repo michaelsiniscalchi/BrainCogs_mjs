@@ -12,7 +12,7 @@
 %
 %---------------------------------------------------------------------------------------------------
 
-function Analyze_Tactile2Visual_VTA( search_filter )
+function Analyze_Tactile2Visual_VTA( search_filter, options )
 
 % Set path
 dirs = getRoots();
@@ -26,7 +26,7 @@ expData = expData(contains({expData(:).sub_dir}', search_filter)); %Filter by da
 
 % Set parameters for analysis
 experiment = 'mjs_tactile2visual'; %If empty, fetch data from all experiments
-[calculate, summarize, figures, mat_file, params] = params_Tactile2Visual_VTA(dirs, expData);
+[calculate, summarize, figures, mat_file, params] = params_Tactile2Visual_VTA(dirs, expData, options);
 expData = get_imgPaths(dirs, expData, calculate, figures); %Append additional paths for imaging data if required by 'calculate'
 
 % Generate directory structure

@@ -1,4 +1,4 @@
-function [ calculate, summarize, figures, mat_file, params ] = params_Tactile2Visual_VTA( dirs, expData )
+function [ calculate, summarize, figures, mat_file, params ] = params_Tactile2Visual_VTA( dirs, expData, options )
 
 %% CALCULATE OR RE-CALCULATE RESULTS
 calculate.combined_data             = true;  %Combine relevant behavioral and imaging data in one MAT file ; truncate if necessary
@@ -7,6 +7,13 @@ calculate.dFF                       = true; %Calculate dF/F, with optional neuro
 calculate.align_signals             = true; %Interpolate dF/F and align to behavioral events
 calculate.trial_average_dFF         = true; %dF/F averaged over specified subsets of trials
 calculate.encoding_model            = false; %Encoding model
+
+%Amend params based on input options
+if exist('options') && isfield(options, 'calculate') %For setting params from SLURM, etc.
+    for f = string(fieldnames(options.calculate))'
+        calculate.(f) = options.calculate.(f);
+    end
+end
 
 calculate.fluorescence = false;
 if any([calculate.cellF, calculate.dFF,... 
