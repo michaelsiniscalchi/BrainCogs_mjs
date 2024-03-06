@@ -115,7 +115,8 @@ end
 %Load stack using custom function loadtiffseq.m
 if ~isfield(handles,'stack')
     disp(['Loading ' handles.pathname handles.filename '...']); tic
-    handles.stack = double(loadtiffseq(fullfile(handles.pathname,handles.filename))); toc
+    stack = double(loadtiffseq(fullfile(handles.pathname,handles.filename))); toc
+    handles.stack = stack-min(stack(:)); %Recenter so all values are positive
 end
 
 %Calculate mean, max, and variance projections to aid in ROI selection
