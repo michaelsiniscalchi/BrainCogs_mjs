@@ -14,6 +14,11 @@
 
 function Analyze_Tactile2Visual_VTA( search_filter, options )
 
+%Handle input args
+if nargin<2
+    options = struct();
+end
+
 % Set path
 dirs = getRoots();
 addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...

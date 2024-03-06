@@ -48,9 +48,15 @@ for i = 1:numel(trial_dff)
         else
             subset_label = trialSpec{k};
         end
-        disp(subset_label);
+                
+        %Get dFF in time/position window for specified subset of trials
         trialMask = getMask(trials, trialSpec{k}); %Logical mask for specified combination of trials
-        dff = trial_dff{i}(trialMask, :); %Get dFF in specified window for subset of trials specified by trialMask
+        if any(trialMask)
+            dff = trial_dff{i}(trialMask, :);
+        else
+            dff = nan(size(bootAvg.t));
+        end
+        disp(strjoin([subset_label ', ' num2str(sum(trialMask)) ' trials.'],''));
         
         %Convert trialwise cell arrays to matrices
         if iscell(dff)

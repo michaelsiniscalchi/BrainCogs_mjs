@@ -25,13 +25,15 @@ nReps = params.nReps;
 CI = params.CI;
     
 %% Estimate mean dF/F and confidence intervals using the bootstrap
-bootRep = NaN(nReps,size(trial_dff,2)); %An array of bootstrap replicates
-for i = 1:nReps
-    
-    %Draw a random sample with replacement and estimate mean
-    bootSample = trial_dff(randsample(nTrials,nTrials,'true'),:);
-    bootRep(i,:) = mean(bootSample,1,"omitnan");
-
+if nTrials
+    bootRep = NaN(nReps,size(trial_dff,2)); %An array of bootstrap replicates
+    for i = 1:nReps
+        %Draw a random sample with replacement and estimate mean
+        bootSample = trial_dff(randsample(nTrials,nTrials,'true'),:);
+        bootRep(i,:) = mean(bootSample,1,"omitnan");
+    end
+else
+    bootRep = nan(size(trial_dff)); %If no trials
 end
 
 %Estimate grand mean and confidence interval
