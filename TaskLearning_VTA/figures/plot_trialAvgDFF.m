@@ -78,7 +78,7 @@ for i = 1:numel(cellIdx)
 
     figName = join([panels(j).comparison,'_', expID, '_cell', cellIDs{idx}],''); %Figure name
     figs(i).Name = figName;
-    figs(i).Position = [50,400,600,280]; %LBWH
+    figs(i).Position = [50,400,600*(numel(panels)),300]; %LBWH
     figs(i).Visible = 'off';
 
 end
