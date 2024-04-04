@@ -89,6 +89,7 @@ expData(i).npCorrFactor = 0.3;
 i = i+1;
 expData(i).sub_dir = '240201-m18-maze7-session2'; 
 expData(i).subjectID = "mjs20_018";
+expData(i).session_number = 2;
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
