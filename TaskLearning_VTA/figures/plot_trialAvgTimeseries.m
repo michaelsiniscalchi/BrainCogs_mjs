@@ -1,4 +1,4 @@
-function fig = plot_trialAvgTimeseries(panels,ax_titles,xLabel,yLabel)
+function fig = plot_trialAvgTimeseries(panels,ax_titles,xLabel,yLabel,legend_loc)
 %%% plot_trialAvgTimeseries
 %PURPOSE:   Plot bootstrapped timeseries (eg cellular fluorescence) time-locked to behavioral event.
 %
@@ -18,13 +18,15 @@ nPanels=numel(panels);  %Number of panels
 
 fig = figure;
 ax = gobjects(nPanels,1);
+tiledlayout(1,nPanels);
 shadeAlpha = 0.2; %Transparency value for error shading
 for i = 1:nPanels
     nSignals = numel(panels(i).signal);
     x = panels(i).x;       %Timepoints, etc. for aligned signal (can also be used for spatial-position series)
-    
-    ax(i) = subplot(1,nPanels,i); hold on;
-    
+
+    %     ax(i) = subplot(1,nPanels,i); hold on;
+    ax(i) = nexttile(i); hold on;
+
     % Fill area representing confidence intervals
     if isfield(panels(i),'CI')
         for j = 1:nSignals
@@ -44,7 +46,7 @@ for i = 1:nPanels
     % Figure legend
     leg = legend(hObj,panels(i).legend_names);
     leg.FontSize = 14;
-    leg.Location = 'bestoutside';
+    leg.Location = legend_loc;
     leg.Box = 'off';
     leg.AutoUpdate = 'off';
     

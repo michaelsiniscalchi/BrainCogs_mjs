@@ -128,6 +128,7 @@ function [ logs, excludeBlocks ] = excludeBadBlocks( logs )
             "mjs20_018",datetime('29-Nov-2023'), 'all';...   %M18 started on linear track
             "mjs20_018",datetime('30-Nov-2023'), 'all';...   %linear track
             "mjs20_018",datetime('28-Feb-2023'),     2;...   %M173 accidentally run as M18
+            "mjs20_018",datetime('07-Mar-2023'),     2;...   %M173 accidentally run as M18
             "mjs20_179",datetime('07-Dec-2023'), 'all';...   %premature tactile rule--should have been lvl 6 L-maze
             }; 
 

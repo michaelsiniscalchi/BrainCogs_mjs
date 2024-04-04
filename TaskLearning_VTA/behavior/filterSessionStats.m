@@ -3,7 +3,8 @@ function subjects_out = filterSessionStats( subjects )
 
 fields.params = ["taskRule","level","reward_scale","maxSkidAngle","lCue","lMem","lMaze"];
 fields.counts = ["nTrials","nCompleted","nForward"];
-fields.mean = ["pCorrect","pCorrect_congruent","pCorrect_conflict","pOmit","pStuck"];
+fields.mean = ["pCorrect","pCorrect_congruent","pCorrect_conflict",...
+    "pLeftTowers","pLeftPuffs","pLeftCues","pOmit","pStuck"];
 fields.max = ["maxCorrectMoving","maxCorrectMoving_congruent","maxCorrectMoving_conflict"];
 fields.other = ["median_velocity","median_pSkid","median_stuckTime","bias"];
 
@@ -48,7 +49,12 @@ for i = 1:numel(subjects)
 
         %Mean/proportional quantities
         weights = S.nCompleted ./ sum(S.nCompleted); %Weight sensory or alternation stats by the respective number of trials
-        for F = ["pCorrect","pCorrect_congruent","pCorrect_conflict","pOmit","pStuck"]
+        for F = ["pCorrect","pCorrect_congruent","pCorrect_conflict"] %Calculated across completed trials
+            S.(F) = sum(S.(F) .* weights);
+        end
+
+        weights = S.nTrials ./ sum(S.nTrials); %Weight sensory or alternation stats by the respective number of trials
+        for F = ["pOmit","pStuck","pLeftTowers","pLeftPuffs","pLeftCues"] %Calculated across all trials
             S.(F) = sum(S.(F) .* weights);
         end
 

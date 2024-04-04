@@ -25,6 +25,14 @@ cellIdx = 1:numel(bootAvg.(trialTypes{1}).cells);
 
 % Initialize figures
 figs = gobjects(numel(cellIdx),1); %Initialize
+fig_pos = [100,400,450,300]; %LBWH
+legend_loc = 'bestoutside';
+if numel(panels)>1
+    fig_pos = [100,400,300*(numel(panels)),300]; %LBWH
+    legend_loc = 'best';
+end
+
+
 
 %% Plot event-aligned dF/F for each cell
 
@@ -74,11 +82,11 @@ for i = 1:numel(cellIdx)
 
     ax_titles = {panels(:).title}'; %Specified in params.panels
 
-    figs(i) = plot_trialAvgTimeseries(panels,ax_titles,xLabel,yLabel);
+    figs(i) = plot_trialAvgTimeseries(panels, ax_titles, xLabel, yLabel, legend_loc);
 
     figName = join([panels(j).comparison,'_', expID, '_cell', cellIDs{idx}],''); %Figure name
     figs(i).Name = figName;
-    figs(i).Position = [50,400,600*(numel(panels)),300]; %LBWH
+    figs(i).Position = fig_pos; %LBWH
     figs(i).Visible = 'off';
 
 end

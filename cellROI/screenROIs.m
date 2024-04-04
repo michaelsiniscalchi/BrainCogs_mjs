@@ -9,7 +9,7 @@
 clearvars;
 
 %% User Must Set Params
-subject_ID = ['m173']; %User enters subject name, or other string to use as filter for dirs to search
+subject_ID = ['m18']; %User enters subject name, or other string to use as filter for dirs to search
 data_dir = 'X:\michael\network-batch\rois\';
 segWidth = 100; %width of viewing box in pixels
 
@@ -26,7 +26,7 @@ master_file = fullfile(data_dir,['master_rois_' subject_ID '.mat']); %Master ROI
 
 for i=1:numel(dirs.sessions)
     temp = dir(fullfile(dirs.sessions{i},'ROI*.tif'));
-    temp = temp(temp.isdir); %Get only the directories
+    temp = temp([temp.isdir]); %Get only the directories
     if ~isempty(temp)
         dirs.roi{i} = fullfile(dirs.sessions{i},temp.name);
     end

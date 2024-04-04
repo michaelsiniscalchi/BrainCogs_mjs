@@ -39,7 +39,9 @@ for i = 1:numel(subjects)
     end
 
     %Line at 0.5 for proportional quantities
-    allProportional = all(ismember(vars,{'pCorrect','pCorrect_congruent','pCorrect_conflict','pOmit',...
+    allProportional = all(ismember(vars,...
+        {'pCorrect','pCorrect_congruent','pCorrect_conflict','pOmit',...
+        'pLeftTowers','pLeftPuffs','pLeftCues'...
         'maxCorrectMoving','maxCorrectMoving_congruent','maxCorrectMoving_conflict','bias'}));
     X = 1:numel(subjects(i).sessions);
     if allProportional
@@ -51,10 +53,6 @@ for i = 1:numel(subjects)
                 'Color',[0.8,0.8,0.8],'LineWidth',3);
         end
     end
-    %     if ismember(vars,{'pCorrect','pCorrect_congruent','pCorrect_conflict','bias'})
-    %         plot([0,X(end)+1],[0.8, 0.8],':k','LineWidth',1); %Threshold correct rate
-    %         plot([0,X(end)+1],[0.1, 0.1],':k','LineWidth',1); %Threshold bias
-    %     end
 
     yyax = {'left','right'};
     for j = 1:numel(vars)
@@ -65,29 +63,19 @@ for i = 1:numel(subjects)
         end
 
         p(j) = plot(X, [subjects(i).sessions.(vars{j})],...
-            'o','MarkerSize',params.markerSize,'Color',colors.(vars{j}),...
+            'o','MarkerSize',params.markerSize,...
+            'Color',colors.(vars{j}),...
+            'MarkerFaceColor',colors.(vars{j}),...
             'LineWidth',lineWidth,'LineStyle','none');
 
         marker = {'o','o','_'};
         %         faceColor = {colors.(vars{j}),'none','none'};
-        faceColor = {'none','none','none'};
-        if numel(vars)>1 %&& isequal(colors.(vars{j}),colors.(vars{j-1}))
+        faceColor = {colors.(vars{j}),'none','none'};
+        if j>1 && isequal(colors.(vars{j}),colors.(vars{j-1}))
             set(p(j),'Marker',marker{j},...
                 'MarkerSize',params.markerSize,...
                 'MarkerFaceColor',faceColor{j},...
                 'LineWidth',lineWidth);
-            if j==numel(vars)
-                if isequal(vars,{'pCorrect','pCorrect_conflict'})
-                    legend(p,{'All','Conflict'},'Location','best','Interpreter','none');
-                elseif isequal(vars,{'pCorrect_congruent','pCorrect_conflict'})
-                    legend(p,{'Congruent','Conflict'},'Location','best','box','off','Interpreter','none');
-                elseif isequal(vars,{'maxCorrectMoving_congruent','maxCorrectMoving_conflict'})
-                    legend(p,{'Congruent','Conflict','All'},'Location','best','Interpreter','none');
-                else
-                    legendVars = cellfun(@(C) ~all(isnan([subjects(i).sessions.(C)])), vars);
-                    legend(p,vars{legendVars},'Location','best','Interpreter','none');
-                end
-            end
         end
 
         switch vars{j}
@@ -104,7 +92,7 @@ for i = 1:numel(subjects)
                 p(j).YData(taskRule=="forcedChoice") = NaN;
                 ylabel('Max. Accuracy');
                 ylim([0, 1]);
-            case {'pOmit','pConflict','pStuck'}
+            case {'pOmit','pConflict','pStuck','pLeftTowers','pLeftPuffs','pLeftCues'}
                 ylabel('Proportion of trials');
                 ylim([0, 1]);
             case 'mean_velocity'
@@ -118,24 +106,31 @@ for i = 1:numel(subjects)
             case 'nCompleted'
                 ylabel('Number of completed trials');
             case 'bias'
-                %p(j).YData(sessionType=="forcedChoice") = NaN; %Only for Sensory or Alternation
-                %Symbols for left and right
-                p(j).Marker = 'none';
-                scatter(X(p(j).YData<0),abs(p(j).YData(p(j).YData<0)),...
-                    '<','MarkerFaceColor','none','MarkerEdgeColor',p(j).Color);
-                scatter(X(p(j).YData>0),p(j).YData(p(j).YData>0),...
-                    '>','MarkerFaceColor','none','MarkerEdgeColor',p(j).Color);
-                ylabel('Bias');
-                %                 legend(p); %Only include the specified variables in legend
+                color = p(j).Color; %Store color and data to use for scatter
+                yData = p(j).YData; 
+                p(j).YData = nan(size(yData));
+                p(j) = scatter(X(yData<0),abs(yData(yData<0)),...
+                    '<','MarkerFaceColor','none','MarkerEdgeColor',color);
+                scatter(X(yData>0),yData(yData>0),...
+                    '>','MarkerFaceColor','none','MarkerEdgeColor',color);
+                ylabel('Bias or Proportion of trials');
+                ylim([0, 1]);
+        end
+
+        %If final plot, make legend
+        if j==numel(vars)
+            if isequal(vars,{'pCorrect','pCorrect_conflict'})
+                lgd = legend(p,{'All','Conflict'},'Location','best','Interpreter','none');
+            elseif isequal(vars,{'pCorrect_congruent','pCorrect_conflict'})
+                lgd = legend(p,{'Congruent','Conflict'},'Location','best','box','off','Interpreter','none');
+            elseif isequal(vars,{'maxCorrectMoving_congruent','maxCorrectMoving_conflict'})
+                lgd = legend(p,{'Congruent','Conflict','All'},'Location','best','Interpreter','none');
+            else
+                legendVars = cellfun(@(C) ~all(isnan([subjects(i).sessions.(C)])), vars);
+                lgd = legend(p, vars{legendVars},'Location','best','Interpreter','none');
+            end
         end
     end
-
-    %     %Mark transition session for variable manipulation or version, etc
-    %     [ ~, changePt ] = getRotationsPerRev(subjects(i).logs);
-    %     plot(changePt,0,'k+');
-
-    %Only include the specified variables in legend
-    legend(p);
 
     %Cutoff L-maze data
     zoom2TMaze = false; %Cutoff L-maze data
