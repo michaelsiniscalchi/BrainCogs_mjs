@@ -192,6 +192,7 @@ i = i+1;
 expData(i).sub_dir = '240216-m175-maze7'; 
 expData(i).subjectID = "mjs20_175";
 expData(i).mainMaze = 7;
+expData(i).session_number = 2; 
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 expData(i).sub_dir = '240216-m175-maze7'; 
