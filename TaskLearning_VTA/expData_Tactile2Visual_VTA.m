@@ -76,6 +76,8 @@ expData(i).subjectID = "mjs20_105";
 expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+
+%% VTA Cohort #2 (N=4)
 %M18
 expData(i).sub_dir = '240126-m18-maze7'; 
 expData(i).subjectID = "mjs20_018";
@@ -186,6 +188,33 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
+%M175
+expData(i).sub_dir = '240216-m175-maze7'; 
+expData(i).subjectID = "mjs20_175";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '240216-m175-maze7'; 
+expData(i).subjectID = "mjs20_175";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '240223-m175-maze7'; 
+expData(i).subjectID = "mjs20_175";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '240305-m175-maze7'; 
+expData(i).subjectID = "mjs20_175";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '240307-m175-maze7'; 
+expData(i).subjectID = "mjs20_175";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
 %M177
 expData(i).sub_dir = '240118-m177-maze7'; 
 expData(i).subjectID = "mjs20_177";
@@ -193,6 +222,7 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
+%M179
 expData(i).sub_dir = '240104-m179-maze7'; 
 expData(i).subjectID = "mjs20_179";
 expData(i).mainMaze = 7;

@@ -136,7 +136,7 @@ ax(i).lineStyle     = {':',':'};
 ax(i).xLabel        = 'Time from outcome (s)';  % XLabel
 i=i+1;
 
-ax(i).title         = 'Congruent';
+ax(i).title         = 'Rewarded';
 ax(i).comparison    = "conflict-outcome";
 ax(i).trigger       = "outcome";
 ax(i).trialType     = ["congruent_correct", "conflict_correct"];
@@ -145,7 +145,7 @@ ax(i).color         = {colors.correct,colors.correct2}; %Outcome: hit/priorHit v
 ax(i).lineStyle     = {'-',':'};
 ax(i).xLabel        = 'Time from outcome (s)';  % XLabel
 i=i+1;
-ax(i).title         = 'Conflict';
+ax(i).title         = 'Unrewarded';
 ax(i).comparison    = "conflict-outcome";
 ax(i).trigger       = "outcome";
 ax(i).trialType     = ["congruent_error", "conflict_error"];
