@@ -34,6 +34,7 @@ for i = 1:numel(subjects)
             );
         response = rightChoice;
         subjects(i).sessions(j).glm1 = logisticStats(X, response, trials, exclIdx);
+        subjects(i).sessions(j).glm1_bias = subjects(i).sessions(j).glm1.bias.beta;
 
 %         %Effect code the predictors and response
 %         bias = ones(size(rightChoice));
@@ -88,6 +89,7 @@ for i = 1:numel(subjects)
             );
         response = rightChoice;
         subjects(i).sessions(j).glm2 = logisticStats(X, response, trials, exclIdx);
+        subjects(i).sessions(j).glm2_bias = subjects(i).sessions(j).glm2.bias.beta;
 
         %         %Regress
         %         [predictors, pNames, idx] = formatPredictors(X,trials,exclIdx);

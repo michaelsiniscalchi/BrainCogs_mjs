@@ -24,13 +24,14 @@ exe = struct(...
     'reloadData',           true,...
     'updateExperData',      true,...
     'motor_trajectory',     false,...
-    'model_strategy',       false);
+    'model_strategy',       true);
 plots = struct(...
     'motor_trajectory',                 false,...
     'collision_locations',              false,...
     'trial_duration',                   false,...
-    'longitudinal_performance',         true,...
+    'longitudinal_performance',         false,...
     'longitudinal_glm',                 false,...
+    'glm1',                                     true,...
     'group_performance',                false);
 
 %Subject info
@@ -43,13 +44,15 @@ if exe.reloadData
         'experimenter', 'mjs20',...
         'waterType', 'sucrose');
 
+%     subjects = subjects(3); %M175
+
     %Switch data source
     if dataSource.remoteLogData && ~dataSource.experimentData
         setupDataJoint_mjs();
         subjects = getRemoteVRData( experiment, subjects );
         %Append Labels for Session Types
         % subjects = getSessionLabels_TaskLearning_VTA(subjects);
-        %Exclude warmup trials from correct rate for Sensory and Alternation Mazes
+        %Exclude warmup trials from correct rate for Main Mazes
         subjects = filterSessionStats(subjects);
     elseif dataSource.DataJoint && ~dataSource.experimentData
         setupDataJoint_mjs();
@@ -106,22 +109,15 @@ if plots.collision_locations
     clearvars figs;
 end
 
-if plots.trial_duration
-    saveDir = fullfile(dirs.results,'Trial Duration');
-    figs = fig_longitudinal_trialDuration( subjects,experiment );
-    save_multiplePlots(figs,saveDir);
-    clearvars figs;
-end
-
 %Plot Individual Longitudinal Performance
 if plots.longitudinal_performance
     %Full performance data for each subject
     saveDir = fullfile(dirs.results,'Performance');
-    vars = {...%["pCorrect_congruent", "pCorrect_conflict"],...
-        %["pCorrect", "bias"],...
+    vars = {...
+        ["pCorrect_congruent", "pCorrect_conflict"],...
+        ["pCorrect", "bias"],...
         ["pLeftCues", "bias"]};
-%         {'maxCorrectMoving_congruent','maxCorrectMoving_conflict'},...
-%         {'median_velocity','pOmit'},{'pStuck','median_pSkid'}};
+
     params = struct('colors', colors, 'lineWidth', 1.5,...
         'markerSize', 6,'omitShaping','true'); 
     for i = 1:numel(vars)
@@ -131,24 +127,25 @@ if plots.longitudinal_performance
     end
 end
 
+if plots.session_glm
+    saveDir = fullfile(dirs.results,'GLM_TowerSide_PuffSide_priorChoice');
+    vars = {'towers','puffs','priorChoice','bias'};
+    figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
+    save_multiplePlots(figs,saveDir);
+end
+
 
 if plots.longitudinal_glm
-    %Longitudinal
     saveDir = fullfile(dirs.results,'GLM_TowerSide_PuffSide');
     vars = {'towers','puffs','bias'};
     figs = fig_longitudinal_glm( subjects, vars, 'glm1', colors );
     save_multiplePlots(figs,saveDir);
 
-    %     saveDir = fullfile(dirs.results,'GLM_TowerSide_PuffSide_priorChoice');
-    %     vars = {'towers','puffs','priorChoice','bias'};
-    %     figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
-    %     save_multiplePlots(figs,saveDir);
-    %
-    %     saveDir = fullfile(dirs.results,'GLM_TowerSide_PuffSide_priorChoice');
-    %     vars = {'towers','puffs','priorRewChoice','priorUnrewChoice','bias'};
-    %     figs = fig_longitudinal_glm( subjects, vars, 'glm3', colors );
-    %     save_multiplePlots(figs,saveDir);
-    %     clearvars figs;
+        saveDir = fullfile(dirs.results,'GLM_TowerSide_PuffSide_priorChoice');
+        vars = {'towers','puffs','priorChoice','bias'};
+        figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
+        save_multiplePlots(figs,saveDir);
+
 end
 
 

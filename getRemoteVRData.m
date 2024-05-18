@@ -30,6 +30,7 @@ for i = 1:numel(subjects)
     for j = 1:numel(sessionDate)
         key.session_date   = char(sessionDate(j)); %Can also include key fields in ARG #3 for loading individual sessions
         [ dataPath, logs ] = loadRemoteVRFile(key);
+        key = rmfield(key,"session_date"); %remove session_date; else constrains fetch for next subject 
         if isempty(logs)
             continue
         end
@@ -79,6 +80,7 @@ for i = 1:numel(subjects)
             'median_velocity', [], 'median_response_delay', [], 'median_delay_bias', [],...
             'median_pSkid',[],'median_stuckTime',[],...
             'bias', [],...
+            'psychometric', struct('congruent',struct(),'conflict',struct(),'all',struct()),...
             'excludeBlocks', [],...
             'new_remote_path_behavior_file', []);
 
@@ -428,11 +430,12 @@ for i = 1:numel(subjects)
             'median_pSkid', median_pSkid,... %Mean proportion of maze where mouse skidded along walls
             'median_stuckTime', median_stuckTime,...
             'bias', bias,...
+            'psychometric',psychometric,...
             'excludeBlocks', excludeBlocks,...
             'new_remote_path_behavior_file', dataPath);
 
         clearvars eventTimes level bias;
-        key = rmfield(key,"session_date"); %remove session_date; else constrains fetch for next subject 
+        
     end
 
     %Assign fields to current subject

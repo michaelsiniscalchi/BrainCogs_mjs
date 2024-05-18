@@ -125,11 +125,12 @@ function [ logs, excludeBlocks ] = excludeBadBlocks( logs )
             "mjs20_103",datetime('18-Sep-2023'), 'all';...   %Accidentally started on maze level 8
 
 
-            "mjs20_018",datetime('29-Nov-2023'), 'all';...   %M18 started on linear track
-            "mjs20_018",datetime('30-Nov-2023'), 'all';...   %linear track
-            "mjs20_018",datetime('28-Feb-2023'),     2;...   %M173 accidentally run as M18
-            "mjs20_018",datetime('07-Mar-2023'),     2;...   %M173 accidentally run as M18
-            "mjs20_179",datetime('07-Dec-2023'), 'all';...   %premature tactile rule--should have been lvl 6 L-maze
+            "mjs20_018",datetime('29-Nov-2024'), 'all';...   %M18 started on linear track
+            "mjs20_018",datetime('30-Nov-2024'), 'all';...   %linear track
+            "mjs20_018",datetime('28-Feb-2024'),     2;...   %M173 accidentally run as M18
+            "mjs20_018",datetime('07-Mar-2024'),     2;...   %M173 accidentally run as M18
+            "mjs20_177",datetime('14-Mar-2024'),    'all';...    %missing log field 'pDistractorTrials'
+            "mjs20_179",datetime('07-Dec-2024'), 'all';...   %premature tactile rule--should have been lvl 6 L-maze
             }; 
 
 % "mjs20_103",datetime('03-Oct-2023'), 1;... %Restarted
