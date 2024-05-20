@@ -27,7 +27,7 @@ for i = 1:numel(subjects)
 
     %Load each matfile and aggregate into structure
     sessionDate = string(unique({data_files(:).session_date}));
-    for j = 1:numel(sessionDate)
+    for j = numel(sessionDate)%1:numel(sessionDate)
         key.session_date   = char(sessionDate(j)); %Can also include key fields in ARG #3 for loading individual sessions
         [ dataPath, logs ] = loadRemoteVRFile(key);
         key = rmfield(key,"session_date"); %remove session_date; else constrains fetch for next subject 
@@ -399,7 +399,15 @@ for i = 1:numel(subjects)
             end
 
         end
-
+        
+        %Psychometric curves for whole session
+        psychometric = struct();
+        if any(trials(j).leftPuffs) && any(trials(j).leftTowers)
+            psychometric.all = getPsychometricCurve(trialData(j), trials(j));
+            psychometric.congruent = getPsychometricCurve(trialData(j), trials(j), trials(j).congruent);
+            psychometric.conflict = getPsychometricCurve(trialData(j), trials(j), trials(j).conflict);
+        end
+        
         %Store session data
         sessions(j) = struct(...
             'session_date', datetime(sessionDate(j)),...
@@ -430,7 +438,7 @@ for i = 1:numel(subjects)
             'median_pSkid', median_pSkid,... %Mean proportion of maze where mouse skidded along walls
             'median_stuckTime', median_stuckTime,...
             'bias', bias,...
-            'psychometric',psychometric,...
+            'psychometric', psychometric,...
             'excludeBlocks', excludeBlocks,...
             'new_remote_path_behavior_file', dataPath);
 

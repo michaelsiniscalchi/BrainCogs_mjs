@@ -1,6 +1,6 @@
 function psychStruct = getPsychometricCurve( trialData, trials, trialSubset )
 
-if nargin<4
+if nargin<3
     trialSubset = ~trials.omit;
 else
     trialSubset = trialSubset & ~trials.omit;
@@ -17,11 +17,11 @@ diff.all = diff.towers + diff.puffs;
 %Get proportion of R-choice trials at each contrast
 for f = string(fieldnames(diff))'
     edges = -max(abs(diff.(f))):max(abs(diff.(f)))+1;
-    psychStruct.(f).nRight = histcounts(diff.(f)(trialMask), edges); 
+    psychStruct.(f).diffCues = diff.(f);
     psychStruct.(f).pRight =...
         histcounts(diff.(f)(trialMask), edges) ./ histcounts(diff.(f), edges);
-    psychStruct.(f).diff = diff.(f); 
     psychStruct.(f).bins = edges(1:end-1); %Remove right bin-edge
+    mdl = fit(psychStruct.(f).bins, psychStruct.(f).pRight, fittype('logistic'));
 end
 
 %Trial counts
