@@ -222,6 +222,12 @@ expData(i).subjectID = "mjs20_177";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+expData(i).sub_dir = '240124-m177-maze7'; 
+expData(i).subjectID = "mjs20_177";
+expData(i).mainMaze = 7;
+expData(i).session_number = 1; %Idx starts with 0
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 
 %M179
 expData(i).sub_dir = '240104-m179-maze7'; 
