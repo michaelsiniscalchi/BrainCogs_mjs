@@ -9,7 +9,7 @@
 clearvars;
 
 %% User Must Set Params
-subject_ID = ['m18']; %User enters subject name, or other string to use as filter for dirs to search
+subject_ID = ['m177']; %User enters subject name, or other string to use as filter for dirs to search
 data_dir = 'X:\michael\network-batch\rois\';
 segWidth = 100; %width of viewing box in pixels
 

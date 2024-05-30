@@ -5,7 +5,6 @@ fields.params = ["taskRule","level","reward_scale","maxSkidAngle","lCue","lMem",
 fields.counts = ["nTrials","nCompleted","nForward"];
 fields.mean = ["pCorrect","pCorrect_congruent","pCorrect_conflict",...
     "pLeftTowers","pLeftPuffs","pLeftCues","pOmit","pStuck"];
-fields.max = ["maxCorrectMoving","maxCorrectMoving_congruent","maxCorrectMoving_conflict"];
 fields.other = ["median_velocity","median_pSkid","median_stuckTime","bias"];
 
 for i = 1:numel(subjects)
@@ -17,9 +16,11 @@ for i = 1:numel(subjects)
 
         ruleNames = ["visual","tactile","sensory","alternation"];
         inclBlockIdx = ismember(S.taskRule, ruleNames);
+        inclBlockIdx(S.excludeBlocks) = false;
         if ~isempty(S.taskRule) && all(S.taskRule=="forcedChoice")
             inclBlockIdx = S.taskRule=="forcedChoice" & S.nCompleted==max(S.nCompleted); %Just use majority block for shaping
-        elseif any(S.taskRule=="visual") && any(S.taskRule=="tactile") %check for any mixed sessions and flag for block exclusion
+        elseif any(S.taskRule(inclBlockIdx)=="visual") &&...
+                any(S.taskRule(inclBlockIdx)=="tactile") %check for any mixed sessions and flag for block exclusion
             warning(strjoin(["Session from " subjects(i).ID ", " string(S.session_date) "was mixed between rules. Check!"]));
         elseif all(~inclBlockIdx)
             disp('Warning: "taskRule" must be one of the following: "forcedChoice","visual","tactile","sensory","alternation"...');
@@ -40,7 +41,7 @@ for i = 1:numel(subjects)
         end
 
         %Filter session stats to exclude warmup blocks
-        for F = [fields.params, fields.counts, fields.mean, fields.max, fields.other]
+        for F = [fields.params, fields.counts, fields.mean, fields.other]
             S.(F) = S.(F)(inclBlockIdx);
         end
 
@@ -60,9 +61,6 @@ for i = 1:numel(subjects)
 
         %Counts
         for F = fields.counts, S.(F) = sum(S.(F)); end
-
-        %Max quantities
-        for F = fields.max, S.(F) = max(S.(F)); end
 
         %% Recalculate from TrialData or "Trials" vectors
         trials = subjects(i).trials(j); %unpack
@@ -99,24 +97,60 @@ for i = 1:numel(subjects)
         S.median_pSkid = median(trialData.pSkid(trialMask)); %Median proportion of maze where mouse skidded along walls
         S.median_stuckTime = median(trialData.stuck_time,'omitnan'); %Median proportion of time spent stuck as result of friction
 
-        %Choice bias
-        leftError = sum(trialMask & trials.error & trials.left)...
-            / sum(trials.left(trialMask));
-        rightError = sum(trialMask & trials.error & trials.right)...
-            / sum(trials.right(trialMask));
-        S.bias = rightError-leftError;
+%         %Choice bias
+%         leftError = sum(trialMask & trials.error & trials.left)...
+%             / sum(trials.left(trialMask));
+%         rightError = sum(trialMask & trials.error & trials.right)...
+%             / sum(trials.right(trialMask));
+%         S.bias = rightError-leftError;
+
+        %Perceptual bias
+        leftSensitivity = sum(trials.leftCues(trials.left & ~trials.exclude))...
+            /sum(trials.leftCues(~trials.exclude));
+        rightSensitivity = sum(trials.rightCues(trials.right & ~trials.exclude))...
+            /sum(trials.rightCues(~trials.exclude));
+        S.bias = rightSensitivity-leftSensitivity;
+
+        %Recalculate moving average correct rate
+        tempCorrect = double(trials.correct(~trials.exclude));
+        tempCongruent = trials.congruent(~trials.exclude);
+        hits = struct('all',tempCorrect,'congruent',tempCorrect,'conflict',tempCorrect);
+        hits.congruent(~tempCongruent) = NaN;
+        hits.conflict(tempCongruent) = NaN;
+        
+        S.movmeanAccuracy = struct();
+        for f = ["all","congruent","conflict"]
+            S.movmeanAccuracy.(f) = movmean(hits.(f),[99 0],'omitnan','Endpoints','discard');
+            maxmeanAccuracy.(f) = max(S.movmeanAccuracy.(f));
+            if isempty(maxmeanAccuracy.(f))
+                maxmeanAccuracy.(f) = NaN;
+            end
+        end
+        S.maxmeanAccuracy = maxmeanAccuracy.all;
+        S.maxmeanAccuracy_congruent = maxmeanAccuracy.congruent;
+        S.maxmeanAccuracy_conflict = maxmeanAccuracy.conflict;
+
+        %Moving average perceptual bias
+        hits = struct('leftCue',NaN(1, sum(~trials.exclude)),'rightCue',NaN(1, sum(~trials.exclude)));
+        for f = ["left","right","leftCues","rightCues"]
+            mask.(f) = trials.(f)(~trials.exclude); %Temporary masks
+        end
+        hits.leftCue(mask.leftCues) = mask.left(mask.leftCues);
+        hits.rightCue(mask.rightCues) = mask.right(mask.rightCues);
+        leftSensitivity = movmean(hits.leftCue,[99 0],'omitnan','Endpoints','discard');
+        rightSensitivity = movmean(hits.rightCue,[99 0],'omitnan','Endpoints','discard');
+        S.movmeanAccuracy.bias = rightSensitivity-leftSensitivity;
 
         %Replace edited fields
         subjects(i).sessions(j) = S;
         subjects(i).trialData(j) = trialData;
         subjects(i).trials(j) = trials;
     end
+
     %Exclude any sessions with no data (or different task, etc)
     for f = ["logs","sessions","trialData","trials"]
         subjects(i).(f) = subjects(i).(f)(~exclSessionIdx);
     end
-
-
 end
 
 %Output modified structure

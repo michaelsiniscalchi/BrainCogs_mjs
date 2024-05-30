@@ -27,7 +27,7 @@ for i = 1:numel(subjects)
 
     %Load each matfile and aggregate into structure
     sessionDate = string(unique({data_files(:).session_date}));
-    for j = numel(sessionDate)%1:numel(sessionDate)
+    for j = 1:numel(sessionDate)
         key.session_date   = char(sessionDate(j)); %Can also include key fields in ARG #3 for loading individual sessions
         [ dataPath, logs ] = loadRemoteVRFile(key);
         key = rmfield(key,"session_date"); %remove session_date; else constrains fetch for next subject 
@@ -63,7 +63,9 @@ for i = 1:numel(subjects)
 
         trials(numel(sessionDate),1) = ...
             struct('left',[],'right',[],... %logical
-            'leftTowers',[],'rightTowers',[],'leftPuffs',[],'rightPuffs',[],... %logical
+            'leftTowers',[],'rightTowers',[],'leftPuffs',[],'rightPuffs',[],...%logical
+            'leftCues',[],'rightCues',[],... %logical
+            'visualRule',[],'tactileRule',[],'forcedChoice',[],... %logical
             'correct',[],'error',[],'omit',[],'congruent',[],'conflict',[],... %logical
             'priorLeft',[],'priorRight',[],'priorCorrect',[],'priorError',[],... %logical
             'forward',[],'stuck',[],'exclude',[],...  %logical
@@ -76,7 +78,8 @@ for i = 1:numel(subjects)
             'pCorrect', [], 'pCorrect_congruent',[], 'pCorrect_conflict', [], 'pOmit', [],...
             'pLeftTowers', [], 'pLeftPuffs', [], 'pLeftCues', [],...
             'pStuck', [],...
-            'maxCorrectMoving',NaN,'maxCorrectMoving_congruent',NaN,'maxCorrectMoving_conflict',NaN,...
+            'movmeanAccuracy',struct(),...
+            'maxmeanAccuracy',NaN,'maxmeanAccuracy_congruent',NaN,'maxmeanAccuracy_conflict',NaN,...
             'median_velocity', [], 'median_response_delay', [], 'median_delay_bias', [],...
             'median_pSkid',[],'median_stuckTime',[],...
             'bias', [],...
@@ -230,7 +233,8 @@ for i = 1:numel(subjects)
         %---Trial masks--------------------------------------------------------------------
 
         %Initialize
-        [left, right, leftTowers, rightTowers,leftPuffs, rightPuffs,...
+        [left, right, leftTowers, rightTowers, leftPuffs, rightPuffs,...
+            tactileRule, visualRule,...
             correct, omit, congruent, conflict, forward, stuck] = deal(false(1,numel(blockIdx)));
 
         mazeLevel = [logs.block.mazeID];
@@ -248,6 +252,13 @@ for i = 1:numel(subjects)
                 nPuffs = cellfun(@numel,reshape([Trials.puffPos],2,numel(Trials)))';
                 leftPuffs(blockIdx==k) = nPuffs(:,1) > nPuffs(:,2);
                 rightPuffs(blockIdx==k) = nPuffs(:,1) < nPuffs(:,2);
+            end
+
+            %Sensory rule
+            if isfield(Trials,"visualRule")
+                forcedChoice(blockIdx==k) = [Trials.forcedChoice];
+                visualRule(blockIdx==k) = [Trials.visualRule];
+                tactileRule(blockIdx==k) = [Trials.tactileRule];
             end
 
             %Choices
@@ -283,16 +294,23 @@ for i = 1:numel(subjects)
             level(blockIdx==k) = mazeLevel(k);
         end
 
-        %Trial masks for exclusions, etc.
+        %Derived trial masks
+        leftCues = (leftTowers & visualRule) | (leftPuffs & tactileRule); %Relevant cue
+        rightCues = (rightTowers & visualRule) | (rightPuffs & tactileRule); %Relevant cue
+
         forward = forward & ~omit; %Exclude forward trials exceeding time limit
         err = ~correct & ~omit;
+                        
         exclude = omit | ~forward; %Additions made downstream, eg for warm-up blocks, etc
         exclude(ismember(blockIdx,excludeBlocks)) = true; %Exclude trials from blocks specified in excludeBadBlocks()
 
+        %Save to struct
         trials(j) = struct(...
             'left',left,'right',right,...
             'leftTowers',leftTowers,'rightTowers',rightTowers,...
             'leftPuffs',leftPuffs,'rightPuffs',rightPuffs,...
+            'leftCues',leftCues,'rightCues',rightCues,...
+            'visualRule',visualRule,'tactileRule',tactileRule,'forcedChoice',forcedChoice,...
             'correct',correct,'error',err,'omit',omit,...
             'priorLeft',[0, left(1:end-1)],'priorRight',[0, right(1:end-1)],...
             'priorCorrect',[0, correct(1:end-1)],'priorError',[0, err(1:end-1)],...
@@ -311,8 +329,7 @@ for i = 1:numel(subjects)
             turnTime = [trialData(j).eventTimes.turnEntry]-[trialData(j).eventTimes.start];
             trialData(j).response_delay = trialData(j).response_time - turnTime';
         end
-
-
+       
         %--- Session data ------------------------------------------------------------------
 
         %Block data
@@ -320,7 +337,8 @@ for i = 1:numel(subjects)
             pCorrect, pCorrect_congruent, pCorrect_conflict, pOmit,...
             pLeftTowers, pLeftPuffs, pLeftCues, pStuck,...
             median_velocity, median_pSkid, median_stuckTime] = deal([]);
-        maxCorrectMoving = struct('all',[],'congruent',[],'conflict',[]);
+        movmeanAccuracy = struct('all',[],'congruent',[],'conflict',[]);
+        maxmeanAccuracy = struct('all',[],'congruent',[],'conflict',[]);
 
         ruleNames = ["forcedChoice","visualRule","tactileRule","alternateTrials"];
         rule = strings(1,numel(logs.block));
@@ -360,25 +378,28 @@ for i = 1:numel(subjects)
                 /sum(blockIdx==k);
             pLeftPuffs(k) = sum(leftPuffs(blockIdx==k))...
                 /sum(blockIdx==k);
-            
-            pLeftCues(k) = NaN;
-            if rule(k)=="visual"
-                pLeftCues(k) = pLeftTowers(k);
-            elseif rule(k)=="tactile"
-                pLeftCues(k) = pLeftPuffs(k);
-            end
-                        
+            pLeftCues(k) = sum(leftCues(blockIdx==k))...
+                /sum(blockIdx==k);        
+                    
+            %Motor
             pStuck(k) = mean(stuck(~omit & blockIdx==k));
-
-
             median_velocity(k) = median(trialData(j).mean_velocity(fwdIdx,2)); %Median velocity across all completed trials (x,y,theta)
             median_pSkid(k) = median(trialData(j).pSkid(fwdIdx)); %Median proportion of maze where mouse skidded along walls
             median_stuckTime(k) = median(trialData(j).stuck_time(fwdIdx),'omitnan');
             
             %Choice bias
-            leftError = sum(left(err & ~omit & blockIdx==k))/sum(left(~omit & blockIdx==k));
-            rightError = sum(right(err & ~omit & blockIdx==k))/sum(right(~omit & blockIdx==k));
-            bias(k) = rightError-leftError;
+%             leftError = sum(left(err & ~omit & blockIdx==k))/sum(left(~omit & blockIdx==k));
+%             rightError = sum(right(err & ~omit & blockIdx==k))/sum(right(~omit & blockIdx==k));
+%             bias(k) = rightError-leftError;
+
+            %Perceptual bias
+            leftSensitivity = sum(leftCues(left & blockIdx==k))/sum(leftCues(blockIdx==k));
+            rightSensitivity = sum(rightCues(right & blockIdx==k))/sum(rightCues(blockIdx==k));
+            if rule(k)=="forcedChoice"
+                leftSensitivity = sum(leftCues(left & blockIdx==k))/sum(leftCues(blockIdx==k));
+                rightSensitivity = sum(rightCues(right & blockIdx==k))/sum(rightCues(blockIdx==k));
+            end
+            bias(k) = rightSensitivity-leftSensitivity;
 
             %Motor bias
             median_response_delay = median(trialData(j).response_delay(fwdIdx));
@@ -392,11 +413,20 @@ for i = 1:numel(subjects)
             hits.congruent(~tempCongruent) = NaN;
             hits.conflict(tempCongruent) = NaN;
             for fields = ["all","congruent","conflict"]
-                maxCorrectMoving(k).(fields) = max(movmean(hits.(fields),[99 0],'omitnan','Endpoints','discard'));
-                if isempty(maxCorrectMoving(k).(fields))
-                    maxCorrectMoving(k).(fields) = NaN;
+                movmeanAccuracy(k).(fields) = movmean(hits.(fields),[99 0],'omitnan','Endpoints','discard');
+                maxmeanAccuracy(k).(fields) = max(movmeanAccuracy(k).(fields));
+                if isempty(maxmeanAccuracy(k).(fields))
+                    maxmeanAccuracy(k).(fields) = NaN;
                 end
             end
+
+            %Moving average perceptual bias
+            hits = struct('left',NaN(1,sum(blockIdx==k)),'right',NaN(1,sum(blockIdx==k)));
+            hits.left(leftCues(blockIdx==k)) = left(leftCues & blockIdx==k);
+            hits.right(rightCues(blockIdx==k)) = right(rightCues & blockIdx==k);
+            leftSensitivity = movmean(hits.left,[99 0],'omitnan','Endpoints','discard'); 
+            rightSensitivity = movmean(hits.right,[99 0],'omitnan','Endpoints','discard');
+            movmeanAccuracy(k).bias = rightSensitivity-leftSensitivity;
 
         end
         
@@ -429,9 +459,10 @@ for i = 1:numel(subjects)
             'pLeftPuffs', pLeftPuffs,...
             'pLeftCues', pLeftCues,...
             'pStuck', pStuck,...
-            'maxCorrectMoving', [maxCorrectMoving.all],...
-            'maxCorrectMoving_congruent', [maxCorrectMoving.congruent],...
-            'maxCorrectMoving_conflict', [maxCorrectMoving.conflict],...
+            'movmeanAccuracy', movmeanAccuracy,...
+            'maxmeanAccuracy', [maxmeanAccuracy.all],...
+            'maxmeanAccuracy_congruent', [maxmeanAccuracy.congruent],...
+            'maxmeanAccuracy_conflict', [maxmeanAccuracy.conflict],...
             'median_velocity', median_velocity,... %Mean velocity across all completed trials (x,y,theta)
             'median_response_delay', median_response_delay,... %Median delay between turn entry and choice
             'median_delay_bias', median_delay_bias,... %Diff median delay R-L
