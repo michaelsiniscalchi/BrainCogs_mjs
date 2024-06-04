@@ -5,7 +5,7 @@
 % NOTE: Use header only if run independently of 'analyze_RuleSwitching.m'
 %
 %---------------------------------------------------------------------------------------------------
-function figures_Tactile2Visual_VTA(search_filter)
+function figures_Tactile2Visual_VTA( search_filter, options )
 
 % Set path
 dirs = getRoots();
@@ -18,7 +18,7 @@ addpath(genpath(fullfile(dirs.code, 'mym', 'distribution', 'mexa64'))); %For Dat
 expData = expData(contains({expData(:).sub_dir}', search_filter)); %Filter by data-directory name, etc.
 
 % Set parameters for analysis
-[calculate, ~, figures, mat_file, params] = params_Tactile2Visual_VTA(dirs, expData);
+[calculate, ~, figures, mat_file, params] = params_Tactile2Visual_VTA(dirs, expData, options);
 expData = get_imgPaths(dirs, expData, calculate, figures); %Append additional paths for imaging data if required by 'calculate'
 
 colors = getFigColors();

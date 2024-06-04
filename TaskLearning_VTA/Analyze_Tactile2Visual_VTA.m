@@ -64,8 +64,13 @@ if calculate.combined_data
         if isfield(expData,'session_number') && ~isempty(expData.session_number)
             key.session_number = expData.session_number;
         end
+        %Extract basic behavioral data
         behavior = getRemoteVRData( experiment, subject, key );
+        %Restrict stats to main maze and exclude specified blocks 
         behavior = restrictImgTrials(behavior, expData(i).mainMaze, expData(i).excludeBlock);
+        %Logistic regression
+        behavior = analyzeTaskStrategy(behavior);
+
         %Synchronize imaging frames with behavioral time basis
         stackInfo = syncImagingBehavior(stackInfo, behavior);
         %Save processed data

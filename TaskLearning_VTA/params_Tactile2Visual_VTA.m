@@ -13,20 +13,7 @@ calculate.align_signals             = false; %Interpolate dF/F and align to beha
 calculate.trial_average_dFF         = false; %dF/F averaged over specified subsets of trials
 calculate.encoding_model            = false; %Encoding model
 
-%Amend params based on input options
-if isfield(options, 'calculate') %For setting params from SLURM, etc.
-    for f = string(fieldnames(options.calculate))'
-        calculate.(f) = options.calculate.(f);
-    end
-end
 
-calculate.fluorescence = false;
-if any([calculate.cellF, calculate.dFF,... 
-        calculate.align_signals,...
-        calculate.trial_average_dFF,...
-		calculate.encoding_model])
-	calculate.fluorescence = true;
-end
 
 %% SUMMARIZE RESULTS
 summarize.trialDFF              = false;
@@ -58,6 +45,27 @@ figures.summary_modulation				= false;    %Box/line plots of selectivity results
 % Validation
 figures.validation_ROIs                 = false;
 figures.validation_alignment            = false;
+
+%Amend params based on input options
+if isfield(options, 'calculate') %For setting params from SLURM, etc.
+    for f = string(fieldnames(options.calculate))'
+        calculate.(f) = options.calculate.(f);
+    end
+end
+
+if isfield(options, 'figures') %For setting params from SLURM, etc.
+    for f = string(fieldnames(options.figures))'
+        figures.(f) = options.figures.(f);
+    end
+end
+
+calculate.fluorescence = false;
+if any([calculate.cellF, calculate.dFF,... 
+        calculate.align_signals,...
+        calculate.trial_average_dFF,...
+		calculate.encoding_model])
+	calculate.fluorescence = true;
+end
 
 %% PATHS TO SAVED DATA
 %By experiment
