@@ -5,7 +5,7 @@
 % NOTE: Use header only if run independently of 'analyze_RuleSwitching.m'
 %
 %---------------------------------------------------------------------------------------------------
-function figures_Tactile2Visual_VTA( search_filter)
+function figures_Tactile2Visual_VTA(search_filter)
 
 % Set path
 dirs = getRoots();
@@ -20,6 +20,19 @@ expData = expData(contains({expData(:).sub_dir}', search_filter)); %Filter by da
 % Set parameters for analysis
 [calculate, ~, figures, mat_file, params] = params_Tactile2Visual_VTA(dirs, expData);
 expData = get_imgPaths(dirs, expData, calculate, figures); %Append additional paths for imaging data if required by 'calculate'
+
+colors = getFigColors();
+
+%% FIGURES - BEHAVIOR
+
+if figures.session_summary
+    saveDir = fullfile(dirs.figures,'session-summary');
+    for i = 1:numel(expData)
+        subject = load(mat_file.img_beh(i), 'ID', 'sessions', 'trialData', 'trials'); %Leave out logs
+        figs = fig_session_summary( subject, 'glm1', colors );
+        save_multiplePlots(figs,saveDir);
+    end
+end
 
 %% FIGURES - IMAGING
 

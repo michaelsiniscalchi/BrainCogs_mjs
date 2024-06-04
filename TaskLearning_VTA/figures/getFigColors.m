@@ -14,10 +14,16 @@ clearvars colors
 
 % %Define color codes for cell types, etc.
 choiceColors = {'left',cbrew.red,'left2',cbrew.red2,'right',cbrew.blue,'right2',cbrew.blue2}; 
-ruleColors = {'sensory',cbrew.black,'sensory2',cbrew.gray,'alternation',cbrew.purple,'alternation2',cbrew.purple2,...
-    'congruent',cbrew.black,'conflict',cbrew.red}; 
+ruleColors = {'all',cbrew.black,'alternation',cbrew.purple,'alternation2',cbrew.purple2,...
+    'congruent',cbrew.black,'congruent2',cbrew.gray,'conflict',cbrew.red,'conflict2',cbrew.red2}; 
 outcomeColors = {'correct',cbrew.green,'correct2',cbrew.green2,'err',cbrew.pink,'err2',cbrew.pink2,...
     'pErr',cbrew.pink,'pErr2',cbrew.pink2,'oErr',cbrew.pink,'oErr2',cbrew.pink2,...
     'miss',cbrew.gray,'miss2',cbrew.gray2};
+performanceColors = {'bias',cbrew.green2};
 dataColors = {'data',cbrew.black,'data2',cbrew.gray};
-colors = struct(choiceColors{:}, ruleColors{:}, outcomeColors{:}, dataColors{:});
+colors = struct(choiceColors{:}, ruleColors{:}, outcomeColors{:}, dataColors{:}, performanceColors{:});
+
+%Color names
+for f = string(fieldnames(cbrew))'
+    colors.(f) = cbrew.(f);
+end

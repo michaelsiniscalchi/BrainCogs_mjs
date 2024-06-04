@@ -41,7 +41,7 @@ summarize.table_comparative_stats   = false;
 %% PLOT RESULTS
 
 % Behavior
-figures.raw_behavior                    = false;
+figures.session_summary                 = false;
 % Imaging 
 figures.FOV_mean_projection             = false;
 figures.timeseries                      = false; %Plot all timeseries for each session
