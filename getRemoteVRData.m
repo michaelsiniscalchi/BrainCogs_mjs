@@ -30,7 +30,7 @@ for i = 1:numel(subjects)
     for j = 1:numel(sessionDate)
         key.session_date   = char(sessionDate(j)); %Can also include key fields in ARG #3 for loading individual sessions
         [ dataPath, logs ] = loadRemoteVRFile(key);
-        key = rmfield(key,"session_date"); %remove session_date; else constrains fetch for next subject 
+        key = rmfield(key,"session_date"); %remove session_date; else constrains fetch for next subject
         if isempty(logs)
             continue
         end
@@ -54,12 +54,13 @@ for i = 1:numel(subjects)
 
         %Initialize output structures
         trialData(numel(sessionDate),1) = struct(...
-            'session_date', [],'eventTimes',struct(),...
-            'towerPositions', [],'puffPositions', [],...
-            'duration',[],'response_time',[],'response_delay',[],...
-            'position',[],'velocity',[],'mean_velocity',[],...
-            'x_trajectory',[],'theta_trajectory',[],'time_trajectory',[],'positionRange',[],...
-            'collision_locations',[],'pSkid',[],'stuck_locations',[],'stuck_time',[]);
+            'session_date', [], 'eventTimes', struct(),...
+            'towerPositions', [], 'puffPositions', [],...
+            'nTowers', [],'nPuffs', [],...
+            'duration', [],'response_time', [],'response_delay', [],...
+            'position', [],'velocity', [],'mean_velocity', [],...
+            'x_trajectory', [],'theta_trajectory', [],'time_trajectory', [],'positionRange', [],...
+            'collision_locations', [],'pSkid', [],'stuck_locations', [],'stuck_time', []);
 
         trials(numel(sessionDate),1) = ...
             struct('left',[],'right',[],... %logical
@@ -84,6 +85,7 @@ for i = 1:numel(subjects)
             'median_pSkid',[],'median_stuckTime',[],...
             'bias', [],...
             'psychometric', struct('congruent',struct(),'conflict',struct(),'all',struct()),...
+            'cueHistogram', struct('towers',struct(),'puffs',struct(),'cueCounts',[]),...
             'excludeBlocks', [],...
             'new_remote_path_behavior_file', []);
 
@@ -146,18 +148,20 @@ for i = 1:numel(subjects)
 
             %Event times
             eventTimes(blockIdx==k,1) = getTrialEventTimes(logs, k); %Need logs and block idx for time, because restarts/new blocks cause divergent time references
-          
-            %Cue positions
+
+            %Cue positions and number on each side
             [towerPositions(blockIdx==k,1), puffPositions(blockIdx==k,1)] = getCuePositions(logs, k);
 
-            %Response time from trial start to choice (modified after generating trial masks) 
-            response_time(blockIdx==k)  = arrayfun(@(idx) Trials(idx).time(Trials(idx).iterations), 1:numel(Trials));
+            nTowers(blockIdx==k,:) = [...
+                arrayfun(@(idx) numel(towerPositions{idx}{1}), find(blockIdx==k)'),... %Left cues
+                arrayfun(@(idx) numel(towerPositions{idx}{2}), find(blockIdx==k))']; %Right cues
 
-            %Response delay (latency from turn-entry to choice)
-%             if any([eventTimes(blockIdx==k).turnEntry])
-%                 response_delay(blockIdx==k)  = arrayfun(@(idx) ...
-%                     Trials(idx).time(Trials(idx).iterations)-Trials(idx).time(Trials(idx).iTurnEntry), 1:numel(Trials));
-%             end
+            nPuffs(blockIdx==k,:) = [...
+                arrayfun(@(idx) numel(puffPositions{idx}{1}), find(blockIdx==k)'),... %Left cues
+                arrayfun(@(idx) numel(puffPositions{idx}{2}), find(blockIdx==k))']; %Right cues
+
+            %Response time from trial start to choice (modified after generating trial masks)
+            response_time(blockIdx==k)  = arrayfun(@(idx) Trials(idx).time(Trials(idx).iterations), 1:numel(Trials));
 
             %Duration including ITI
             duration(blockIdx==k)  = [Trials.duration];
@@ -215,9 +219,11 @@ for i = 1:numel(subjects)
             'eventTimes', eventTimes,...
             'towerPositions', {towerPositions},...
             'puffPositions', {puffPositions},...
+            'nTowers', nTowers,...
+            'nPuffs', nPuffs,...
             'duration', duration,...
-            'response_time', response_time,... 
-            'response_delay', response_delay,... %Time from entry into turn region to choice entry 
+            'response_time', response_time,...
+            'response_delay', response_delay,... %Time from entry into turn region to choice entry
             'position', {position},...
             'x_trajectory',x_trajectory,...
             'theta_trajectory',theta_trajectory,...
@@ -243,13 +249,15 @@ for i = 1:numel(subjects)
             Trials = logs.block(k).trial;
 
             %Visual cues
-            nTowers = cellfun(@numel,reshape([Trials.cuePos],2,numel(Trials)))';
+            %             nTowers = cellfun(@numel,reshape([Trials.cuePos],2,numel(Trials)))';
+            nTowers = trialData(j).nTowers(blockIdx==k,:); %temp
             leftTowers(blockIdx==k) = nTowers(:,1) > nTowers(:,2); %Trials where towers rule instructs left (ie, nLeft>nRight)
             rightTowers(blockIdx==k) = nTowers(:,1) < nTowers(:,2);%Towers rule indicates "right"
 
             %Tactile cues
             if isfield(Trials,"puffPos") && any(~cellfun(@isempty,[Trials.puffPos]))
-                nPuffs = cellfun(@numel,reshape([Trials.puffPos],2,numel(Trials)))';
+                %                 nPuffs = cellfun(@numel,reshape([Trials.puffPos],2,numel(Trials)))';
+                nPuffs = trialData(j).nPuffs(blockIdx==k,:); %temp
                 leftPuffs(blockIdx==k) = nPuffs(:,1) > nPuffs(:,2);
                 rightPuffs(blockIdx==k) = nPuffs(:,1) < nPuffs(:,2);
             end
@@ -272,7 +280,7 @@ for i = 1:numel(subjects)
             %Trials where alternative rules agree or conflict
             if isfield(Trials,"visualRule")...
                     && ~any([Trials.forcedChoice])... %Visual or Tactile rule
-                    && any([leftPuffs(blockIdx==k), rightPuffs(blockIdx==k)])... %Block has both Visual and Tactile cues 
+                    && any([leftPuffs(blockIdx==k), rightPuffs(blockIdx==k)])... %Block has both Visual and Tactile cues
                     && any([leftTowers(blockIdx==k), rightTowers(blockIdx==k)])
                 congruent(blockIdx==k) = ...
                     (leftPuffs(blockIdx==k)==leftTowers(blockIdx==k)) &...
@@ -300,7 +308,7 @@ for i = 1:numel(subjects)
 
         forward = forward & ~omit; %Exclude forward trials exceeding time limit
         err = ~correct & ~omit;
-                        
+
         exclude = omit | ~forward; %Additions made downstream, eg for warm-up blocks, etc
         exclude(ismember(blockIdx,excludeBlocks)) = true; %Exclude trials from blocks specified in excludeBadBlocks()
 
@@ -321,7 +329,7 @@ for i = 1:numel(subjects)
 
         %--- Modify trialData based on trials (trial masks) ----------------------------------------
 
-        %Response time          
+        %Response time
         trialData(j).response_time(~forward | omit) = NaN;
 
         %Response delay (latency from turn-entry to choice)
@@ -329,7 +337,7 @@ for i = 1:numel(subjects)
             turnTime = [trialData(j).eventTimes.turnEntry]-[trialData(j).eventTimes.start];
             trialData(j).response_delay = trialData(j).response_time - turnTime';
         end
-       
+
         %--- Session data ------------------------------------------------------------------
 
         %Block data
@@ -372,25 +380,20 @@ for i = 1:numel(subjects)
             pCorrect_congruent(k) = mean(correct(~omit & congruent & blockIdx==k));
             pCorrect_conflict(k) = mean(correct(~omit & conflict & blockIdx==k));
             pOmit(k) = mean(omit(blockIdx==k));
-            
+
             %Sensory cues
             pLeftTowers(k) = sum(leftTowers(blockIdx==k))...
                 /sum(blockIdx==k);
             pLeftPuffs(k) = sum(leftPuffs(blockIdx==k))...
                 /sum(blockIdx==k);
             pLeftCues(k) = sum(leftCues(blockIdx==k))...
-                /sum(blockIdx==k);        
-                    
+                /sum(blockIdx==k);
+
             %Motor
             pStuck(k) = mean(stuck(~omit & blockIdx==k));
             median_velocity(k) = median(trialData(j).mean_velocity(fwdIdx,2)); %Median velocity across all completed trials (x,y,theta)
             median_pSkid(k) = median(trialData(j).pSkid(fwdIdx)); %Median proportion of maze where mouse skidded along walls
             median_stuckTime(k) = median(trialData(j).stuck_time(fwdIdx),'omitnan');
-            
-            %Choice bias
-%             leftError = sum(left(err & ~omit & blockIdx==k))/sum(left(~omit & blockIdx==k));
-%             rightError = sum(right(err & ~omit & blockIdx==k))/sum(right(~omit & blockIdx==k));
-%             bias(k) = rightError-leftError;
 
             %Perceptual bias
             leftSensitivity = sum(leftCues(left & blockIdx==k))/sum(leftCues(blockIdx==k));
@@ -424,20 +427,34 @@ for i = 1:numel(subjects)
             hits = struct('left',NaN(1,sum(blockIdx==k)),'right',NaN(1,sum(blockIdx==k)));
             hits.left(leftCues(blockIdx==k)) = left(leftCues & blockIdx==k);
             hits.right(rightCues(blockIdx==k)) = right(rightCues & blockIdx==k);
-            leftSensitivity = movmean(hits.left,[99 0],'omitnan','Endpoints','discard'); 
+            leftSensitivity = movmean(hits.left,[99 0],'omitnan','Endpoints','discard');
             rightSensitivity = movmean(hits.right,[99 0],'omitnan','Endpoints','discard');
             movmeanAccuracy(k).bias = rightSensitivity-leftSensitivity;
 
         end
-        
-        %Psychometric curves for whole session
+
+        %Psychometric curves & histogram of cue counts for whole session
         psychometric = struct();
+        cueHistogram = struct();
         if any(trials(j).leftPuffs) && any(trials(j).leftTowers)
             psychometric.all = getPsychometricCurve(trialData(j), trials(j));
             psychometric.congruent = getPsychometricCurve(trialData(j), trials(j), trials(j).congruent);
             psychometric.conflict = getPsychometricCurve(trialData(j), trials(j), trials(j).conflict);
+
+            nTowers = trialData(j).nTowers;
+            nPuffs = trialData(j).nPuffs;
+            edges = -max(abs(nTowers(:))):max(abs(nTowers(:))+1);
+            cueHistogram.towers = histcounts(diff(nTowers,[],2), edges);
+            cueHistogram.puffs = histcounts(diff(nPuffs,[],2), edges);
+            cueHistogram.edges = edges;
+
+            %Histogram of omissions for each cue count
+            cueHistogram.omit.towers = histcounts(diff(nTowers(trials(j).omit,:),[],2), edges);
+            cueHistogram.omit.puffs = histcounts(diff(nPuffs(trials(j).omit,:),[],2), edges);
+
         end
-        
+
+
         %Store session data
         sessions(j) = struct(...
             'session_date', datetime(sessionDate(j)),...
@@ -470,11 +487,12 @@ for i = 1:numel(subjects)
             'median_stuckTime', median_stuckTime,...
             'bias', bias,...
             'psychometric', psychometric,...
+            'cueHistogram', cueHistogram,...
             'excludeBlocks', excludeBlocks,...
             'new_remote_path_behavior_file', dataPath);
 
-        clearvars eventTimes level bias;
-        
+        %         clearvars eventTimes level bias;
+        clearvars -except i subjects sessions trials trialData key sessionDate
     end
 
     %Assign fields to current subject

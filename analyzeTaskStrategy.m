@@ -10,15 +10,26 @@ for i = 1:numel(subjects)
 
         %Trial masks for predictors and response variable
         trials = subjects(i).trials(j);
+        trialData = subjects(i).trialData(j);
         exclIdx = trials.omit | ~trials.forward;
         priorExclIdx = [true, exclIdx(1:end-1)];
 
+        %Cue Side
         rightTowers = trials.rightTowers(~exclIdx)'; %Exclude omissions and ~forward trials
         rightPuffs = trials.rightPuffs(~exclIdx)'; %Exclude omissions for all
+        
+        %Number of Cues
+        nTowersLeft = trialData.nTowers(~exclIdx,1);
+        nTowersRight = trialData.nTowers(~exclIdx,2);
+        nPuffsLeft = trialData.nPuffs(~exclIdx,1);
+        nPuffsRight = trialData.nPuffs(~exclIdx,2);
+
+        %Choice
         rightChoice = trials.right(~exclIdx)';
         rightPriorChoice = trials.priorRight';
         rightPriorChoice(priorExclIdx) = NaN;
         rightPriorChoice = rightPriorChoice(~exclIdx);
+        %Outcome
         reward = trials.correct(~exclIdx)'; %Trial outcome
 
         %Code predictors as {-1,1}
@@ -30,170 +41,26 @@ for i = 1:numel(subjects)
         X = struct(...
             'bias',ones(size(rightTowers)),...
             'towers', effectCode(rightTowers),... %Cueside(n)
-            'puffs', effectCode(rightPuffs)...
+            'puffs', effectCode(rightPuffs),...
+            'priorChoice', effectCode(rightPriorChoice)...
             );
         response = rightChoice;
         subjects(i).sessions(j).glm1 = logisticStats(X, response, trials, exclIdx);
         subjects(i).sessions(j).glm1_bias = subjects(i).sessions(j).glm1.bias.beta;
 
-%         %Effect code the predictors and response
-%         bias = ones(size(rightChoice));
-%         predictors = [bias, effectCode([rightTowers, rightPuffs])]; %Add column of ones to idx bias term in more complicated glms below
-%         response = rightChoice;
-% 
-%         %Idx into stats structure
-%         [biasIdx, towerIdx, puffIdx] = deal(1,2,3);
-% 
-%         %Special cases for sessions with only one sensory modality
-%         if all(~trials.rightPuffs(~exclIdx)) && all(~trials.leftPuffs(~exclIdx))
-%             predictors = [bias, effectCode(rightTowers)];
-%             rightPuffs = nan(size(rightPuffs));
-%             puffIdx = [];
-%         elseif all(~trials.rightTowers(~exclIdx)) && all(~trials.leftTowers(~exclIdx))
-%             predictors = [bias, effectCode(rightPuffs)];
-%             rightTowers = nan(size(rightTowers));
-%             puffIdx = 2; %Replace towerIdx in stats
-%             towerIdx = [];
-%         end
-% 
-%         %Run regression
-%         [stats, predictors, response, condNum, warnMsg, warnId] = logistic(predictors, response);
-% 
-%         %If regression algorithm does not converge within time limit, etc.
-%         if ~isempty(warnMsg)
-%             [biasIdx, towerIdx, puffIdx] = deal([]);
-%         end
-% 
-%         %Assign into output structures
-%         subjects(i).sessions(j).glm1 = struct(...
-%             'Name','towerSide_puffSide',...
-%             'bias',params(stats, biasIdx),...
-%             'towerSide',params(stats, towerIdx),...
-%             'puffSide',params(stats, puffIdx),...
-%             'R_predictors', min(corrcoef(predictors),[],'all'),... %Excludes diagonal ones
-%             'R_towerSide_choice', min(corrcoef([rightTowers, response]),[],'all'),...
-%             'R_puffSide_choice', min(corrcoef([rightPuffs, response]),[],'all'),...
-%             'N',size(predictors,1),...
-%             'pRightTowers', mean(rightTowers), 'pRightPuffs', mean(rightPuffs),...
-%             'conditionNum',condNum,...
-%             'warning', struct('msg',warnMsg,'ID',warnId)...
-%             );
-
-        %% GLM 2: Logistic regression of Choices based on Cues, Prior Choice, and Prior Choice x Outcome
-        % Y = Bias + towerSide(n)*X + puffSide(n)*X + Choice(n-1)*X + error
+        %% GLM 2: Logistic regression of Choices based on nCues_L, nCues_R
+        % Y = B0 + nTowers_L*X + nTowers_R*X + nPuffs_L*X + nPuffs_R*X + error
         X = struct(...
             'bias',ones(size(rightTowers)),...
-            'towers', effectCode(rightTowers),... %Cueside(n)
-            'puffs', effectCode(rightPuffs),...
+            'nTowersLeft', nTowersLeft,... 
+            'nTowersRight', nTowersRight,... 
+            'nPuffsLeft', nPuffsLeft,... 
+            'nPuffsRight', nPuffsRight,... 
             'priorChoice', effectCode(rightPriorChoice)...
             );
         response = rightChoice;
         subjects(i).sessions(j).glm2 = logisticStats(X, response, trials, exclIdx);
         subjects(i).sessions(j).glm2_bias = subjects(i).sessions(j).glm2.bias.beta;
-
-        %         %Regress
-        %         [predictors, pNames, idx] = formatPredictors(X,trials,exclIdx);
-        %         [stats, predictors, response, condNum, warnMsg, warnId] = logistic(predictors, response);
-        %
-        %         %If regression algorithm does not converge within time limit, etc.
-        %         if ~isempty(warnMsg)
-        %             for f = string(fieldnames(X))'
-        %                 idx.(f) = [];
-        %             end
-        %         end
-        %
-        %         %Assign into output structures
-        %         subjects(i).sessions(j).glm2 = struct(...
-        %             'Name','towerSide_puffSide_choice',...
-        %             'Predictors', strjoin(pNames(pNames~="bias"),'_'),...
-        %             'bias',params(stats, idx.bias),...
-        %             'towerSide',params(stats, idx.towers),...
-        %             'puffSide',params(stats, idx.puffs),...
-        %             'priorChoice',params(stats, idx.priorChoice),...
-        %             'R_predictors', corrcoef(predictors,'Rows','pairwise'),...
-        %             'N',numel(response),...
-        %             'conditionNum',condNum,...
-        %             'warning', struct('msg',warnMsg,'ID',warnId)...
-        %             );
-
-
-        %% GLM 3: Logistic regression of Choices based on Cues, Prior Choice, and Prior Choice x Outcome
-        % Y = Bias + towerSide(n)*X + puffSide(n)*X + SUM(Choice(n-i)*Outcome(n-i)*X) + error
-        X = struct(...
-            'bias',ones(size(rightTowers)),...
-            'towers', effectCode(rightTowers),... %Cueside(n)
-            'puffs', effectCode(rightPuffs),...
-            'priorRewChoice', effectCode(rightPriorChoice) .* history(reward,1),...
-            'priorUnrewChoice', effectCode(rightPriorChoice) .* history(~reward,1)...
-            );
-        response = rightChoice;
-        subjects(i).sessions(j).glm3 = logisticStats(X, response, trials, exclIdx);
-
-%         predictorNames = ["Bias","TowerSide","PuffSide","PriorRewChoice","PriorUnrewChoice"];
-%         X = struct(...
-%             'bias',ones(size(rightTowers)),...
-%             'towers', effectCode(rightTowers),... %Cueside(n)
-%             'puffs', effectCode(rightPuffs),...
-%             'priorRewChoice', effectCode(rightPriorChoice) .* history(reward,1),...
-%             'priorUnrewChoice', effectCode(rightPriorChoice) .* history(~reward,1)...
-%             );
-% 
-%         %Idx into stats structure
-%         pNames = fieldnames(X);
-%         for k = 1:numel(pNames)
-%             nameVal(:,k) = [pNames(k); k];
-%         end
-%         idx = struct(nameVal{:});
-% 
-%         %Special cases for sessions with only one sensory modality
-%         if all(~trials.rightPuffs(~exclIdx)) && all(~trials.leftPuffs(~exclIdx))
-%             X = rmfield(X,'puffs'); %remove term from glm
-%             predictorNames = predictorNames(predictorNames~="PuffSide");
-%             rightPuffs = nan(size(rightPuffs)); %For correlation output to indicate NaN
-%             idx.puffs = [];
-%         elseif all(~trials.rightTowers(~exclIdx)) && all(~trials.leftTowers(~exclIdx))
-%             X = rmfield(X,'towers'); %remove term from glm
-%             predictorNames = predictorNames(predictorNames~="TowerSide");
-%             rightTowers = nan(size(rightTowers)); %For correlation output to indicate NaN
-%             idx.towers = []; %For handling stats below
-%         end
-% 
-%         %Predictor matrix and idxs
-%         pNames = fieldnames(X);
-%         predictors = NaN(size(rightTowers,1),numel(pNames));
-%         for k = 1:numel(pNames)
-%             predictors(:,k) = X.(pNames{k});
-%             idx.(pNames{k}) = k;
-%         end
-% 
-%         %Regress
-%         response = rightChoice;
-%         [stats, predictors, response, condNum, warnMsg, warnId] = logistic(predictors, response);
-% 
-%         %If regression algorithm does not converge within time limit, etc.
-%         if ~isempty(warnMsg)
-%             [idx.bias, idx.towers, idx.puffs] = deal([]);
-%         end
-% 
-%         %Assign into output structures
-%         subjects(i).sessions(j).glm3 = struct(...
-%             'Name', 'towerSide_puffSide_choice*outcome',...
-%             'Predictors', predictorNames,...
-%             'bias', params(stats, idx.bias),...
-%             'towerSide', params(stats, idx.towers),...
-%             'puffSide', params(stats, idx.puffs),...
-%             'priorRewChoice', params(stats, idx.priorRewChoice),...
-%             'priorUnrewChoice', params(stats, idx.priorUnrewChoice),...
-%             'R_predictors', corrcoef(predictors,'Rows','pairwise'),...
-%             'N', numel(response),...
-%             'pRightChoice',mean(rightChoice),...
-%             'pRightTowers',mean(rightTowers),...
-%             'pRightPuffs',mean(rightPuffs),...
-%             'pReward',mean(reward),...
-%             'conditionNum',condNum,...
-%             'warning', struct('msg',warnMsg,'ID',warnId)...
-%             );
-
 
     end
 end

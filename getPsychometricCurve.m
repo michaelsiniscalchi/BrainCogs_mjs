@@ -1,31 +1,41 @@
 function psychStruct = getPsychometricCurve( trialData, trials, trialSubset )
 
 if nargin<3
-    trialSubset = ~trials.omit;
-else
-    trialSubset = trialSubset & ~trials.omit;
+    trialSubset = true(size(trials.right));
 end
 
-%Restrict analysis to trial subset
-choiceMask = trials.right(trialSubset); %Logical mask for right trials
-
 %Get domain (difference R-L cues) for each category
-diff.towers = cellfun(@(C) numel(C{2})-numel(C{1}), trialData.towerPositions(trialSubset));
-diff.puffs = cellfun(@(C) numel(C{2})-numel(C{1}), trialData.puffPositions(trialSubset));
-diff.all = diff.towers + diff.puffs;
+diffCues.towers = diff(trialData.nTowers(trialSubset,:),[],2); %nTowers is formatted L,R x nTrials
+diffCues.puffs = diff(trialData.nPuffs(trialSubset,:),[],2);
+diffCues.all = diffCues.towers + diffCues.puffs;
 
 %Get proportion of R-choice trials at each contrast
 logistic = @(x, b, b0, L) L./(1+exp(-b*(x-b0))); % Y = a/(1+exp(-b*(x-c)))
 
-for f = string(fieldnames(diff))'
-    edges = -max(abs(diff.(f))):max(abs(diff.(f)))+1;
-    psychStruct.(f).diffCues = diff.(f);
+%Restrict analysis to choice trials
+choiceMask = trials.right(trialSubset & ~trials.omit); %Logical mask for right trials
+omitMask = trials.omit(trialSubset);
+
+for f = string(fieldnames(diffCues))'
+    %Initialize
+    psychStruct.(f) = struct(...
+        'pRight', [], 'pOmit', [], 'diffCues', [], 'bins', [], 'nTrials', []);
+    
+    %Probability of omission
+    edges = -max(abs(diffCues.(f))):max(abs(diffCues.(f)))+1;
+    psychStruct.(f).pOmit =...
+        histcounts(diffCues.(f)(omitMask), edges) ./ histcounts(diffCues.(f), edges);
+    %Probability of right choice
+    diffCues.(f) = diffCues.(f)(~omitMask); %Exclude omissions
     psychStruct.(f).pRight =...
-        histcounts(diff.(f)(choiceMask), edges) ./ histcounts(diff.(f), edges);
+        histcounts(diffCues.(f)(choiceMask), edges) ./ histcounts(diffCues.(f), edges);
     psychStruct.(f).bins = edges(1:end-1); %Remove right bin-edge
     
+    %Store source data
+    psychStruct.(f).diffCues = diffCues.(f);
+
     %Logistic regression
-    [~,~,stats] = glmfit(diff.(f), choiceMask', 'binomial', 'link', 'logit');
+    [~,~,stats] = glmfit(diffCues.(f), choiceMask', 'binomial', 'link', 'logit');
     L = max(psychStruct.(f).pRight);
     psychStruct.(f).curvefit = logistic(psychStruct.(f).bins,stats.beta(2),stats.beta(1),L);
 

@@ -10,7 +10,7 @@ fields.other = ["median_velocity","median_pSkid","median_stuckTime","bias"];
 for i = 1:numel(subjects)
     exclSessionIdx = false(size(subjects(i).sessions));
     for j = 1:numel(subjects(i).sessions)
-        
+
         %Get main task rule (excl. isolated forced-choice blocks, etc.)
         S = subjects(i).sessions(j);
 
@@ -97,13 +97,6 @@ for i = 1:numel(subjects)
         S.median_pSkid = median(trialData.pSkid(trialMask)); %Median proportion of maze where mouse skidded along walls
         S.median_stuckTime = median(trialData.stuck_time,'omitnan'); %Median proportion of time spent stuck as result of friction
 
-%         %Choice bias
-%         leftError = sum(trialMask & trials.error & trials.left)...
-%             / sum(trials.left(trialMask));
-%         rightError = sum(trialMask & trials.error & trials.right)...
-%             / sum(trials.right(trialMask));
-%         S.bias = rightError-leftError;
-
         %Perceptual bias
         leftSensitivity = sum(trials.leftCues(trials.left & ~trials.exclude))...
             /sum(trials.leftCues(~trials.exclude));
@@ -117,7 +110,7 @@ for i = 1:numel(subjects)
         hits = struct('all',tempCorrect,'congruent',tempCorrect,'conflict',tempCorrect);
         hits.congruent(~tempCongruent) = NaN;
         hits.conflict(tempCongruent) = NaN;
-        
+
         S.movmeanAccuracy = struct();
         for f = ["all","congruent","conflict"]
             S.movmeanAccuracy.(f) = movmean(hits.(f),[99 0],'omitnan','Endpoints','discard');
@@ -140,7 +133,25 @@ for i = 1:numel(subjects)
         leftSensitivity = movmean(hits.leftCue,[99 0],'omitnan','Endpoints','discard');
         rightSensitivity = movmean(hits.rightCue,[99 0],'omitnan','Endpoints','discard');
         S.movmeanAccuracy.bias = rightSensitivity-leftSensitivity;
-
+        
+        if S.pLeftCues
+            %Psychometric
+            S.psychometric.all = getPsychometricCurve(trialData, trials);
+            S.psychometric.congruent =...
+                getPsychometricCurve(trialData, trials, trials.congruent);
+            S.psychometric.conflict =...
+                getPsychometricCurve(trialData, trials, trials.conflict);
+            %Cue histogram
+            edges = -max(abs(trialData.nTowers(:))):max(abs(trialData.nTowers(:))+1);
+            S.cueHistogram.towers = histcounts(diff(trialData.nTowers, [], 2), edges);
+            S.cueHistogram.puffs = histcounts(diff(trialData.nPuffs, [], 2), edges);
+            %Histogram of omissions for each cue count
+            S.cueHistogram.omit.towers =...
+                histcounts(diff(trialData.nTowers(trials.omit,:),[],2), edges);
+            S.cueHistogram.omit.puffs =...
+                histcounts(diff(trialData.nPuffs(trials.omit,:),[],2), edges);
+            S.cueHistogram.edges = edges;
+        end
         %Replace edited fields
         subjects(i).sessions(j) = S;
         subjects(i).trialData(j) = trialData;

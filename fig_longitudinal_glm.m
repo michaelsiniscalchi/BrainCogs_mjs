@@ -106,14 +106,22 @@ for i = 1:numel(subjects)
     end
      
     %Simplify markers/colors for >2 vars
-    symbols = {'o','o','^'};
-    faceColor = {colors.predictor.(vars{1}),'none','none','none','none'};
+    symbols = repmat("o",1,numel(vars)); %initialize
     for j = 1:numel(vars)
-        mkr = symbols{min(j,numel(symbols))};
-        if strcmp(vars{j},'bias')
-            mkr = '_';         
+        faceColor{j} = colors.predictor.(vars{j}); %#ok<AGROW> 
+        switch vars{j}
+            case {'nTowersLeft','nTowersRight'} 
+            case {'nPuffsLeft','nPuffsRight'} 
+                faceColor{j} = 'none'; %#ok<AGROW> 
+            case 'priorChoice'
+                symbols(j) = "<";
+            case 'bias'
+                symbols(j) = "_";
         end
-        set(p(j),'Marker',mkr,'MarkerSize',8,'LineWidth',lineWidth);
+    end
+    
+    for j = 1:numel(vars)
+        set(p(j),'Marker',symbols(j),'MarkerSize',8,'LineWidth',lineWidth);
         p(j).MarkerFaceColor = faceColor{j};
     end
 
