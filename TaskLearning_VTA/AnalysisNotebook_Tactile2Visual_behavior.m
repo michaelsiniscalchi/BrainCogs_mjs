@@ -7,7 +7,11 @@ end
 %Set paths
 experiment = 'mjs_tactile2visual'; %If empty, fetch data from all experiments
 
-dirs = addGitRepo(getRoots(),'General','TankMouseVR','U19-pipeline-matlab','BrainCogs_mjs');
+dirs = getRoots();
+addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...
+    'datajoint-matlab','compareVersions','GHToolbox');
+addpath(genpath(fullfile(dirs.code, 'mym', 'distribution', 'mexa64')));
+
 dirs.data = fullfile(dirs.root,'tactile2visual','data');
 dirs.results = fullfile(dirs.root,'tactile2visual','results',experiment);
 dirs.summary = fullfile(dirs.root,'tactile2visual','summary',experiment);
