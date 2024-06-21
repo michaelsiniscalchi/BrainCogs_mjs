@@ -131,6 +131,8 @@ function [ logs, excludeBlocks ] = excludeBadBlocks( logs )
             "mjs20_018",datetime('07-Mar-2024'),     2;...   %M173 accidentally run as M18
             "mjs20_177",datetime('14-Mar-2024'),    'all';...    %missing log field 'pDistractorTrials'
             "mjs20_179",datetime('07-Dec-2024'), 'all';...   %premature tactile rule--should have been lvl 6 L-maze
+
+            "mjs20_569",datetime('06-May-2024'),'all';...   %changed fields in logs.block for second block (could amend code to accommodate)
             }; 
 
 % "mjs20_103",datetime('03-Oct-2023'), 1;... %Restarted
@@ -148,6 +150,12 @@ for i = 1:size(exclude,1)
     elseif ismember(logs.animal.name,exclude{i,1}) &&...
             string(datetime(logs.session(1).start,'Format','dd-MMM-yyyy'))==exclude{i,2}
         excludeBlocks = exclude{i,3};
+%         %Truncate logs.block to match
+%         exclIdx = false(numel(logs.block),1);
+%         exclIdx(excludeBlocks) = true;
+%         logs.block = logs.block(~exclIdx);
+%         logs.version = logs.version(~exclIdx);
+%         logs.session = logs.session(~exclIdx);
         return
     end
 end

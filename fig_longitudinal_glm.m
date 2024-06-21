@@ -110,8 +110,8 @@ for i = 1:numel(subjects)
     for j = 1:numel(vars)
         faceColor{j} = colors.predictor.(vars{j}); %#ok<AGROW> 
         switch vars{j}
-            case {'nTowersLeft','nTowersRight'} 
-            case {'nPuffsLeft','nPuffsRight'} 
+            case {'nTowersLeft','nTowersRight','towers'} 
+            case {'nPuffsLeft','nPuffsRight','puffs'} 
                 faceColor{j} = 'none'; %#ok<AGROW> 
             case 'priorChoice'
                 symbols(j) = "<";
@@ -133,7 +133,7 @@ for i = 1:numel(subjects)
     elseif ismember(vars{j},{'R_predictors', 'R_cue_choice', 'R_priorChoice_choice'})
         ylim([-1, 1]);
     elseif ismember(vars{j}, predictorNames)
-        ylim([-4, 4]);
+        ylim([-5, 5]);
     else
         rng = max(cellfun(@max,data))-min(cellfun(@min,data));
         ylim([min(cellfun(@min,data)),max(cellfun(@max,data))] + 0.1*rng*[-1,1]);

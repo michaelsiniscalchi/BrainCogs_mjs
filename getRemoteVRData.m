@@ -122,11 +122,11 @@ for i = 1:numel(subjects)
         end
 
         %Initialize trial variables aggregated from logs
-        blockIdx = nan(1,numel([logs.block.trial]));
-        [duration, response_time, response_delay, pSkid, stuck_time] = deal(nan(numel(blockIdx),1));
+        blockIdx = nan(1,numel([logs.block.trial])); %Row vector
+        [duration, response_time, response_delay, pSkid, stuck_time] = deal(nan(numel(blockIdx),1)); %Column vectors
         [position, velocity,...
             towerPositions, puffPositions,...
-            collision_locations, stuck_locations] = deal(cell(numel(blockIdx),1));
+            collision_locations, stuck_locations] = deal(cell(numel(blockIdx),1)); %Cell arrays
 
         %Initialize as one cell per block
         [theta_trajectory, x_trajectory, time_trajectory, positionRange] =...
@@ -240,7 +240,7 @@ for i = 1:numel(subjects)
 
         %Initialize
         [left, right, leftTowers, rightTowers, leftPuffs, rightPuffs,...
-            tactileRule, visualRule,...
+            tactileRule, visualRule, forcedChoice, level,...
             correct, omit, congruent, conflict, forward, stuck] = deal(false(1,numel(blockIdx)));
 
         mazeLevel = [logs.block.mazeID];
@@ -434,26 +434,26 @@ for i = 1:numel(subjects)
         end
 
         %Psychometric curves & histogram of cue counts for whole session
-        psychometric = struct();
-        cueHistogram = struct();
-        if any(trials(j).leftPuffs) && any(trials(j).leftTowers)
-            psychometric.all = getPsychometricCurve(trialData(j), trials(j));
+%         psychometric = struct('all',[],'congruent',[],'conflict',[]);
+        cueHistogram = struct('puffs',[],'towers',[],'edges',[]);
+
+        psychometric.all = getPsychometricCurve(trialData(j), trials(j));
+        if any(trials(j).conflict) %Multimodal sessions
             psychometric.congruent = getPsychometricCurve(trialData(j), trials(j), trials(j).congruent);
             psychometric.conflict = getPsychometricCurve(trialData(j), trials(j), trials(j).conflict);
-
-            nTowers = trialData(j).nTowers;
-            nPuffs = trialData(j).nPuffs;
-            edges = -max(abs(nTowers(:))):max(abs(nTowers(:))+1);
-            cueHistogram.towers = histcounts(diff(nTowers,[],2), edges);
-            cueHistogram.puffs = histcounts(diff(nPuffs,[],2), edges);
-            cueHistogram.edges = edges;
-
-            %Histogram of omissions for each cue count
-            cueHistogram.omit.towers = histcounts(diff(nTowers(trials(j).omit,:),[],2), edges);
-            cueHistogram.omit.puffs = histcounts(diff(nPuffs(trials(j).omit,:),[],2), edges);
-
         end
 
+        %Cue histogram
+        nTowers = trialData(j).nTowers;
+        nPuffs = trialData(j).nPuffs;
+        edges = -max(abs([nTowers(:); nPuffs(:)])) : max(abs([nTowers(:); nPuffs(:)])+1);
+        cueHistogram.towers = histcounts(diff(nTowers,[],2), edges);
+        cueHistogram.puffs = histcounts(diff(nPuffs,[],2), edges);
+        cueHistogram.edges = edges;
+
+        %Histogram of omissions for each cue count
+        cueHistogram.omit.towers = histcounts(diff(nTowers(trials(j).omit,:),[],2), edges);
+        cueHistogram.omit.puffs = histcounts(diff(nPuffs(trials(j).omit,:),[],2), edges);
 
         %Store session data
         sessions(j) = struct(...
@@ -491,7 +491,6 @@ for i = 1:numel(subjects)
             'excludeBlocks', excludeBlocks,...
             'new_remote_path_behavior_file', dataPath);
 
-        %         clearvars eventTimes level bias;
         clearvars -except i subjects sessions trials trialData key sessionDate
     end
 

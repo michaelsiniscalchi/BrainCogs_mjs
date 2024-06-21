@@ -1,4 +1,4 @@
-function subjects = analyzeTaskStrategy(subjects)
+function subjects = analyzeTaskStrategy2(subjects)
 
 for i = 1:numel(subjects)
     for j = 1:numel(subjects(i).sessions)
@@ -17,7 +17,7 @@ for i = 1:numel(subjects)
         %Cue Side
         rightTowers = trials.rightTowers(~exclIdx)'; %Exclude omissions and ~forward trials
         rightPuffs = trials.rightPuffs(~exclIdx)'; %Exclude omissions for all
-        
+
         %Number of Cues
         nTowersLeft = trialData.nTowers(~exclIdx,1);
         nTowersRight = trialData.nTowers(~exclIdx,2);
@@ -32,7 +32,7 @@ for i = 1:numel(subjects)
         %Outcome
         reward = trials.correct(~exclIdx)'; %Trial outcome
 
-        %Code predictors
+        %Code predictors as {-1,1}
         effectCode = @(X) 2*(X-0.5);
         normCode = @(X) X./max(X,[],"omitnan");
         meanCenter = @(X) X-mean(X,1,"omitnan");
@@ -41,26 +41,44 @@ for i = 1:numel(subjects)
 
         % Y = Bias + towerSide(n)*X + puffSide(n)*X + Choice(n-1)*X + error
         X = struct(...
-            'bias',ones(size(rightTowers)),...
+            'bias', ones(size(rightTowers)),... %Need field, but column of ones not used for glmfit(); used previously with fitglm()
             'towers', effectCode(rightTowers),... %Cueside(n)
             'puffs', effectCode(rightPuffs)...
             );
         response = rightChoice;
+
         subjects(i).sessions(j).glm1 = logisticStats(X, response, trials, exclIdx);
         subjects(i).sessions(j).glm1_bias = subjects(i).sessions(j).glm1.bias.beta;
-
+        
         %% GLM 2: Logistic regression of Choices based on nCues_L, nCues_R
         % Y = B0 + nTowers_L*X + nTowers_R*X + nPuffs_L*X + nPuffs_R*X + error
         X = struct(...
             'bias',ones(size(rightTowers)),...
-            'nTowersLeft', normCode(nTowersLeft),... 
-            'nTowersRight', normCode(nTowersRight),... 
-            'nPuffsLeft', normCode(nPuffsLeft),... 
-            'nPuffsRight', normCode(nPuffsRight)... 
+            'nTowersLeft', normCode(nTowersLeft),...
+            'nTowersRight', normCode(nTowersRight),...
+            'nPuffsLeft', normCode(nPuffsLeft),...
+            'nPuffsRight', normCode(nPuffsRight)...
             );
+       
         response = rightChoice;
         subjects(i).sessions(j).glm2 = logisticStats(X, response, trials, exclIdx);
         subjects(i).sessions(j).glm2_bias = subjects(i).sessions(j).glm2.bias.beta;
+
+        %% GLM 3: Logistic regression of Choices based on nCues_L, nCues_R, and cueSide
+        %         % Y = B0 + nTowers_L*X + nTowers_R*X + nPuffs_L*X + nPuffs_R*X + error
+        %         X = struct(...
+        %             'bias',ones(size(rightTowers)),...
+        %             'towers', rightTowers,... %Cueside(n)
+        %             'puffs', rightPuffs,...
+        %             'nTowersLeft', nTowersLeft,...
+        %             'nTowersRight', nTowersRight,...
+        %             'nPuffsLeft', nPuffsLeft,...
+        %             'nPuffsRight', nPuffsRight,...
+        %             'priorChoice', rightPriorChoice...
+        %             );
+        %         response = rightChoice;
+        %         subjects(i).sessions(j).glm3 = logisticStats(X, response, trials, exclIdx);
+        %         subjects(i).sessions(j).glm3_bias = subjects(i).sessions(j).glm3.bias.beta;
 
     end
 end
@@ -78,67 +96,82 @@ end
 function regStruct = logisticStats( X, response, trials, exclIdx )
 
 %% Regress
-[predictors, pNames, idx] = formatPredictors(X, trials, exclIdx);
-[stats, predictors, response, condNum, warnMsg, warnId] = logistic(predictors, response);
+
+%Format the predictors and append name of response variable
+[predictors, pNames ] = formatPredictors(X, trials, exclIdx);
+varNames = [pNames, "choice"]; %Append response name
+
+%Regress based on specified terms
+[mdl, condNum, warnMsg, warnId] = logistic(predictors, response, varNames);
 
 %If regression algorithm does not converge within time limit, etc.
 if ~isempty(warnMsg)
-    for P = string(fieldnames(X))'
-        idx.(P) = [];
-    end
+    %empty
 end
 
 %% Assign into output structure
 regStruct.name              = strjoin(pNames(pNames~="bias"),'_');
 regStruct.predictors        = pNames;
+regStruct.model             = mdl;
 
 %Regression stats: beta, p, se
-for P = string(fieldnames(X))' %f = string(fieldnames(idx)) 
-    if ~isempty(idx.(P))
-        regStruct.(P) = struct(...
-            'beta', stats.beta(idx.(P))',...
-            'se',(stats.beta(idx.(P))' - [stats.se(idx.(P)),-stats.se(idx.(P))]'),... %B -/+ SE
-            'p',stats.p(idx.(P))');
+for pName = string(mdl.CoefficientNames) %f = string(fieldnames(idx))
+    if ~isempty(mdl.Coefficients{pName,'Estimate'})
+        regStruct.(pName) = struct(...
+            'beta', mdl.Coefficients{pName,'Estimate'},...
+            'se', mdl.Coefficients{pName,'Estimate'} + mdl.Coefficients{pName,'SE'}*[-1;1],... %B -/+ SE
+            'p', mdl.Coefficients{pName,'pValue'});
     else
         regStruct.(P) = struct('beta', NaN,'se', [NaN,NaN]','p', NaN);
     end
 end
+
 %Additional outputs
 regStruct.R_predictors  = corrcoef(predictors,'Rows','pairwise');
 regStruct.N             = numel(response);
 regStruct.conditionNum  = condNum;
 regStruct.warning       = struct('msg',warnMsg,'ID',warnId);
 
+%GeneralizedLinearModel methods:
+%mdl.CoefficientNames
+%mdl.Coefficients.(pName).Estimate 
+%mdl.Coefficients.(pName).SE
+%mdl.Coefficients.(pName).pValue
+%mdl.Fitted.Response
+%mdl.Rsquared.Ordinary
+%mdl.Rsquared.LLR
+
 %---------------------------------------------------------------------------------------------------
 
-function [ predictors, pNames, idx ] = formatPredictors( X, trials, exclIdx )
-%Idx into stats structure
-pNames = fieldnames(X);
-for k = 1:numel(pNames)
-    nameVal(:,k) = [pNames(k); k];
-end
-idx = struct(nameVal{:});
+function [ predictors, pNames ] = formatPredictors( X, trials, exclIdx )
 
 %Special cases for sessions with only one sensory modality
 if all(~trials.rightPuffs(~exclIdx)) && all(~trials.leftPuffs(~exclIdx))
-    X = rmfield(X,'puffs'); %remove term from glm
-    idx.puffs = [];
+    if isfield(X,'puffs')
+        X = rmfield(X,'puffs'); %remove term from glm
+    end
+    if isfield(X,'nPuffsLeft')
+        X = rmfield(X,{'nPuffsLeft','nPuffsRight'}); %remove term from glm
+    end
 elseif all(~trials.rightTowers(~exclIdx)) && all(~trials.leftTowers(~exclIdx))
-    X = rmfield(X,'towers'); %remove term from glm
-    idx.towers = []; %For handling stats below
+    if isfield(X,'towers')
+        X = rmfield(X,'towers'); %remove term from glm
+    end
+    if isfield(X,'nTowersLeft')
+        X = rmfield(X,{'nTowersLeft','nTowersRight'}); %remove term from glm
+    end
 end
 
-%Predictor matrix and idxs
+%Predictor matrix
 pNames = string(fieldnames(X))'; %Output as string array
-predictors = NaN(size(X.bias,1),numel(pNames));
+predictors = NaN(size(X.bias,1), numel(pNames));
 for k = 1:numel(pNames)
     predictors(:,k) = X.(pNames{k});
-    idx.(pNames(k)) = k;
 end
 
 %---------------------------------------------------------------------------------------------------
 
-function [ stats, predictors, response, condNum, warnMsg, warnId ] = logistic( predictors, response )
+function [ mdl, condNum, warnMsg, warnId ] = logistic( predictors, response, varNames )
 
 %Remove rows with missing values (NaNs) for accurate N, etc.
 exclIdx = any(isnan([predictors, response]),2);
@@ -147,16 +180,24 @@ response = response(~exclIdx);
 
 %Exclude early sessions with few trials (rare)
 if isempty(response) %|| all(isnan(sum(predictors,2)))
-    [stats.beta, stats.se, stats.p] = deal(NaN(size(predictors,2)+1,1));
-    predictors = deal(NaN(1,size(predictors,2)+1));
-    response = NaN;
+    mdl = [];
+    condNum = []
 else
     lastwarn(''); % Clear last warning message
-    [~,~,stats] = glmfit(predictors, response, 'binomial', 'link', 'logit','constant','off');
+
+%Terms matrix (nTerms x (nTerms+1))
+nTerms = size(predictors,2); %Number of predictors, including constant term (all included in 'predictors' var)
+mdlSpec = [eye(nTerms),zeros(nTerms,1)]; %all terms first-order, with no interactions; last column represents response var    
+
+%Fit GLM
+mdl = fitglm(predictors, response, mdlSpec, 'Distribution', 'binomial', 'Link', 'logit', 'VarNames', varNames); %GeneralizedLinearModel object
+
 end
+
+%Get warnings
 [warnMsg, warnId] = lastwarn;
 
-%Get condition number for GLM
+%Calculate condition number for GLM
 X = predictors; %Design matrix
 X = X(~isnan(sum(X,2)),:); %Omit nan rows, which are also omitted in regression
 moment = X'*X; %Moment matrix of regressors

@@ -1,5 +1,10 @@
+function AnalysisNotebook_Tactile2Visual_behavior(search_filter)
+
+if nargin<1
+    search_filter = '';
+end
+
 %Set paths
-close all;
 experiment = 'mjs_tactile2visual'; %If empty, fetch data from all experiments
 
 dirs = addGitRepo(getRoots(),'General','TankMouseVR','U19-pipeline-matlab','BrainCogs_mjs');
@@ -57,12 +62,13 @@ if exe.reloadData
         'experimenter', 'mjs20',...
         'waterType', 'sucrose');
 
-%     subjects = subjects(end-1);
+    %Restrict to specified subject(s)
+    subjects = subjects(contains([subjects.ID], search_filter));
 
     %Switch data source
     if dataSource.remoteLogData && ~dataSource.experimentData
         setupDataJoint_mjs();
-%                 subjects = getRemoteVRData( experiment, subjects, struct('session_date','2023-06-07') );
+%         subjects = getRemoteVRData( experiment, subjects, struct('session_date','2024-06-20') );
         subjects = getRemoteVRData( experiment, subjects);
         %Append Labels for Session Types
         % subjects = getSessionLabels_TaskLearning_VTA(subjects);
@@ -92,12 +98,12 @@ if exe.motor_trajectory
 end
 
 if exe.model_strategy
-    subjects = analyzeTaskStrategy(subjects);
+    subjects = analyzeTaskStrategy2(subjects);
 end
 
 %Save experimental data to matfiles by subject
 if exe.updateExperData && ~dataSource.experimentData
-    fnames = updateExperData(subjects,dirs);
+    fnames = updateExperData(subjects, dirs);
 end
 
 %Get Colors for Plotting
@@ -144,8 +150,15 @@ end
 if plots.session_summary
     saveDir = fullfile(dirs.results,'session-summary');
     for i = 1:numel(subjects)
+        %GLM2
+        %(nTowersLeft_nTowersRight_nPuffsLeft_nPuffsRight_priorChoice_bias)
         subject = loadExperData(subjects(i).ID, dirs);
         figs = fig_session_summary( subject, 'glm2', colors );
+        save_multiplePlots(figs,saveDir);
+        %GLM1 towers_puffs_bias
+        saveDir = fullfile(dirs.results,'session-summary','glm1');
+        subject = loadExperData(subjects(i).ID, dirs);
+        figs = fig_session_summary( subject, 'glm1', colors );
         save_multiplePlots(figs,saveDir);
     end
 end
@@ -155,19 +168,37 @@ if plots.longitudinal_glm
     vars = {'towers','puffs','bias'};
     figs = fig_longitudinal_glm( subjects, vars, 'glm1', colors );
     save_multiplePlots(figs,saveDir);
+% 
+%     vars = {'towers','puffs','bias','priorChoice'};
+%     figs = fig_longitudinal_glm( subjects, vars, 'glm1', colors );
+%     save_multiplePlots(figs,saveDir);
 
+    %All terms
     saveDir = fullfile(dirs.results,'GLM_nTowers_nPuffs_priorChoice');
-    vars = {'nTowersLeft','nTowersRight','nPuffsLeft','nPuffsRight','priorChoice','bias'};
+    vars = {'nTowersLeft','nTowersRight','nPuffsLeft','nPuffsRight','bias'};
     figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
     save_multiplePlots(figs,saveDir);
 
+    %Towers/Puffs separately
+    vars = {'nTowersLeft','nTowersRight','bias'};
+    figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
+    save_multiplePlots(figs,saveDir);
+
+    vars = {'nPuffsLeft','nPuffsRight','bias'};
+    figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
+    save_multiplePlots(figs,saveDir);
+
+    %Towers/Puffs separately (no priorChoice term)
+%     saveDir = fullfile(dirs.results,'GLM_nTowers_nPuffs');
+%     vars = {'nTowersLeft','nTowersRight','bias'};
+%     figs = fig_longitudinal_glm( subjects, vars, 'glm3', colors );
+%     save_multiplePlots(figs,saveDir);
+% 
+%     vars = {'nPuffsLeft','nPuffsRight','bias'};
+%     figs = fig_longitudinal_glm( subjects, vars, 'glm3', colors );
+%     save_multiplePlots(figs,saveDir);
 end
 
 
 % ------------- NOTES ------
-% 230727 Began using 35 psi for M102 to help with ball control
-% 230731 Same for M105
-% 230801 Same for All
-%
-%230905 Cleaned up BehavioralState flow
 
