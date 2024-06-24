@@ -115,14 +115,14 @@ regStruct.predictors        = pNames;
 regStruct.model             = mdl;
 
 %Regression stats: beta, p, se
-for pName = string(mdl.CoefficientNames) %f = string(fieldnames(idx))
-    if ~isempty(mdl.Coefficients{pName,'Estimate'})
+for pName = string(fieldnames(X))' %pName = string(mdl.CoefficientNames)
+    if ismember(pName,mdl.Coefficients.Properties.RowNames)
         regStruct.(pName) = struct(...
             'beta', mdl.Coefficients{pName,'Estimate'},...
             'se', mdl.Coefficients{pName,'Estimate'} + mdl.Coefficients{pName,'SE'}*[-1;1],... %B -/+ SE
             'p', mdl.Coefficients{pName,'pValue'});
     else
-        regStruct.(P) = struct('beta', NaN,'se', [NaN,NaN]','p', NaN);
+        regStruct.(pName) = struct('beta', NaN,'se', [NaN,NaN]','p', NaN);
     end
 end
 

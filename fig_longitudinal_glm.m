@@ -75,6 +75,11 @@ for i = 1:numel(subjects)
             ylim([min(cellfun(@min,data)),max(cellfun(@max,data))] + 0.1*rng*[-1,1]);
         end
         
+
+        %Plot baseline
+        plot(X,zeros(size(X)), ':k', 'LineWidth', lineWidth);
+        
+        %Plot predictor coefficients, etc.
         if ismember(vars{j}, predictorNames)
             for k = 1:numel(X)
                 plot([X(k),X(k)],se{k},'color',colors.predictor.(vars{j}),'LineWidth',lineWidth);

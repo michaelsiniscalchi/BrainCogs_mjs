@@ -7,17 +7,19 @@ end
 %Set paths
 experiment = 'mjs_tactile2visual'; %If empty, fetch data from all experiments
 
-dirs = getRoots();
-addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...
-    'datajoint-matlab','compareVersions','GHToolbox');
-addpath(genpath(fullfile(dirs.code, 'mym', 'distribution', 'mexa64')));
+% dirs = getRoots();
+% addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...
+%     'datajoint-matlab','compareVersions','GHToolbox');
+% addpath(genpath(fullfile(dirs.code, 'mym', 'distribution', 'mexa64')));
+% 
+% dirs.data = fullfile(dirs.root,'tactile2visual','data');
+% dirs.results = fullfile(dirs.root,'tactile2visual','results',experiment);
+% dirs.summary = fullfile(dirs.root,'tactile2visual','summary',experiment);
+% dirs.intake = fullfile(dirs.root,'tactile2visual','results');
+% 
+% create_dirs(dirs.results, dirs.summary, dirs.intake);
 
-dirs.data = fullfile(dirs.root,'tactile2visual','data');
-dirs.results = fullfile(dirs.root,'tactile2visual','results',experiment);
-dirs.summary = fullfile(dirs.root,'tactile2visual','summary',experiment);
-dirs.intake = fullfile(dirs.root,'tactile2visual','results');
-
-create_dirs(dirs.results, dirs.summary, dirs.intake);
+dirs = getDirStruct(experiment);
 
 matfiles = struct(...
     'behavioralData', @(SubjectID) fullfile(dirs.results, [SubjectID,'.mat']),... %Define function later
@@ -68,6 +70,10 @@ if exe.reloadData
 
     %Restrict to specified subject(s)
     subjects = subjects(contains([subjects.ID], search_filter));
+
+    %For testing
+    %dirs = getDirStruct('mjs_tactile2visual'); 
+    %subjects = loadExperData("mjs20_24", dirs);
 
     %Switch data source
     if dataSource.remoteLogData && ~dataSource.experimentData
@@ -178,7 +184,7 @@ if plots.longitudinal_glm
 %     save_multiplePlots(figs,saveDir);
 
     %All terms
-    saveDir = fullfile(dirs.results,'GLM_nTowers_nPuffs_priorChoice');
+    saveDir = fullfile(dirs.results,'GLM_nTowers_nPuffs');
     vars = {'nTowersLeft','nTowersRight','nPuffsLeft','nPuffsRight','bias'};
     figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
     save_multiplePlots(figs,saveDir);
