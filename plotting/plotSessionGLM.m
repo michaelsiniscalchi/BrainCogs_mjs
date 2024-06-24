@@ -7,12 +7,12 @@ S = session_struct;
 factors = S.(glmName).predictors;
 for i = 1:numel(factors)
     data(i) = S.(glmName).(factors(i)).beta;
-    sem(:,i) = S.(glmName).(factors(i)).se;
+    sem(:,i) = S.(glmName).(factors(i)).se(2); %Upper se bar
 end
 
 %Make bar graph 
 bar(1:numel(factors),data,'FaceColor',colors.blue,'LineStyle','none'); hold on
-errorbar(data,sem-data,'Color',colors.blue,'LineWidth',1,'LineStyle','none');
+errorbar(data, sem, 'Color', colors.blue, 'LineWidth', 1, 'LineStyle','none'); %symmetric error bars
 ylim([-4,4]);
 
 %Title and Axis Labels
