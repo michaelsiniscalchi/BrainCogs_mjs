@@ -4,6 +4,9 @@ c.all = colors.black;
 c.congruent = colors.gray;
 c.conflict = colors.red;
 
+c.data = colors.black;
+c.model = colors.green;
+
 f = string(fieldnames(psychStruct))';
 if ~isempty(f)
     for i = 1:numel(f)

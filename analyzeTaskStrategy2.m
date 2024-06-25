@@ -49,6 +49,10 @@ for i = 1:numel(subjects)
 
         subjects(i).sessions(j).glm1 = logisticStats(X, response, trials, exclIdx);
         subjects(i).sessions(j).glm1_bias = subjects(i).sessions(j).glm1.bias.beta;
+
+        %Append psychometric curve based on model parameters
+        trials.right(~exclIdx) = subjects(i).sessions(j).glm1.predictedChoice; %Model/curve based on right-choice trials, omitted trials excluded within function
+        subjects(i).sessions(j).glm1.psychometric = getPsychometricCurve(trialData, trials, ~exclIdx);
         
         %% GLM 2: Logistic regression of Choices based on nCues_L, nCues_R
         % Y = B0 + nTowers_L*X + nTowers_R*X + nPuffs_L*X + nPuffs_R*X + error
@@ -63,6 +67,11 @@ for i = 1:numel(subjects)
         response = rightChoice;
         subjects(i).sessions(j).glm2 = logisticStats(X, response, trials, exclIdx);
         subjects(i).sessions(j).glm2_bias = subjects(i).sessions(j).glm2.bias.beta;
+
+        %Append psychometric curve based on model parameters
+        trials.right(~exclIdx) = subjects(i).sessions(j).glm2.predictedChoice; %Model/curve based on right-choice trials, omitted trials excluded within function
+        subjects(i).sessions(j).glm2.psychometric = getPsychometricCurve(trialData, trials, ~exclIdx);
+        
 
         %% GLM 3: Logistic regression of Choices based on nCues_L, nCues_R, and cueSide
         %         % Y = B0 + nTowers_L*X + nTowers_R*X + nPuffs_L*X + nPuffs_R*X + error
@@ -127,10 +136,11 @@ for pName = string(fieldnames(X))' %pName = string(mdl.CoefficientNames)
 end
 
 %Additional outputs
-regStruct.R_predictors  = corrcoef(predictors,'Rows','pairwise');
-regStruct.N             = numel(response);
-regStruct.conditionNum  = condNum;
-regStruct.warning       = struct('msg',warnMsg,'ID',warnId);
+regStruct.predictedChoice   = mdl.Fitted.Response>0.5; %choose_R if P(choose_R)>0.5
+regStruct.N                 = numel(response);
+regStruct.R_predictors      = corrcoef(predictors,'Rows','pairwise');
+regStruct.conditionNum      = condNum;
+regStruct.warning           = struct('msg',warnMsg,'ID',warnId);
 
 %GeneralizedLinearModel methods:
 %mdl.CoefficientNames

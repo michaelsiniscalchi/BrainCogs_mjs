@@ -36,7 +36,13 @@ for i = 1:numel(subject.sessions)
 
     %--- Psychometric curves for Towers -- all/congruent/conflict trials
     ax(2)=nexttile;
-    if ~isempty(S(i).psychometric)
+    if ~isempty(S(i).psychometric) 
+        if ~isempty(S(i).(glmName).psychometric)
+            S(i).psychometric.model = S(i).(glmName).psychometric;
+            S(i).psychometric.data = S(i).psychometric.all; %Rename field for all (congruent|conflict) to "data"
+            S(i).psychometric =...
+                rmfield(S(i).psychometric,["all","congruent","conflict"]); %Replace congruent/incongruent with Data/Model
+        end
     [~,lgd] = plotPsychometric(S(i).psychometric, "towers", colors, "Towers"); %p = plotPsychometric(psychStruct, cueName, colors, title_str)
     lgd.Visible='off';
     end
@@ -44,8 +50,8 @@ for i = 1:numel(subject.sessions)
     %--- Psychometric curves for Air Puffs -- all/congruent/conflict trials
     ax(3) = nexttile;
     if ~isempty(S(i).psychometric)
-    [~,lgd] = plotPsychometric(S(i).psychometric, "puffs", colors, "Air Puffs");
-    lgd.Location="eastoutside";
+        [~,lgd] = plotPsychometric(S(i).psychometric, "puffs", colors, "Air Puffs");
+        lgd.Location="eastoutside";
     end
     
     %--- GLM ------------------------------------------------------
