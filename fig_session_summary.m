@@ -34,8 +34,38 @@ for i = 1:numel(subject.sessions)
     ylim([0,1]);
     axis square
 
-    %--- Psychometric curves for Towers -- all/congruent/conflict trials
+%--- Histogram, Towers: nCues_right - nCues_left
     ax(2)=nexttile;
+    X = S(i).cueHistogram.edges;
+    Y = S(i).cueHistogram.towers;
+    histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','k'); hold on 
+    Y = S(i).cueHistogram.omit.towers;
+    histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','w'); hold on
+    xlabel("nRightCues-nLeftCues");
+    ylabel("Number of trials");
+    axis square;
+    
+    %--- Histogram, Puffs: nCues_right - nCues_left
+    ax(3)=nexttile;
+    Y = S(i).cueHistogram.puffs;
+    histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','k'); hold on
+    Y = S(i).cueHistogram.omit.puffs;
+    histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','w');
+    
+    xlabel("nRightCues-nLeftCues");
+    ylabel("Number of trials");
+    legend(["all","omissions"],"Location","eastoutside");
+    axis square;
+
+        %--- GLM ------------------------------------------------------
+    ax(4)=nexttile;
+    if ~isempty(S(i).(glmName))
+        plotSessionGLM(S(i), glmName, colors);
+
+    end
+
+    %--- Psychometric curves for Towers -- all/congruent/conflict trials
+    ax(5)=nexttile;
     if ~isempty(S(i).psychometric) 
         if ~isempty(S(i).(glmName).psychometric)
             S(i).psychometric.model = S(i).(glmName).psychometric;
@@ -52,42 +82,12 @@ for i = 1:numel(subject.sessions)
     end
     
     %--- Psychometric curves for Air Puffs -- all/congruent/conflict trials
-    ax(3) = nexttile;
+    ax(6) = nexttile;
     if ~isempty(S(i).psychometric)
         [~,lgd] = plotPsychometric(S(i).psychometric, "puffs", colors, "Air Puffs");
         lgd.Location="eastoutside";
     end
-    
-    %--- GLM ------------------------------------------------------
-    ax(4)=nexttile;
-    if ~isempty(S(i).(glmName))
-        plotSessionGLM(S(i), glmName, colors);
 
-    end
-    
-    %--- Histogram, Towers: nCues_right - nCues_left
-    ax(5)=nexttile;
-    X = S(i).cueHistogram.edges;
-    Y = S(i).cueHistogram.towers;
-    histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','k'); hold on 
-    Y = S(i).cueHistogram.omit.towers;
-    histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','w'); hold on
-    xlabel("nRightCues-nLeftCues");
-    ylabel("Number of trials");
-    axis square;
-    
-    %--- Histogram, Puffs: nCues_right - nCues_left
-    ax(6)=nexttile;
-    Y = S(i).cueHistogram.puffs;
-    histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','k'); hold on
-    Y = S(i).cueHistogram.omit.puffs;
-    histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','w');
-    
-    xlabel("nRightCues-nLeftCues");
-    ylabel("Number of trials");
-    legend(["all","omissions"],"Location","eastoutside");
-    axis square;
-    
     t.Padding = "loose";
     t.TileSpacing = "loose";
 end

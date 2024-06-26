@@ -14,6 +14,9 @@ end
 bar(1:numel(factors),data,'FaceColor',colors.blue,'LineStyle','none'); hold on
 errorbar(data, sem, 'Color', colors.blue, 'LineWidth', 1, 'LineStyle','none'); %symmetric error bars
 ylim([-4,4]);
+if string(glmName)=="glm1"
+    ylim([-1.5,1.5]);
+end
 
 %Title and Axis Labels
 title('Logistic Regression');
