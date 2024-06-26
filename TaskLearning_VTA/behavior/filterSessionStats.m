@@ -136,11 +136,14 @@ for i = 1:numel(subjects)
         
         if S.pLeftCues
             %Psychometric
-            S.psychometric.all = getPsychometricCurve(trialData, trials);
-            S.psychometric.congruent =...
-                getPsychometricCurve(trialData, trials, trials.congruent);
-            S.psychometric.conflict =...
-                getPsychometricCurve(trialData, trials, trials.conflict);
+            S.psychometric.all = getPsychometricCurve(trialData, trials); %All trials
+            if any(trials.conflict) %Congruent and conflict trials separately
+                S.psychometric.congruent =...
+                    getPsychometricCurve(trialData, trials, trials.congruent);
+                S.psychometric.conflict =...
+                    getPsychometricCurve(trialData, trials, trials.conflict);
+            end
+
             %Cue histogram
             edges = -max(abs(trialData.nTowers(:))):max(abs(trialData.nTowers(:))+1);
             S.cueHistogram.towers = histcounts(diff(trialData.nTowers, [], 2), edges);

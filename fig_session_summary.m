@@ -41,7 +41,11 @@ for i = 1:numel(subject.sessions)
             S(i).psychometric.model = S(i).(glmName).psychometric;
             S(i).psychometric.data = S(i).psychometric.all; %Rename field for all (congruent|conflict) to "data"
             S(i).psychometric =...
-                rmfield(S(i).psychometric,["all","congruent","conflict"]); %Replace congruent/incongruent with Data/Model
+                    rmfield(S(i).psychometric,"all"); %Rename field for all (congruent|conflict) to "data"
+            if isfield(S(i).psychometric,["congruent","conflict"])
+                S(i).psychometric =...
+                    rmfield(S(i).psychometric,["congruent","conflict"]); %Replace congruent/incongruent with Data/Model
+            end
         end
     [~,lgd] = plotPsychometric(S(i).psychometric, "towers", colors, "Towers"); %p = plotPsychometric(psychStruct, cueName, colors, title_str)
     lgd.Visible='off';
