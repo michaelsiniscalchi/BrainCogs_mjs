@@ -70,7 +70,7 @@ if calculate.combined_data
         behavior = restrictImgTrials(behavior, expData(i).mainMaze, expData(i).excludeBlock);
         behavior = filterSessionStats(behavior);
         %Logistic regression
-        behavior = analyzeTaskStrategy(behavior);
+        behavior = analyzeTaskStrategy2(behavior);
 
         %Synchronize imaging frames with behavioral time basis
         stackInfo = syncImagingBehavior(stackInfo, behavior);
