@@ -7,18 +7,6 @@ end
 %Set paths
 experiment = 'mjs_tactile2visual'; %If empty, fetch data from all experiments
 
-% dirs = getRoots();
-% addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...
-%     'datajoint-matlab','compareVersions','GHToolbox');
-% addpath(genpath(fullfile(dirs.code, 'mym', 'distribution', 'mexa64')));
-% 
-% dirs.data = fullfile(dirs.root,'tactile2visual','data');
-% dirs.results = fullfile(dirs.root,'tactile2visual','results',experiment);
-% dirs.summary = fullfile(dirs.root,'tactile2visual','summary',experiment);
-% dirs.intake = fullfile(dirs.root,'tactile2visual','results');
-% 
-% create_dirs(dirs.results, dirs.summary, dirs.intake);
-
 dirs = getDirStruct(experiment);
 
 matfiles = struct(...
@@ -73,7 +61,7 @@ if exe.reloadData
 
     %For testing
     %dirs = getDirStruct('mjs_tactile2visual'); 
-    %subjects = loadExperData("mjs20_24", dirs);
+    %subjects = loadExperData("mjs20_26", dirs);
 
     %Switch data source
     if dataSource.remoteLogData && ~dataSource.experimentData
@@ -96,7 +84,7 @@ if exe.reloadData
         end
 
     elseif dataSource.experimentData
-        subjects = loadExperData({subjects.ID},dirs);
+        subjects = loadExperData([subjects.ID],dirs);
     elseif dataSource.localLogData
     end
 end
@@ -143,13 +131,13 @@ end
 if plots.longitudinal_performance
     %Full performance data for each subject
     saveDir = fullfile(dirs.results,'Performance');
-    vars = {...
-        ["pCorrect_congruent", "pCorrect_conflict"],...
-        ["pCorrect", "bias"],...
-        ["pLeftCues", "bias"]};
 
     params = struct('colors', colors, 'lineWidth', 1.5,...
         'markerSize', 6,'omitShaping','true');
+    vars = {...
+        ["pCorrect_congruent", "pCorrect_conflict"],...
+        ["pCorrect", "glm1_bias"],...
+        ["maxmeanAccuracy_congruent", "maxmeanAccuracy_conflict"]};
     for i = 1:numel(vars)
         figs = fig_longitudinal_performance(subjects,vars{i},params);
         save_multiplePlots(figs,saveDir);
