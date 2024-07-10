@@ -34,7 +34,7 @@ for f = string(fieldnames(diffCues))'
     %Store source data
     psychStruct.(f).diffCues = diffCues.(f);
 
-    %Logistic regression
+    %Logistic fit
     [~,~,stats] = glmfit(diffCues.(f), choiceMask', 'binomial', 'link', 'logit');
     L = max(psychStruct.(f).pRight);
     psychStruct.(f).curvefit = logistic(psychStruct.(f).bins,stats.beta(2),stats.beta(1),L);

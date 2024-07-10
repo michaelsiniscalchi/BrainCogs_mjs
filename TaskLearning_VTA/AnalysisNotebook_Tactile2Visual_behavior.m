@@ -1,4 +1,4 @@
-function AnalysisNotebook_Tactile2Visual_behavior(search_filter)
+function [matfiles, dirs, subjects] = AnalysisNotebook_Tactile2Visual_behavior(search_filter)
 
 if nargin<1
     search_filter = '';
@@ -61,7 +61,7 @@ if exe.reloadData
 
     %For testing
     %dirs = getDirStruct('mjs_tactile2visual'); 
-    %subjects = loadExperData("mjs20_26", dirs);
+    %subjects = loadExperData("mjs20_571", dirs);
 
     %Switch data source
     if dataSource.remoteLogData && ~dataSource.experimentData
@@ -135,8 +135,8 @@ if plots.longitudinal_performance
     params = struct('colors', colors, 'lineWidth', 1.5,...
         'markerSize', 6,'omitShaping','true');
     vars = {...
-        ["pCorrect_congruent", "pCorrect_conflict"],...
-        ["pCorrect", "glm1_bias"],...
+        ["pCorrect_congruent", "pCorrect_conflict"],... %for presentation
+        ["pCorrect_congruent", "pCorrect_conflict", "bias"],... %for assessing criterion
         ["maxmeanAccuracy_congruent", "maxmeanAccuracy_conflict"]};
     for i = 1:numel(vars)
         figs = fig_longitudinal_performance(subjects,vars{i},params);

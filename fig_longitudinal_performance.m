@@ -45,11 +45,14 @@ for i = 1:numel(subjects)
         'maxmeanAccuracy','maxmeanAccuracy_congruent','maxmeanAccuracy_conflict','bias'}));
     X = 1:numel(subjects(i).sessions);
     if allProportional
-        plot([0,X(end)+1],[0.5, 0.5],...
+        plot([0,X(end)+1],[0.5, 0.5; 0.2, 0.2; 0.7, 0.7],...
             ':k','LineWidth',1);
         %Overall mean for congruent & conflict plots
-        if isequal(vars,{'maxmeanAccuracy_congruent','maxmeanAccuracy_conflict'})
+        if ismember(vars,{'maxmeanAccuracy_congruent','maxmeanAccuracy_conflict'}) 
             p(3) = plot(X, [subjects(i).sessions.maxmeanAccuracy],...
+                'Color',[0.8,0.8,0.8],'LineWidth',3);
+        elseif any(ismember(vars,{'pCorrect_congruent','pCorrect_conflict'})) 
+            p(3) = plot(X, [subjects(i).sessions.pCorrect],...
                 'Color',[0.8,0.8,0.8],'LineWidth',3);
         end
     end

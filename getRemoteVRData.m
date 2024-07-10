@@ -409,7 +409,7 @@ for i = 1:numel(subjects)
             median_delay_bias = median(trialData(j).response_delay(fwdIdx & right))...
                 - median(trialData(j).response_delay(fwdIdx & left));
 
-            %Moving average correct rate
+            %Moving average correct rate (100 trial moving window)
             tempCorrect = double(correct(blockIdx==k) & ~exclude(blockIdx==k));
             tempCongruent = congruent(blockIdx==k) & ~exclude(blockIdx==k);
             hits = struct('all',tempCorrect,'congruent',tempCorrect,'conflict',tempCorrect);
@@ -434,7 +434,6 @@ for i = 1:numel(subjects)
         end
 
         %Psychometric curves & histogram of cue counts for whole session
-%         psychometric = struct('all',[],'congruent',[],'conflict',[]);
         cueHistogram = struct('puffs',[],'towers',[],'edges',[]);
 
         psychometric.all = getPsychometricCurve(trialData(j), trials(j));
