@@ -435,11 +435,13 @@ for i = 1:numel(subjects)
 
         %Psychometric curves & histogram of cue counts for whole session
         cueHistogram = struct('puffs',[],'towers',[],'edges',[]);
-
-        psychometric.all = getPsychometricCurve(trialData(j), trials(j));
+        nBins = 4; %bins per cueSide
+        psychometric.all = getPsychometricCurve(trialData(j), trials(j), ~trials(j).exclude, nBins);
         if any(trials(j).conflict) %Multimodal sessions
-            psychometric.congruent = getPsychometricCurve(trialData(j), trials(j), trials(j).congruent);
-            psychometric.conflict = getPsychometricCurve(trialData(j), trials(j), trials(j).conflict);
+            trialSubset = trials(j).congruent & ~trials(j).exclude;
+            psychometric.congruent = getPsychometricCurve(trialData(j), trials(j), trialSubset, nBins);
+            trialSubset = trials(j).conflict & ~trials(j).exclude;
+            psychometric.conflict = getPsychometricCurve(trialData(j), trials(j), trialSubset, nBins);
         end
 
         %Cue histogram

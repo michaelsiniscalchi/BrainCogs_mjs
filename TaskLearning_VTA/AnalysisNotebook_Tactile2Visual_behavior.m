@@ -59,14 +59,10 @@ if exe.reloadData
     %Restrict to specified subject(s)
     subjects = subjects(contains([subjects.ID], search_filter));
 
-    %For testing
-    %dirs = getDirStruct('mjs_tactile2visual'); 
-    %subjects = loadExperData("mjs20_571", dirs);
-
     %Switch data source
     if dataSource.remoteLogData && ~dataSource.experimentData
         setupDataJoint_mjs();
-%         subjects = getRemoteVRData( experiment, subjects, struct('session_date','2024-06-20') );
+%         subjects = getRemoteVRData( experiment, subjects, struct('session_date','2024-07-11') );
         subjects = getRemoteVRData( experiment, subjects);
         %Append Labels for Session Types
         % subjects = getSessionLabels_TaskLearning_VTA(subjects);
@@ -130,6 +126,8 @@ end
 %Plot Individual Longitudinal Performance
 if plots.longitudinal_performance
     %Full performance data for each subject
+    %FUTURE: write a function using contains() an split() to plot from arbitrary
+    %fields containing structs, eg ["glm1.sensitivity.puffs.left"]
     saveDir = fullfile(dirs.results,'Performance');
 
     params = struct('colors', colors, 'lineWidth', 1.5,...

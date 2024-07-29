@@ -1,4 +1,4 @@
-function subjects = analyzeTaskStrategy2(subjects)
+function subjects = analyzeTaskStrategy2(subjects, nBins_psychometric)
 
 for i = 1:numel(subjects)
     for j = 1:numel(subjects(i).sessions)
@@ -47,7 +47,7 @@ for i = 1:numel(subjects)
             );
         response = rightChoice;
 
-        subjects(i).sessions(j).glm1 = logisticStats(X, response, trials, trialData, exclIdx);
+        subjects(i).sessions(j).glm1 = logisticStats(X, response, trials, trialData, exclIdx, nBins_psychometric);
         b0 = subjects(i).sessions(j).glm1.bias.beta;
         subjects(i).sessions(j).glm1_bias = exp(b0)/(1+exp(b0)); %P = odds/(1+odds)
 
@@ -73,7 +73,7 @@ for i = 1:numel(subjects)
             );
        
         response = rightChoice;
-        subjects(i).sessions(j).glm2 = logisticStats(X, response, trials, trialData, exclIdx);
+        subjects(i).sessions(j).glm2 = logisticStats(X, response, trials, trialData, exclIdx, nBins_psychometric);
         b0 = subjects(i).sessions(j).glm2.bias.beta;
         subjects(i).sessions(j).glm2_bias = exp(b0)/(1+exp(b0)); %P = odds/(1+odds)
 
@@ -116,7 +116,7 @@ end
 
 %---------------------------------------------------------------------------------------------------
 
-function regStruct = logisticStats( X, response, trials, trialData, exclIdx )
+function regStruct = logisticStats( X, response, trials, trialData, exclIdx, nBins_psychometric)
 
 %% Regress
 
@@ -154,7 +154,7 @@ regStruct.predictedChoice   = mdl.Fitted.Response>0.5; %choose_R if P(choose_R)>
 
 %Psychometric curve based on model parameters
 trials.right(~exclIdx) = regStruct.predictedChoice; %Model/curve based on right-choice trials, omitted trials excluded within function
-regStruct.psychometric = getPsychometricCurve(trialData, trials, ~exclIdx);
+regStruct.psychometric = getPsychometricCurve(trialData, trials, ~exclIdx, nBins_psychometric);
 
 %Side-specific cue sensitivity (similar to "slope" in Garcia, Lak et al., bioRxiv 2023)
 regStruct.sensitivity.puffs = ...

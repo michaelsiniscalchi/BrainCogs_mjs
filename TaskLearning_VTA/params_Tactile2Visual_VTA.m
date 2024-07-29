@@ -9,8 +9,8 @@ end
 calculate.combined_data             = false;  %Combine relevant behavioral and imaging data in one MAT file ; truncate if necessary
 calculate.cellF                     = false; %Extract cellf and neuropilf from ROIs, excluding overlapping regions and extremes of the FOV
 calculate.dFF                       = false; %Calculate dF/F, with optional neuropil subtraction
-calculate.align_signals             = false; %Interpolate dF/F and align to behavioral events
-calculate.trial_average_dFF         = false; %dF/F averaged over specified subsets of trials
+calculate.align_signals             = true; %Interpolate dF/F and align to behavioral events
+calculate.trial_average_dFF         = true; %dF/F averaged over specified subsets of trials
 calculate.encoding_model            = false; %Encoding model
 
 
@@ -96,7 +96,7 @@ params.align.binWidth       = 10; %Spatial bins in cm
 % Trial averaging
 params.bootAvg.timeWindow       = params.align.timeWindow; %Also used for bootavg, etc.
 params.bootAvg.positionWindow   = params.align.positionWindow; %Also used for bootavg, etc.
-params.bootAvg.dsFactor         = 3; %Downsample from interpolated rate of 1/params.interdt
+params.bootAvg.dsFactor         = 1; %Downsample from interpolated rate of 1/params.interdt
 params.bootAvg.nReps            = 1000; %Number of bootstrap replicates
 params.bootAvg.CI               = 90; %Confidence interval as decimal
 params.bootAvg.subtractBaseline = false;

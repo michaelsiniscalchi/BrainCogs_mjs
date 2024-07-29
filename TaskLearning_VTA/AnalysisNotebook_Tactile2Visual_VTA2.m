@@ -31,7 +31,7 @@ plots = struct(...
     'trial_duration',                   false,...
     'longitudinal_performance',         false,...
     'longitudinal_glm',                 false,...
-    'glm1',                                     true,...
+    'session_summary',                  true,...
     'group_performance',                false);
 
 %Subject info
@@ -59,7 +59,7 @@ if exe.reloadData
     %Switch data source
     if dataSource.remoteLogData && ~dataSource.experimentData
         setupDataJoint_mjs();
-        subjects = getRemoteVRData( experiment, subjects );
+        subjects = getRemoteVRData( experiment, subjects, struct('session_date','2023-07-31') );
         %Append Labels for Session Types
         % subjects = getSessionLabels_TaskLearning_VTA(subjects);
         %Exclude warmup trials from correct rate for Main Mazes
@@ -81,11 +81,6 @@ if exe.reloadData
     end
 end
 
- %Save experimental data to matfiles by subject
-if exe.updateExperData && ~dataSource.experimentData
-    fnames = updateExperData(subjects,dirs);
-end
-
 %Save Stats for View-Angle and X-Trajectories
 if exe.motor_trajectory
     trajectories = getTrajectoryDist(subjects);
@@ -95,6 +90,13 @@ end
 if exe.model_strategy
     subjects = analyzeTaskStrategy(subjects);
 end
+
+%Save experimental data to matfiles by subject
+if exe.updateExperData && ~dataSource.experimentData
+    fnames = updateExperData(subjects,dirs);
+end
+
+%--- Plots for Basic Behavior Analysis --------------------------
 
 %Get Colors for Plotting
 colors = setPlotColors(experiment);
@@ -137,13 +139,14 @@ if plots.longitudinal_performance
     end
 end
 
-if plots.session_glm
-    saveDir = fullfile(dirs.results,'GLM_TowerSide_PuffSide_priorChoice');
-    vars = {'towers','puffs','priorChoice','bias'};
-    figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
-    save_multiplePlots(figs,saveDir);
+if plots.session_summary
+    saveDir = fullfile(dirs.results,'session-summary');
+    for i = 1:numel(subjects)
+        subject = loadExperData(subjects(i).ID, dirs);
+        figs = fig_session_summary( subject, 'glm1', colors );
+        save_multiplePlots(figs,saveDir);
+    end
 end
-
 
 if plots.longitudinal_glm
     saveDir = fullfile(dirs.results,'GLM_TowerSide_PuffSide');

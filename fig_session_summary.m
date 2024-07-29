@@ -36,6 +36,7 @@ for i = 1:numel(subject.sessions)
 
 %--- Histogram, Towers: nCues_right - nCues_left
     ax(2)=nexttile;
+    title("Towers");
     X = S(i).cueHistogram.edges;
     Y = S(i).cueHistogram.towers;
     histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','k'); hold on 
@@ -47,6 +48,7 @@ for i = 1:numel(subject.sessions)
     
     %--- Histogram, Puffs: nCues_right - nCues_left
     ax(3)=nexttile;
+    title("Air Puffs");
     Y = S(i).cueHistogram.puffs;
     histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','k'); hold on
     Y = S(i).cueHistogram.omit.puffs;
@@ -77,14 +79,14 @@ for i = 1:numel(subject.sessions)
                     rmfield(S(i).psychometric,["congruent","conflict"]); %Replace congruent/incongruent with Data/Model
             end
         end
-    [~,lgd] = plotPsychometric(S(i).psychometric, "towers", colors, "Towers"); %p = plotPsychometric(psychStruct, cueName, colors, title_str)
+    [~,lgd] = plotPsychometric(S(i).psychometric, "towers", colors, ""); %p = plotPsychometric(psychStruct, cueName, colors, title_str)
     lgd.Visible='off';
     end
     
     %--- Psychometric curves for Air Puffs -- all/congruent/conflict trials
     ax(6) = nexttile;
     if ~isempty(S(i).psychometric)
-        [~,lgd] = plotPsychometric(S(i).psychometric, "puffs", colors, "Air Puffs");
+        [~,lgd] = plotPsychometric(S(i).psychometric, "puffs", colors, "");
         lgd.Location="eastoutside";
     end
 

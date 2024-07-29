@@ -21,7 +21,7 @@ function aligned = alignCellFluo( cells, eventTimes, params )
 % Get nearest time index for each event time
 dFF = cell2mat(cells.dFF');
 t = cells.t; %Abbreviate
-dt = mean(diff(t),'omitnan');%Use mean dt
+dt = mean(diff(t),'omitnan'); %Use mean dt
 rel_idx = round(params.timeWindow(1)/dt) : round(params.timeWindow(end)/dt); %In number of samples
 
 events = fieldnames(eventTimes);

@@ -92,9 +92,9 @@ for i = 1:numel(subjects)
         end
 
         %Recalculate kinematic quantities (recalculate median values)
-        trialMask = trials.forward & ~trials.omit;
-        S.median_velocity = median(trialData.mean_velocity(trialMask,2)); %Median Y-velocity across all completed trials
-        S.median_pSkid = median(trialData.pSkid(trialMask)); %Median proportion of maze where mouse skidded along walls
+        forwardMask = trials.forward & ~trials.omit;
+        S.median_velocity = median(trialData.mean_velocity(forwardMask,2)); %Median Y-velocity across all completed trials
+        S.median_pSkid = median(trialData.pSkid(forwardMask)); %Median proportion of maze where mouse skidded along walls
         S.median_stuckTime = median(trialData.stuck_time,'omitnan'); %Median proportion of time spent stuck as result of friction
 
         %Perceptual bias
@@ -124,9 +124,9 @@ for i = 1:numel(subjects)
         S.maxmeanAccuracy_conflict = maxmeanAccuracy.conflict;
 
         %Moving average perceptual bias
-        hits = struct('leftCue',NaN(1, sum(~trials.exclude)),'rightCue',NaN(1, sum(~trials.exclude)));
+        hits = struct('leftCue',NaN(1, sum(forwardMask)),'rightCue',NaN(1, sum(forwardMask)));
         for f = ["left","right","leftCues","rightCues"]
-            mask.(f) = trials.(f)(~trials.exclude); %Temporary masks
+            mask.(f) = trials.(f)(forwardMask); %Temporary masks
         end
         hits.leftCue(mask.leftCues) = mask.left(mask.leftCues);
         hits.rightCue(mask.rightCues) = mask.right(mask.rightCues);
@@ -136,12 +136,12 @@ for i = 1:numel(subjects)
         
         if S.pLeftCues
             %Psychometric
-            S.psychometric.all = getPsychometricCurve(trialData, trials); %All trials
+            S.psychometric.all = getPsychometricCurve(trialData, trials, forwardMask, 4); %All trials
             if any(trials.conflict) %Congruent and conflict trials separately
                 S.psychometric.congruent =...
-                    getPsychometricCurve(trialData, trials, trials.congruent);
+                    getPsychometricCurve(trialData, trials, trials.congruent & forwardMask, 4);
                 S.psychometric.conflict =...
-                    getPsychometricCurve(trialData, trials, trials.conflict);
+                    getPsychometricCurve(trialData, trials, trials.conflict & forwardMask, 4);
             end
 
             %Cue histogram
