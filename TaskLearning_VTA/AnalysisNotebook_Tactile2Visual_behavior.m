@@ -92,7 +92,8 @@ if exe.motor_trajectory
 end
 
 if exe.model_strategy
-    subjects = analyzeTaskStrategy2(subjects);
+    nBins_psychometric = 4;
+    subjects = analyzeTaskStrategy2(subjects, nBins_psychometric);
 end
 
 %Save experimental data to matfiles by subject

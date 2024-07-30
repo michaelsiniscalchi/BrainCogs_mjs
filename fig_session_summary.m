@@ -36,24 +36,25 @@ for i = 1:numel(subject.sessions)
 
 %--- Histogram, Towers: nCues_right - nCues_left
     ax(2)=nexttile;
-    title("Towers");
     X = S(i).cueHistogram.edges;
     Y = S(i).cueHistogram.towers;
     histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','k'); hold on 
     Y = S(i).cueHistogram.omit.towers;
     histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','w'); hold on
+    
+    title("Towers");
     xlabel("nRightCues-nLeftCues");
     ylabel("Number of trials");
     axis square;
     
     %--- Histogram, Puffs: nCues_right - nCues_left
     ax(3)=nexttile;
-    title("Air Puffs");
     Y = S(i).cueHistogram.puffs;
     histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','k'); hold on
     Y = S(i).cueHistogram.omit.puffs;
     histogram('BinEdges',X,'BinCounts',Y,'EdgeColor','k','FaceColor','w');
     
+    title("Air Puffs");
     xlabel("nRightCues-nLeftCues");
     ylabel("Number of trials");
     legend(["all","omissions"],"Location","eastoutside");
