@@ -69,25 +69,26 @@ for i = 1:numel(subject.sessions)
 
     %--- Psychometric curves for Towers -- all/congruent/conflict trials
     ax(5)=nexttile;
-    if ~isempty(S(i).psychometric) 
+    if ~isempty(S(i).psychometric)
         if ~isempty(S(i).(glmName).psychometric)
             S(i).psychometric.model = S(i).(glmName).psychometric;
             S(i).psychometric.data = S(i).psychometric.all; %Rename field for all (congruent|conflict) to "data"
             S(i).psychometric =...
-                    rmfield(S(i).psychometric,"all"); %Rename field for all (congruent|conflict) to "data"
-            if isfield(S(i).psychometric,["congruent","conflict"])
+                rmfield(S(i).psychometric,"all"); %Rename field for all (congruent|conflict) to "data"
+            %Remove special fields for congruent & conflict trials
+            if any(isfield(S(i).psychometric,["congruent","conflict"]))
                 S(i).psychometric =...
                     rmfield(S(i).psychometric,["congruent","conflict"]); %Replace congruent/incongruent with Data/Model
             end
         end
-    [~,lgd] = plotPsychometric(S(i).psychometric, "towers", colors, ""); %p = plotPsychometric(psychStruct, cueName, colors, title_str)
+    lgd = plotPsychometric(S(i).psychometric, "towers", colors, ""); %p = plotPsychometric(psychStruct, cueName, colors, title_str)
     lgd.Visible='off';
     end
     
     %--- Psychometric curves for Air Puffs -- all/congruent/conflict trials
     ax(6) = nexttile;
     if ~isempty(S(i).psychometric)
-        [~,lgd] = plotPsychometric(S(i).psychometric, "puffs", colors, "");
+        lgd = plotPsychometric(S(i).psychometric, "puffs", colors, "");
         lgd.Location="eastoutside";
     end
 

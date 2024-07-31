@@ -1,9 +1,11 @@
 % For testing
-dirs = getDirStruct('mjs_tactile2visual');
-subjects = loadExperData("mjs20_572", dirs);
 
-subIdx = subjects.ID=="mjs20_572";
-sessionIdx = [subjects(subIdx).sessions.session_date]==datetime('16-Jul-2024');
+subjectID = "mjs20_22";
+dirs = getDirStruct('mjs_tactile2visual');
+subjects = loadExperData(subjectID, dirs);
+
+subIdx = subjects.ID==subjectID;
+sessionIdx = [subjects(subIdx).sessions.session_date]==datetime('10-Aug-2023');
 S = subjects(subIdx);
 
 sessions = S.sessions(sessionIdx);

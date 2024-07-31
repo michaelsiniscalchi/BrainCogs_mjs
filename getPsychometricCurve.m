@@ -27,7 +27,7 @@ for f = string(fieldnames(diffCues))'
         'edges', [], 'curvefit', []);
     
     %Handle forced choice, etc
-    if isempty(diffCues.(f)) || sum(diffCues.(f))==0
+    if isempty(diffCues.(f)) || all(diffCues.(f)==0)
         continue
     end
 
