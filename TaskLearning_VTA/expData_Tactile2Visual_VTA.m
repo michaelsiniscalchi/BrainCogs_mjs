@@ -243,6 +243,12 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
+expData(i).sub_dir = '240701-m571-maze7'; 
+expData(i).subjectID = "mjs20_571";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
 % 230929-m103-maze7
 
 % 230922-m105-maze7

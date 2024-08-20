@@ -1,4 +1,4 @@
-%% align2Event()
+%% align2Position()
 %
 % PURPOSE: To align cellular fluorescence to a specified behavioral/physiological
 %               event repeated within an imaging session.
@@ -9,10 +9,10 @@
 %           struct 'cells', containing fields 'dFF' and 't'.
 %
 % OUTPUTS:
-%           struct 'aligned, containing fields:
+%           'aligned, struct containing fields:
 %                   -'(params.trigTimes).dFF', a cell array (nCells x 1) containing aligned
 %                       cellular fluorescence as a matrix (nTriggers x nTimepoints).
-%                   -'t', a vector representing time relative to the specified event.
+%           'position', a vector representing time relative to the specified event.
 %
 %--------------------------------------------------------------------------
 
