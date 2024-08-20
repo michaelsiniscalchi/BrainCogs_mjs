@@ -9,10 +9,9 @@ end
 calculate.combined_data             = false;  %Combine relevant behavioral and imaging data in one MAT file ; truncate if necessary
 calculate.cellF                     = false; %Extract cellf and neuropilf from ROIs, excluding overlapping regions and extremes of the FOV
 calculate.dFF                       = false; %Calculate dF/F, with optional neuropil subtraction
-calculate.align_signals             = true; %Interpolate dF/F and align to behavioral events
-calculate.trial_average_dFF         = true; %dF/F averaged over specified subsets of trials
-calculate.encoding_model            = false; %Encoding model
-
+calculate.align_signals             = false; %Interpolate dF/F and align to behavioral events
+calculate.trial_average_dFF         = false; %dF/F averaged over specified subsets of trials
+calculate.encoding_model            = true; %Encoding model
 
 
 %% SUMMARIZE RESULTS
@@ -84,6 +83,9 @@ mat_file.figData.fovProj        = fullfile(dirs.figures,'FOV mean projections','
 
 %% HYPERPARAMETERS FOR ANALYSIS
 
+% Behavior
+params.behavior.nBins_psychometric = 4;
+
 % Cellular fluorescence calculations
 params.fluo.exclBorderWidth     = 10; %For calc_cellF: n-pixel border of FOV to be excluded from analysis
 
@@ -101,6 +103,9 @@ params.bootAvg.nReps            = 1000; %Number of bootstrap replicates
 params.bootAvg.CI               = 90; %Confidence interval as decimal
 params.bootAvg.subtractBaseline = false;
 params.bootAvg   = specBootAvgParams(params.bootAvg); %params.bootAvg.trigger(1:3) = "start","firstcue","outcome", etc...
+
+% Encoding model
+params.encoding.dsFactor         = 1; %Downsample from interpolated rate of 1/params.interdt
 
 % ------- Single-unit decoding -------
 % params.decode.decode_type     = ...
