@@ -61,7 +61,7 @@ if calculate.combined_data
         stackInfo = load(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'));
         subject.ID = expData(i).subjectID;
         key.session_date = datestr(stackInfo.startTime,'yyyy-mm-dd');
-        if isfield(expData,'session_number') && ~isempty(expData.session_number)
+        if isfield(expData,'session_number') && ~isempty([expData.session_number])
             key.session_number = expData.session_number;
         end
         %Extract basic behavioral data
@@ -70,7 +70,7 @@ if calculate.combined_data
         behavior = restrictImgTrials(behavior, expData(i).mainMaze, expData(i).excludeBlock);
         behavior = filterSessionStats(behavior);
         %Logistic regression
-        behavior = analyzeTaskStrategy2(behavior);
+        behavior = analyzeTaskStrategy2(behavior, params.behavior.nBins_psychometric);
 
         %Synchronize imaging frames with behavioral time basis
         stackInfo = syncImagingBehavior(stackInfo, behavior);
@@ -150,11 +150,11 @@ if calculate.fluorescence
             clearvars trialDFF trials cellID bootAvg
         end
 
-        % Decode choice, outcome, and rule from single-units
+        % Encoding model
         if calculate.encoding_model
-            load(mat_file.img_beh(i),'trialDFF','trials');
-            decode = calc_selectivity(trialDFF,trials,params.decode);
-            save(mat_file.results(i),'decode','-append');
+            img_beh = load(mat_file.img_beh(i),'dFF','t','cellID','trialData','trials','logs');
+            encodingMdl = encodingModel(img_beh, params.encoding);
+            save(mat_file.results(i),'encodingMdl','-append');
         end
 
     end
