@@ -236,16 +236,33 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
+% %M570
+
+
 %M571
 expData(i).sub_dir = '240528-m571-maze7'; 
 expData(i).subjectID = "mjs20_571";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
-
 expData(i).sub_dir = '240701-m571-maze7'; 
 expData(i).subjectID = "mjs20_571";
 expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '240807-m571-maze8'; 
+expData(i).subjectID = "mjs20_571";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '240814-m571-maze8'; 
+expData(i).subjectID = "mjs20_571";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '240816-m571-maze9'; 
+expData(i).subjectID = "mjs20_571";
+expData(i).mainMaze = 9;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 

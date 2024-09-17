@@ -11,7 +11,7 @@ calculate.cellF                     = false; %Extract cellf and neuropilf from R
 calculate.dFF                       = false; %Calculate dF/F, with optional neuropil subtraction
 calculate.align_signals             = false; %Interpolate dF/F and align to behavioral events
 calculate.trial_average_dFF         = false; %dF/F averaged over specified subsets of trials
-calculate.encoding_model            = true; %Encoding model
+calculate.encoding_model            = false; %Encoding model
 
 
 %% SUMMARIZE RESULTS
