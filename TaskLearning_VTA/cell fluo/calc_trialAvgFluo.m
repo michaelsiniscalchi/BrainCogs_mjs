@@ -53,8 +53,10 @@ for i = 1:numel(trial_dff)
         trialMask = getMask(trials, trialSpec{k}); %Logical mask for specified combination of trials
         if any(trialMask)
             dff = trial_dff{i}(trialMask, :);
-        else
+        elseif isfield(bootAvg,'t')
             dff = nan(size(bootAvg.t));
+        else
+            dff = nan(size(bootAvg.position));
         end
         disp(strjoin([subset_label ', ' num2str(sum(trialMask)) ' trials.'],''));
         
