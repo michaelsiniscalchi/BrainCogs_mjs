@@ -243,7 +243,7 @@ i = i+1;
 expData(i).sub_dir = '240528-m571-maze7'; 
 expData(i).subjectID = "mjs20_571";
 expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.7;
+expData(i).npCorrFactor = 0.3;
 i = i+1;
 expData(i).sub_dir = '240701-m571-maze7'; 
 expData(i).subjectID = "mjs20_571";
@@ -265,6 +265,40 @@ expData(i).subjectID = "mjs20_571";
 expData(i).mainMaze = 9;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+
+%M32
+expData(i).sub_dir = '240821-m32-maze7'; 
+expData(i).subjectID = "mjs20_32";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '240827-m32-maze7'; 
+expData(i).subjectID = "mjs20_32";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '240904-m32-maze7'; 
+expData(i).subjectID = "mjs20_32";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '240906-m32-maze7'; 
+expData(i).subjectID = "mjs20_32";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '240913-m32-maze7'; 
+expData(i).subjectID = "mjs20_32";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '240917-m32-maze7'; 
+expData(i).subjectID = "mjs20_32";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
+
 
 % 230929-m103-maze7
 

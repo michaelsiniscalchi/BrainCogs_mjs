@@ -88,15 +88,15 @@ ax(i).lineStyle     = {'-'};
 ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
 
-ax(i).title         = "Time";
-ax(i).comparison    = "time";
-ax(i).trigger       = "cueEntry";
-ax(i).trialType     = ["forward"];
-ax(i).window        = [-1, 5];
-ax(i).color         = {colors.data}; %Choice: left/hit/sound vs right/hit/sound
-ax(i).lineStyle     = {'-'};
-ax(i).xLabel        = 'Time from cue entry (s)';  % XLabel
-i=i+1;
+% ax(i).title         = "Time";
+% ax(i).comparison    = "time";
+% ax(i).trigger       = "cueEntry";
+% ax(i).trialType     = ["forward"];
+% ax(i).window        = [-1, 5];
+% ax(i).color         = {colors.data}; %Choice: left/hit/sound vs right/hit/sound
+% ax(i).lineStyle     = {'-'};
+% ax(i).xLabel        = 'Time from cue entry (s)';  % XLabel
+% i=i+1;
 
 ax(i).title         = 'Rewarded';
 ax(i).comparison    = "prior-outcome";
