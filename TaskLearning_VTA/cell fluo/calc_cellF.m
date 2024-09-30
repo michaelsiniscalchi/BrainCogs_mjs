@@ -83,13 +83,19 @@ parfor i = 1:nStacks
     npF{i} = npfi;
 end
 
+%Concatenate data cells from individual stacks
+% cells.cellF = mat2cell(cell2mat(cellF), ones(1,numel(roi)), sum(nFrames));
+% cells.npF = mat2cell(cell2mat(npF), ones(1,numel(roi)), sum(nFrames));
+cellF = cell2mat(cellF); %nNeurons x nFrames
+npF  = cell2mat(npF);
+%Truncate to match image time vector, t 
+t = expData.img_beh.t;
+cellF = cellF(:, 1:numel(t));
+npF = npF(:, 1:numel(t));
 %Store in structure
-cellF = mat2cell(cell2mat(cellF), ones(1,numel(roi)), sum(nFrames));
-npF = mat2cell(cell2mat(npF), ones(1,numel(roi)), sum(nFrames));
-
-cells.t = expData.img_beh.t;
-cells.cellF = cellF(1:numel(cells.t)); %May need truncation if final frames had no I2C data
-cells.npF = npF(1:numel(cells.t));
+cells.t = t; %time vector 
+cells.cellF = mat2cell(cellF, ones(1,numel(roi)), numel(t)); %cellular fluorescence, 1 x nTimepoints, one cell per neuron
+cells.npF = mat2cell(npF, ones(1,numel(roi)), numel(t)); %neuropil fluorescence, same format
 cells.cellMask = roi;
 cells.npMask = npMask;
 
