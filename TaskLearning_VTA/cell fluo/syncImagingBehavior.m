@@ -10,6 +10,9 @@ for i = 1:numel(vrTime)
     trialIdx = stackInfo.I2C.trialIdx(i);
     iter = stackInfo.I2C.iteration(i);
     vrTime(i) = getTrialIterationTime( behavior.logs, blockIdx, trialIdx, iter );
+    if isnan(vrTime(i))
+    disp();
+    end
 end
 
 %Method 2: gives slightly different values (on order of 10e-4 s)
@@ -29,11 +32,7 @@ stackInfo.t = zeros(sum(stackInfo.nFrames),1); %Iterpolated ViRMEn time for each
 %Assign mean value of multiple timestamps per frame figure; plot(vrTime==vrTime2);
 for i = 1:numel(frameNum)
     frIdx = stackInfo.I2C.frameNumber==frameNum(i);
-    if sum(frIdx)==1
-        meanTime(i) = vrTime(frIdx); %Assign from single packet sent during frame
-    else
         meanTime(i) = mean(vrTime(frIdx)); %Assign using mean time value from multiple packets
-    end
 end
 
 % %Diagnostic plot 1
@@ -45,25 +44,26 @@ end
 
 %Remove timestamps preceeded by missing values
 %   Rationale: Each timestamp contains an error equal to the duration of the associated iteration;
-%       accordingly, "long" iterations > 1 frame in duration are unreliable for sychronization 
+%       accordingly, "long" iterations > 1 frame in duration are unreliable for sychronization
 missing = ~ismember(1:sum(stackInfo.nFrames),frameNum); %Idxs of frames missing I2C data
-missing(end) = 0; %Assign last frame as end of run in case session ends with missing frames 
-firstMissIdx = find(diff([0,missing])==1); %First frame in each run of missing I2C data
+missing(end) = 0; %Assign last frame as end of run in case session ends with missing frames
 priorMissIdx = find(diff([0,missing])==-1); %First frame following each run of missing data
-nMissing = priorMissIdx - firstMissIdx; %Number of frames in each run
 exclIdx = ismember(frameNum,priorMissIdx); %Idx for time values to exclude
-frameNum = frameNum(~exclIdx); 
-meanTime = meanTime(~exclIdx); 
+frameNum = frameNum(~exclIdx);
+meanTime = meanTime(~exclIdx);
 
 % %Diagnostic plot 2
 % nanTime = NaN(sum(stackInfo.nFrames),1);
 % nanTime(frameNum) = meanTime;
-% figure; plot(1:length(nanTime),nanTime,'.'); 
+% figure; plot(1:length(nanTime),nanTime,'.');
 % ylabel('Time (s)');
 % xlabel('Frame number');
 
 %Interpolate missing time values
-stackInfo.t = interp1(frameNum, meanTime, frameNum(1):frameNum(1)+sum(stackInfo.nFrames)-1)';
+% stackInfo.t = interp1(frameNum, meanTime, frameNum(1):frameNum(1)+sum(stackInfo.nFrames)-1);
+stackInfo.t = interp1(frameNum, meanTime, frameNum(1):frameNum(end),...
+    'linear')'; %Truncate to avoid extrapolation
+
 
 % %Troubleshooting plot 3
 % missing(priorMissIdx) = true;
@@ -73,9 +73,9 @@ stackInfo.t = interp1(frameNum, meanTime, frameNum(1):frameNum(1)+sum(stackInfo.
 % legend({'VR Time','Missing Data'})
 
 % --- Notes --------------------
-%  [stackInfo.I2C.frameNumber(1:20) stackInfo.I2C.iteration(1:20)] 
+%  [stackInfo.I2C.frameNumber(1:20) stackInfo.I2C.iteration(1:20)]
 %       -often, multiple iterations per frame...with ViRMEn running @100-120Hz, there should be ~3-4
-%       -also, many gaps where no I2C data are sent: 
+%       -also, many gaps where no I2C data are sent:
 %           K>> unique(diff(frameNum))'
 %           ans =
 %               1     2     3     4    13    14    15    16    22    23    41
@@ -90,7 +90,7 @@ stackInfo.t = interp1(frameNum, meanTime, frameNum(1):frameNum(1)+sum(stackInfo.
 %     virmenTime(i) = trial(i).start + trial(i).time(iter);
 %     endTime(i) = trial(i).start + trial(i).time(end);
 % end
-% figure; scatter(virmenTime,endTime); hold on; 
+% figure; scatter(virmenTime,endTime); hold on;
 % plot([endTime(1),endTime(end)],[endTime(1),endTime(end)]);
 % xlabel('ViRMEn time (s)');
 % ylabel('End time (s)');

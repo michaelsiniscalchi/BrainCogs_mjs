@@ -84,9 +84,12 @@ parfor i = 1:nStacks
 end
 
 %Store in structure
-cells.cellF = mat2cell(cell2mat(cellF), ones(1,numel(roi)), sum(nFrames));
-cells.npF = mat2cell(cell2mat(npF), ones(1,numel(roi)), sum(nFrames));
+cellF = mat2cell(cell2mat(cellF), ones(1,numel(roi)), sum(nFrames));
+npF = mat2cell(cell2mat(npF), ones(1,numel(roi)), sum(nFrames));
+
 cells.t = expData.img_beh.t;
+cells.cellF = cellF(1:numel(cells.t)); %May need truncation if final frames had no I2C data
+cells.npF = npF(1:numel(cells.t));
 cells.cellMask = roi;
 cells.npMask = npMask;
 
