@@ -32,8 +32,8 @@ figures.session_summary                 = false;
 figures.FOV_mean_projection             = false;
 figures.timeseries                      = false; %Plot all timeseries for each session
 % Combined
-figures.trial_average_dFF               = false;  %Overlay traces for distinct choices, outcomes, and rules (CO&R)
-figures.encoding_model                  = false;  %Stimulus kernel estimates
+figures.trial_average_dFF               = true;  %Overlay traces for distinct choices, outcomes, and rules (CO&R)
+figures.encoding_model                  = true;  %Stimulus kernel estimates
 figures.heatmap_modulation_idx          = false;  %Heatmap of selectivity idxs for COR for each session
 % Summary
 figures.summary_behavior                = false;    %Summary of descriptive stats, eg, nTrials and {trials2crit, pErr, oErr} for each rule
