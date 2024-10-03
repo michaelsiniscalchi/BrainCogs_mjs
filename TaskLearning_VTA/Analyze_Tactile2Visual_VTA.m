@@ -154,7 +154,7 @@ if calculate.fluorescence
         if calculate.encoding_model
             img_beh = load(mat_file.img_beh(i),'dFF','t','cellID','trialData','trials','logs');
             encodingMdl = encodingModel(img_beh, params.encoding);
-            save(mat_file.results(i),'encodingMdl','-append');
+            save(mat_file.results(i),'-struct','encodingMdl','-append');
         end
 
     end

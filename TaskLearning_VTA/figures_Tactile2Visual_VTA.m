@@ -99,23 +99,19 @@ if figures.trial_average_dFF
     end
 end
 
-if figures.time_average_dFF
-    expIdx = restrictExpIdx({expData.sub_dir},params.figs.timeAvg.expIDs); %Restrict to specific sessions, if desired 
-    cellIDs = restrictCellIDs(expIdx,params.figs.timeAvg.cellIDs); %Cell array of subsets 
-    for i = expIdx
+% Plot encoding model results
+if figures.encoding_model
+    for i = 1:numel(expData)
         %Load data
-        load(mat_file.results(i),'bootAvg');
-        %Get specified subset of cells
-        cellIdx = getCellSubset(mat_file.img_beh(i),cellIDs{expIdx==i});
-        save_dir = fullfile(dirs.figures,'Cellular fluorescence');   %Figures directory: single units
+        glm = load(mat_file.results(i),'session','cellID','kernel','t');
+        save_dir = fullfile(dirs.figures,'Encoding model', expData(i).sub_dir);   %Figures directory: single units
         create_dirs(save_dir); %Create dir for these figures
-        
-        %Save figure for each cell plotting all combinations of choice x outcome
-        fig = plot_timeAvgDFF(bootAvg, cellIdx,...
-            expData(i).sub_dir, expData(i).cellType, params.figs.timeAvg);
-        save_multiplePlots(fig,save_dir,'pdf'); %save as FIG, PNG & PDF
-        clearvars fig
-     end
+        for j = 1:numel(params.figs.encoding.panels)
+            figs = plot_eventKernel(glm, params.figs.encoding.panels(j));
+            save_multiplePlots(figs, save_dir); %save as FIG and PNG
+        end
+        clearvars figs
+    end
 end
 
 % Heatmap of selectivity traces: one figure each for choice, outcome, and rule

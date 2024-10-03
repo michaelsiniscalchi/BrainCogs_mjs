@@ -32,8 +32,8 @@ figures.session_summary                 = false;
 figures.FOV_mean_projection             = false;
 figures.timeseries                      = false; %Plot all timeseries for each session
 % Combined
-figures.trial_average_dFF               = true;  %Overlay traces for distinct choices, outcomes, and rules (CO&R)
-figures.time_average_dFF                = false;  %Overlay traces for distinct choices, outcomes, and rules (CO&R)
+figures.trial_average_dFF               = false;  %Overlay traces for distinct choices, outcomes, and rules (CO&R)
+figures.encoding_model                  = false;  %Stimulus kernel estimates
 figures.heatmap_modulation_idx          = false;  %Heatmap of selectivity idxs for COR for each session
 % Summary
 figures.summary_behavior                = false;    %Summary of descriptive stats, eg, nTrials and {trials2crit, pErr, oErr} for each rule
@@ -139,20 +139,7 @@ c = [zeros(256,1) linspace(0,1,256)' zeros(256,1)];
 params.figs.fovProj.colormap        = c;
 params.figs.fovProj.overlay_ROIs    = true; %Overlay outlines of ROIs
 params.figs.fovProj.overlay_npMasks = false; %Overlay outlines of neuropil masks
-% params.figs.fovProj.expIDs          = [];
-% params.figs.fovProj.expIDs = {...
-%     '220404 M411 T7 1Chan';...
-%     };
-% 
-% % For plotting only selected cells
-% % params.figs.fovProj.cellIDs{numel(expData)} = []; %Initialize
-% params.figs.fovProj.cellIDs(restrictExpIdx({expData.sub_dir},params.figs.fovProj.expIDs)) = {... % One {} per session, containing cellIDs
-%     {'001','002','003','004'};...
-%     };
 
-% %% FIGURE: RAW BEHAVIOR
-% params.figs.behavior.window = params.behavior.timeWindow; 
-% params.figs.behavior.colors = struct('red',cbrew.red,'blue',cbrew.blue,'green',cbrew.green);
 
 %% FIGURE: CELLULAR FLUORESCENCE TIMESERIES FOR ALL NEURONS
 p = params.figs.all; %Global figure settings: colors structure, etc.
@@ -180,17 +167,9 @@ p.panels = specBootAvgPanels( params.figs );
 params.figs.bootAvg = p;
 clearvars p
 
-%% FIGURE: TIME-AVERAGED CELLULAR FLUORESCENCE (CO-PLOT SPECIFIED CELLS)
+%% FIGURE: Single-unit encoding model
 
-% -------Trial Averaging: All trials performed-------------------------------------------------
-params.figs.timeAvg = params.figs.timeseries;
-%params.figs.timeAvg.expIDs              = [];
-params.figs.timeAvg.cellIDs             = [];
-params.figs.timeAvg.colors              = colors; %Choice: left/hit/sound vs right/hit/sound
-params.figs.timeAvg.verboseLegend       = false;
-params.figs.timeAvg.panels              = [];
-params.figs.timeAvg.panels.title        = 'All Trials Performed';
-params.figs.timeAvg.panels.lineStyle    = {'-'};
+params.figs.encoding.panels = specEncodingPanels( params.figs );
 
 %% FIGURE: MODULATION INDEX: CHOICE, OUTCOME, AND RULE
 

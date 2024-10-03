@@ -28,12 +28,12 @@ bootParams(i).trialSpec = {...
     ["rightPuffs","left"]};
 i = i+1;
 
-%All trials aligned to cueEntry
-bootParams(i).trigger = "cueEntry";
-bootParams(i).subtractBaseline = true;
-bootParams(i).trialSpec = {...
-    "forward"};
-i = i+1;
+%All trials aligned to cueEntry (Time)
+% bootParams(i).trigger = "cueEntry";
+% bootParams(i).subtractBaseline = true;
+% bootParams(i).trialSpec = {...
+%     "forward"};
+% i = i+1;
 
 %Aligned to y-position, no baseline subtraction
 bootParams(i).trigger = "cueRegion";
@@ -126,6 +126,13 @@ bootParams(i).trialSpec = {...
     ["leftTowers","right"],...
     ["rightTowers","right"],...
     ["rightTowers","left"]};
+i = i+1;
+
+bootParams(i).trigger = "start";
+bootParams(i).subtractBaseline = true;
+bootParams(i).trialSpec = {...
+    ["forward"],...
+};
 i = i+1;
 
 %Append general params

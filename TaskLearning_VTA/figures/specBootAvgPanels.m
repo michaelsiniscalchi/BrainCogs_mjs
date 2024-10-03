@@ -155,6 +155,26 @@ ax(i).lineStyle     = {'-',':'};
 ax(i).xLabel        = 'Time from outcome (s)';  % XLabel
 i=i+1;
 
+ax(i).title         = 'Outcome';
+ax(i).comparison    = "reward-noReward";
+ax(i).trigger       = "outcome";
+ax(i).trialType     = ["correct", "error"];
+ax(i).window        = [-1, 5];
+ax(i).color         = {colors.correct,colors.err}; %Outcome: hit/priorHit vs err/priorHit
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from outcome (s)';  % XLabel
+i=i+1;
+
+ax(i).title         = 'Time';
+ax(i).comparison    = "start";
+ax(i).trigger       = "start";
+ax(i).trialType     = "forward";
+ax(i).window        = [-1, 5];
+ax(i).color         = {colors.data}; %Outcome: hit/priorHit vs err/priorHit
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from outcome (s)';  % XLabel
+i=i+1;
+
 ax(i).title      = 'First Puff';
 ax(i).comparison   = 'first-puff';
 ax(i).trigger   = "firstPuff";
