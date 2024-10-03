@@ -172,7 +172,7 @@ ax(i).trialType     = "forward";
 ax(i).window        = [-1, 5];
 ax(i).color         = {colors.data}; %Outcome: hit/priorHit vs err/priorHit
 ax(i).lineStyle     = {'-','-'};
-ax(i).xLabel        = 'Time from outcome (s)';  % XLabel
+ax(i).xLabel        = 'Time from start (s)';  % XLabel
 i=i+1;
 
 ax(i).title      = 'First Puff';
