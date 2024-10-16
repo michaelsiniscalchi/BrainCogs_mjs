@@ -8,12 +8,6 @@ eventTimes = trialData.eventTimes;
 
 dt = mean(diff(t),'omitnan'); %Use mean dt
 
-%---FOR DEVO-----------------------------------------------------------
-params.bSpline_nSamples = 60; %N time points for spline basis set
-params.bSpline_degree = 3; %degree of each (Bernstein polynomial) term
-params.bSpline_df = 7; %number of terms:= order + N internal knots
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %-------Predictor matrix and indices-------------------------------------------------
 
 init.bin = false(size(img_beh.t));
@@ -22,10 +16,10 @@ init.event = NaN(size(img_beh.t,1), params.bSpline_df); %Matrix size nSamples x 
 init.cell = repmat({NaN},size(eventTimes));
 
 %***Put this in getVRData()***--------------------------------------------
-[eventTimes(:).reward] = init.cell{:};
-[eventTimes(:).noReward] = init.cell{:};
+%Append outcome-specific events
 [eventTimes(trials.correct).reward] = eventTimes(trials.correct).outcome;
 [eventTimes(trials.error).noReward] = eventTimes(trials.error).outcome;
+
 %---------------------------------------------------------------------------
 
 %Time, Position, Velocity, Acceleration, Heading
@@ -38,60 +32,76 @@ predictors.acceleration = cat(1,NaN,diff(predictors.velocity)); %restrict to Y-v
 %Trial epoch (start, cue, turn, outcome)?
 
 %Event Times as binary index (~impulse function)
-eventNames = ["start","leftTowers","rightTowers",...
-    "leftPuffs","rightPuffs","reward","noReward"];
+eventNames = ["start",...
+    "leftTowers","rightTowers","firstTower",...
+    "leftPuffs","rightPuffs","firstPuff",...
+    "reward","noReward"];
 for i = 1:numel(eventNames)
     impulse.(eventNames(i)) = init.bin; %initialize as false
     tempTimes = [eventTimes.(eventNames(i))]; %Aggregate all events within & across trials
-    tempTimes = tempTimes(tempTimes>t(1)); %Restrict to events following first image frame
+    tempTimes = tempTimes(tempTimes>t(1) & tempTimes<t(end)); %Restrict to events within time range of imaging data
     %Index samples in 't' corresponding to event times
     idx = NaN(numel(tempTimes),1);
     parfor j = 1:numel(tempTimes)
-        idx(j) = sum(t < tempTimes(j)) + 1; %First frame after event
+        idx(j) = sum(t < tempTimes(j)); %First frame after event
     end
     impulse.(eventNames{i})(idx) = true;
 end
 clearvars idx;
 
-%Events convolved with spline basis set
-bSpline = makeBSpline(params.bSpline_degree, params.bSpline_df, params.bSpline_nSamples);
-for i = 1:numel(eventNames)
-    %Initialize predictor, one column per spline basis function
-    predictors.(eventNames(i)) = ...
-        NaN(length(impulse.(eventNames(i))) + length(bSpline)-1, params.bSpline_df); %Length of convolve =  nTimepoints + nTimepoints in basis function minus 1
-    %Convolve impulse function with each spline basis function
-    for j = 1:params.bSpline_df
-        predictors.(eventNames(i))(:,j) =...
-            conv(impulse.(eventNames(i)), bSpline(:,j));
+%Separately consider first and subsequent cues
+for cue = {'Tower','Puff'}
+    firstCueType = ['first', cue{:}];
+    for side = {'left', 'right'}
+        cueType = [side{:},cue{:},'s'];                
+        firstSideCueType = ['first',upper(side{:}(1)),side{:}(2:end),cue{:}];
+        impulse.(firstSideCueType) = impulse.(cueType) & impulse.(firstCueType); %eg, impulse.firstRightPuff
+        impulse.(cueType) = impulse.(cueType) & ~impulse.(firstCueType); %exclude first cue from unordered cue predictor
     end
-    %Truncate to numel(t)
-    predictors.(eventNames(i)) = predictors.(eventNames(i))(1:numel(t),:);
+    impulse = rmfield(impulse, firstCueType); %Remove extraneous firstCue event
 end
 
-%Restrict to forward trials
-exclIdx = ismember(predictors.trialIdx, find(~trials.forward));
-for f = string(fieldnames(predictors))'
-    predictors.(f)(exclIdx,:) = NaN;
+%Events convolved with spline basis set
+bSpline = makeBSpline(params.bSpline_degree, params.bSpline_df, params.bSpline_nSamples);
+for event = string(fieldnames(impulse))'
+    %Initialize predictor, one column per spline basis function
+    predictors.(event) = ...
+        NaN(length(impulse.(event)) + length(bSpline)-1, params.bSpline_df); %Length of convolve =  nTimepoints + nTimepoints in basis function minus 1
+    %Convolve impulse function with each spline basis function
+    for j = 1:params.bSpline_df
+        predictors.(event)(:,j) =...
+            conv(impulse.(event), bSpline(:,j));
+    end
+    %Truncate to numel(t)
+    predictors.(event) = predictors.(event)(1:numel(t),:);
 end
 
 %-------Multiple Linear Regression Model------------------------------------------------
 
 %Create Table of Regressors
-fields = [eventNames,"viewAngle","position","velocity","acceleration"];
+eventNames = string(fieldnames(impulse))';
+pNames = [eventNames,"viewAngle","position","velocity","acceleration"];
 X = [];
-[varNames, tempNames] = deal(string([]));
+varNames = string([]);
 
-for f = fields
-    nTerms = size(predictors.(f), 2);
-    tempNames = f;
+%Restrict all predictors to forward trials
+exclIdx = ismember(predictors.trialIdx, find(~trials.forward));
+for P = pNames
+    predictors.(P)(exclIdx,:) = NaN;
+end
+
+%Name components of regression splines by number
+for P = pNames
+    nTerms = size(predictors.(P), 2);
+    tempNames = P; %Initialize as predictor name, no numeric suffix
     if nTerms>1
-        for i = 1:nTerms
-            tempNames(i) = strjoin([f, num2str(i)],'');
+        for i = 1:nTerms %Append term index for b-spline or higher order predictor (moments, etc.)  
+            tempNames(i) = strjoin([P, num2str(i)],'');
         end
     end
-    varNames = [varNames, tempNames];
-    idx.(f) = 1 + size(X,2) + (1:nTerms); %1st term for intercept
-    X = [X, predictors.(f)];
+    varNames = [varNames, tempNames]; %#ok<AGROW> 
+    idx.(P) = 1 + size(X,2) + (1:nTerms); %1st term reserved for intercept
+    X = [X, predictors.(P)]; %#ok<AGROW> 
 end
 
 %Z-score the predictor matrix
@@ -103,23 +113,20 @@ for i = 1:numel(img_beh.dFF)
     glm.model{i} = mdl;
 
     %Estimate response kernels for each event-related predictor
-%     mdl.Coefficients.Estimate
-%     mdl.Coefficients.SE
-%     a = mdl.Fitted.Response;
-%     glm.cells(i)
 for varName = eventNames
-    if size(predictors.(varName),2) > 1
         estimate = bSpline*mdl.Coefficients.Estimate(idx.(varName)); %(approx. resp func) = bSpline * Beta
         se = bSpline*mdl.Coefficients.SE(idx.(varName)); 
         se = estimate + [1,-1].*se; %Express as estimate +/- se
         glm.kernel(i).(varName).estimate = estimate'; %transpose for plotting
-        glm.kernel(i).(varName).se = se'; %transpose for plotting
-    end
+        glm.kernel(i).(varName).se = se'; %transpose for plotting  
+        glm.kernel(i).(varName).t = 0:dt:dt*(size(bSpline,1)-1);
 end
+
+%Predict full time series from model
+glm.predictedDFF{i,:} = mdl.Fitted.Response;
 
 end
 
 %Metadata
+glm.eventNames = eventNames;
 glm.bSpline = bSpline;
-glm.t = 0:dt:dt*(size(bSpline,1)-1);
-

@@ -143,27 +143,47 @@ if calculate.fluorescence
             %Save results
             session = expData(i).sub_dir; %Before running fresh, Stick these lines in <<if ~exist... >>
             subject = expData(i).subjectID;
-            if ~exist(mat_file.results(i),'file')
-                save(mat_file.results(i),'subject','session','cellID','bootAvg'); %Save
-            else, save(mat_file.results(i),'subject','session','cellID','bootAvg','-append');
+            if ~exist(mat_file.results.cellFluo(i),'file')
+                save(mat_file.results.cellFluo(i),'subject','session','cellID','bootAvg'); %Save
+            else, save(mat_file.results.cellFluo(i),'subject','session','cellID','bootAvg','-append');
             end
             clearvars trialDFF trials cellID bootAvg
         end
 
         % Encoding model
         if calculate.encoding_model
-            img_beh = load(mat_file.img_beh(i),'dFF','t','cellID','trialData','trials','logs');
+            img_beh = load(mat_file.img_beh(i),'dFF','t','cellID','trialData','trials');
             encodingMdl = encodingModel(img_beh, params.encoding);
-            save(mat_file.results(i),'-struct','encodingMdl','-append');
+            
+            %Align model-predicted dFF 
+            cells = struct('dFF', {encodingMdl.predictedDFF}, 't', img_beh.t);
+            encodingMdl.trialDFF = alignCellFluo(cells, img_beh.trialData.eventTimes, params.align);
+            [encodingMdl.trialDFF.cueRegion, encodingMdl.trialDFF.position] = ...
+                alignFluoByPosition(cells, img_beh.trialData, params.align);
+
+            %Trial-averaged model prediction
+            for j = 1:numel(params.bootAvg) %For each trigger event
+                if ~isfield(encodingMdl,'bootAvg') || ~isfield(encodingMdl.bootAvg, params.bootAvg(j).trigger)
+                    encodingMdl.bootAvg.(params.bootAvg(j).trigger) = struct();
+                end
+                encodingMdl.bootAvg.(params.bootAvg(j).trigger) = ...
+                    calc_trialAvgFluo(encodingMdl.trialDFF, img_beh.trials,...
+                    params.bootAvg(j), encodingMdl.bootAvg.(params.bootAvg(j).trigger)); %Include var bootAvg if multiple params.bootAvg use the same trigger (eg, w/o baseline subtraction)
+            end
+
+            %Get metadata from cellular fluorescence file
+            metadata = load(mat_file.results.cellFluo(i), 'cellID', 'session');
+            encodingMdl.cellID = metadata.cellID;
+            encodingMdl.session = metadata.session;
+
+            %Save results
+                save(mat_file.results.encoding(i),...
+                     '-struct', 'encodingMdl','-append');          
         end
 
     end
     close(f);
     disp(['Total time needed for cellular fluorescence analyses: ' num2str(toc) 'sec.']);
-    %05 hrs for cellF
-    %29 hrs for dF/F for all sessions
-    %XX hrs for new ROC analysis
-
 end
 
 %% SUMMARY

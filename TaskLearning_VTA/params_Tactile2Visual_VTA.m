@@ -11,7 +11,7 @@ calculate.cellF                     = false; %Extract cellf and neuropilf from R
 calculate.dFF                       = false; %Calculate dF/F, with optional neuropil subtraction
 calculate.align_signals             = false; %Interpolate dF/F and align to behavioral events
 calculate.trial_average_dFF         = false; %dF/F averaged over specified subsets of trials
-calculate.encoding_model            = false; %Encoding model
+calculate.encoding_model            = true; %Encoding model
 
 
 %% SUMMARIZE RESULTS
@@ -32,8 +32,8 @@ figures.session_summary                 = false;
 figures.FOV_mean_projection             = false;
 figures.timeseries                      = false; %Plot all timeseries for each session
 % Combined
-figures.trial_average_dFF               = true;  %Overlay traces for distinct choices, outcomes, and rules (CO&R)
-figures.encoding_model                  = true;  %Stimulus kernel estimates
+figures.trial_average_dFF               = false;  %Overlay traces for distinct choices, outcomes, and rules (CO&R)
+figures.encoding_model                  = true;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
 figures.heatmap_modulation_idx          = false;  %Heatmap of selectivity idxs for COR for each session
 % Summary
 figures.summary_behavior                = false;    %Summary of descriptive stats, eg, nTrials and {trials2crit, pErr, oErr} for each rule
@@ -68,9 +68,10 @@ end
 
 %% PATHS TO SAVED DATA
 %By experiment
-mat_file.stack_info     = @(idx) fullfile(dirs.data,expData(idx).sub_dir,'stack_info.mat');
-mat_file.img_beh        = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'img_beh.mat');
-mat_file.results        = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'results.mat');
+mat_file.stack_info         = @(idx) fullfile(dirs.data,expData(idx).sub_dir,'stack_info.mat');
+mat_file.img_beh            = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'img_beh.mat');
+mat_file.results.cellFluo   = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'results.mat');
+mat_file.results.encoding   = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'encoding.mat');
 %Aggregated
 mat_file.summary.behavior       = fullfile(dirs.summary,'behavior.mat');
 mat_file.summary.imaging        = fullfile(dirs.summary,'imaging.mat');
@@ -105,7 +106,10 @@ params.bootAvg.subtractBaseline = false;
 params.bootAvg   = specBootAvgParams(params.bootAvg); %params.bootAvg.trigger(1:3) = "start","firstcue","outcome", etc...
 
 % Encoding model
-params.encoding.dsFactor         = 1; %Downsample from interpolated rate of 1/params.interdt
+params.encoding.dsFactor            = 1; %Downsample from interpolated rate of 1/params.interdt
+params.encoding.bSpline_nSamples    = 120; %N time points for spline basis set
+params.encoding.bSpline_degree      = 3; %degree of each (Bernstein polynomial) term
+params.encoding.bSpline_df          = 7; %number of terms:= order + N internal knots
 
 % ------- Single-unit decoding -------
 % params.decode.decode_type     = ...

@@ -41,10 +41,10 @@ if figures.FOV_mean_projection
     save_dir = fullfile(dirs.figures,'FOV mean projections');   %Figures directory: cellular fluorescence
     create_dirs(save_dir); %Create dir for these figures
     expIdx = restrictExpIdx({expData.sub_dir},params.figs.fovProj.expIDs); %Restrict to specific sessions, if desired
-    
+
     % Calculate or re-calculate mean projection from substacks
     figData = getFigData(dirs,expData,expIdx,mat_file,'FOV_mean_projections',params);
-          
+
     % Generate figures: mean projection with optional ROI and/or neuropil masks
     figs = gobjects(numel(expIdx),1); %Initialize figures
     for i = 1:numel(expIdx)
@@ -59,16 +59,16 @@ end
 
 % Plot all timeseries from each experiment
 if figures.timeseries
-    %Initialize graphics array and create directories 
-    expIdx = restrictExpIdx({expData.sub_dir},params.figs.timeseries.expIDs); %Restrict to specific sessions, if desired 
+    %Initialize graphics array and create directories
+    expIdx = restrictExpIdx({expData.sub_dir},params.figs.timeseries.expIDs); %Restrict to specific sessions, if desired
     save_dir = fullfile(dirs.figures,'Cellular fluorescence');   %Figures directory: cellular fluorescence
-    create_dirs(save_dir); %Create dir for these figures 
+    create_dirs(save_dir); %Create dir for these figures
     figs = gobjects(numel(expIdx),1); %Initialize figures
     %Generate figures
     for i = 1:numel(expIdx)
         imgBeh = load(mat_file.img_beh(expIdx(i)),'dFF','t','trials','trialData','cellID'); %Load data
         imgBeh.sessionID = expData(i).sub_dir;
-%         params.figs.timeseries.cellIDs = ["001","005","006","008"];
+        %         params.figs.timeseries.cellIDs = ["001","005","006","008"];
         figs(i) = fig_plotAllTimeseries(imgBeh,params.figs.timeseries);         %Generate fig
     end
     %Save batch as FIG, PNG, and SVG
@@ -82,12 +82,12 @@ end
 if figures.trial_average_dFF
     for i = 1:numel(expData)
         %Load data
-        load(mat_file.results(i),'bootAvg','cellID');
+        load(mat_file.results.cellFluo(i),'bootAvg','cellID');
         save_dir = fullfile(dirs.figures,'Cellular fluorescence', expData(i).sub_dir);   %Figures directory: single units
         create_dirs(save_dir); %Create dir for these figures
         %Save figure for each cell plotting all combinations of choice x outcome
         comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
-        
+
         for j = 1:numel(comparisons)
             panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
             event = [params.figs.bootAvg.panels(panelIdx(1)).trigger];
@@ -103,14 +103,27 @@ end
 if figures.encoding_model
     for i = 1:numel(expData)
         %Load data
-        glm = load(mat_file.results(i),'session','cellID','kernel','t');
-        save_dir = fullfile(dirs.figures,'Encoding model', expData(i).sub_dir);   %Figures directory: single units
+        glm = load(mat_file.results.encoding(i));
+        save_dir = fullfile(dirs.figures,'Encoding model', 'Response kernels', expData(i).sub_dir);   %Figures directory: single units
         create_dirs(save_dir); %Create dir for these figures
         for j = 1:numel(params.figs.encoding.panels)
             figs = plot_eventKernel(glm, params.figs.encoding.panels(j));
             save_multiplePlots(figs, save_dir); %save as FIG and PNG
         end
+        %         figs = plot_coefficientValues(glm, params.figs.encoding.panels(j));
+        %         save_multiplePlots(figs, save_dir); %save as FIG and PNG
+        %         clearvars figs
+        save_dir = fullfile(dirs.figures,'Encoding model', 'Predicted dFF', expData(i).sub_dir);
+        comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
+        for j = 1:numel(comparisons)
+            panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
+            event = [params.figs.bootAvg.panels(panelIdx(1)).trigger];
+            figs = plot_trialAvgDFF(glm.bootAvg.(event), glm.cellID, glm.session,...
+                params.figs.bootAvg.panels(panelIdx));
+            save_multiplePlots(figs, save_dir); %save as FIG and PNG
+        end
         clearvars figs
+
     end
 end
 
@@ -128,15 +141,15 @@ end
 % Histogram of trial-wise selectivity: one figure per session
 if figures.summary_selectivity_histogram
     %Figures directory: selectivity
-    save_dir = fullfile(dirs.figures,'Selectivity');   
+    save_dir = fullfile(dirs.figures,'Selectivity');
     %Load data
     S = load(mat_file.summary.selectivity);
     for rule = ["sensory","alternation"]
         for field = ["meanSelectivity","meanPreference"]
-        figs = histogram_summaryPreference(S.(rule), field,... histogram_summaryPreference(selectivity_struct, field, figName, params)
-            join([field  rule "histogram"],'-'), ["all", "last"], params.summary.trialAvg); 
-        save_multiplePlots(figs,save_dir); %save as FIG and PNG
-        clearvars figs;
+            figs = histogram_summaryPreference(S.(rule), field,... histogram_summaryPreference(selectivity_struct, field, figName, params)
+                join([field  rule "histogram"],'-'), ["all", "last"], params.summary.trialAvg);
+            save_multiplePlots(figs,save_dir); %save as FIG and PNG
+            clearvars figs;
         end
     end
 end
