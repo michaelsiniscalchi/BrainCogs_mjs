@@ -36,11 +36,8 @@ for i = 1:numel(cellIdx)
     disp(['Plotting event kernels for ' num2str(i) '/' num2str(numel(cellIdx)) '...']);
     for j = 1:numel(panels)
         varName = panels(j).varName;
-        panels(j).x = glm.t;
-
         for k = 1:numel(varName)
-            
-
+     
             if ~isfield(glm.kernel, varName(k))
                 panels(j).signal{k} = NaN(size(panels(j).x));
                 panels(j).CI{k} = NaN(2,size(panels(j).x,2));
@@ -52,6 +49,7 @@ for i = 1:numel(cellIdx)
                 strjoin([varName(k), "response"]); %Leading trial specifier, all others should generally be fixed
 
             %Signal and confidence bounds
+            panels(j).x = glm.kernel(i).(varName(k)).t;
             panels(j).signal{k} = glm.kernel(i).(varName(k)).estimate;
             panels(j).CI{k} = glm.kernel(i).(varName(k)).se;
         
