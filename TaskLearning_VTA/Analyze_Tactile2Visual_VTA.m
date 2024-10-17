@@ -178,7 +178,7 @@ if calculate.fluorescence
 
             %Save results
                 save(mat_file.results.encoding(i),...
-                     '-struct', 'encodingMdl','-append');          
+                     '-struct', 'encodingMdl');          
         end
 
     end
