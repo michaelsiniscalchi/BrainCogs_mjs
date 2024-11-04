@@ -18,7 +18,7 @@ nPanels=numel(panels);  %Number of panels
 
 fig = figure;
 ax = gobjects(nPanels,1);
-tiledlayout(1,nPanels);
+tiledlayout(1, nPanels);
 shadeAlpha = 0.2; %Transparency value for error shading
 for i = 1:nPanels
     nSignals = numel(panels(i).signal);

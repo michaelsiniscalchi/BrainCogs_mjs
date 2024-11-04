@@ -18,7 +18,7 @@ cellIdx = 1:numel(glm.cellID);
 
 % Initialize figures
 figs = gobjects(numel(cellIdx),1); %Initialize
-fig_pos = [100,400,450,300]; %LBWH
+fig_pos = [100,400,1000,800]; %LBWH
 legend_loc = 'bestoutside';
 if numel(panels)>1
     fig_pos = [100,400,300*(numel(panels)),300]; %LBWH
@@ -31,6 +31,8 @@ end
 
 for i = 1:numel(cellIdx)
 
+% isempty(varName(k))
+
     % Assign specified signals to each structure in the array 'panels'
     idx = cellIdx(i); %Index in 'cells' structure for cell with corresponding cell ID
     disp(['Plotting event kernels for ' num2str(i) '/' num2str(numel(cellIdx)) '...']);
@@ -38,9 +40,9 @@ for i = 1:numel(cellIdx)
         varName = panels(j).varName;
         for k = 1:numel(varName)
      
-            if ~isfield(glm.kernel, varName(k))
-                panels(j).signal{k} = NaN(size(panels(j).x));
-                panels(j).CI{k} = NaN(2,size(panels(j).x,2));
+            if ~isfield(glm.kernel, varName(k)) || isempty(varName(k))
+                panels(j).signal{k} = NaN();
+                panels(j).CI{k} = NaN();
                 continue;
             end
 
@@ -53,6 +55,7 @@ for i = 1:numel(cellIdx)
             panels(j).signal{k} = glm.kernel(i).(varName(k)).estimate;
             panels(j).CI{k} = glm.kernel(i).(varName(k)).se;
         
+            panels(j).color = panels(j).color(end);
         end
 
         %Labels

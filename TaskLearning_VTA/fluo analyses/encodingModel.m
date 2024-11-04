@@ -12,14 +12,16 @@ dt = mean(diff(t),'omitnan'); %Use mean dt
 
 init.bin = false(size(img_beh.t));
 init.num = NaN(size(img_beh.t));
+init.choice = zeros(size(img_beh.t));
 init.event = NaN(size(img_beh.t,1), params.bSpline_df); %Matrix size nSamples x nSplineBases
 init.cell = repmat({NaN},size(eventTimes));
 
 %***Put this in getVRData()***--------------------------------------------
-%Append outcome-specific events
+%Append choice and outcome-specific events
+[eventTimes(trials.left).leftChoice] = eventTimes(trials.left).turnEntry;
+[eventTimes(trials.right).rightChoice] = eventTimes(trials.right).turnEntry;
 [eventTimes(trials.correct).reward] = eventTimes(trials.correct).outcome;
 [eventTimes(trials.error).noReward] = eventTimes(trials.error).outcome;
-
 %---------------------------------------------------------------------------
 
 %Time, Position, Velocity, Acceleration, Heading
@@ -29,13 +31,25 @@ predictors.position = predictors.position(:,2); %restrict to Y-position
 predictors.velocity = predictors.velocity(:,2); %restrict to Y-velocity
 predictors.acceleration = cat(1,NaN,diff(predictors.velocity)); %restrict to Y-velocity
 
-%Trial epoch (start, cue, turn, outcome)?
+%Trialwise predictors
+%Choice, prior choice, accuracy
+predictors.accuracy = init.bin;
+predictors.accuracy(ismember(predictors.trialIdx, find(trials.correct))) = true; %Image frames from correct trials
+
+predictors.priorOutcome = init.bin;
+predictors.priorOutcome(ismember(predictors.trialIdx, find(trials.priorCorrect))) = true; %Image frames from correct trials
+
+predictors.priorChoice = init.choice;
+predictors.priorChoice(ismember(predictors.trialIdx, find(trials.priorLeft))) = -1; %Frames from prior-left choice trials
+predictors.priorChoice(ismember(predictors.trialIdx, find(trials.priorRight))) = 1; %Prior right
 
 %Event Times as binary index (~impulse function)
 eventNames = ["start",...
     "leftTowers","rightTowers","firstTower",...
-    "leftPuffs","rightPuffs","firstPuff",...
+    "leftPuffs","rightPuffs","firstPuff",... 
+    "leftChoice","rightChoice",...
     "reward","noReward"];
+
 for i = 1:numel(eventNames)
     impulse.(eventNames(i)) = init.bin; %initialize as false
     tempTimes = [eventTimes.(eventNames(i))]; %Aggregate all events within & across trials

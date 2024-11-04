@@ -36,11 +36,11 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-expData(i).sub_dir = '230922-m105-simulation'; 
-expData(i).subjectID = "mjs20_105";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
+% expData(i).sub_dir = '230922-m105-simulation'; 
+% expData(i).subjectID = "mjs20_105";
+% expData(i).mainMaze = 7;
+% expData(i).npCorrFactor = 0.3;
+% i = i+1;
 
 expData(i).sub_dir = '231004-m105-maze7'; 
 expData(i).subjectID = "mjs20_105";

@@ -12,8 +12,8 @@ t = encoding.kernel(1).start.t;
 %Colors
 colors = getFigColors();
 colors.start = colors.purple;
-[colors.leftTowers, colors.leftPuffs] = deal(colors.left);
-[colors.rightTowers, colors.rightPuffs] = deal(colors.right);
+[colors.leftTowers, colors.leftPuffs, colors.firstLeftTower, colors.firstLeftPuff] = deal(colors.left);
+[colors.rightTowers, colors.rightPuffs, colors.firstRightTower, colors.firstRightPuff] = deal(colors.right);
 colors.reward = colors.correct;
 colors.noReward = colors.err;
 %Plotting params
@@ -30,7 +30,7 @@ for i = 1:numel(encoding.kernel)
     %Response kernels
     figs(i) = figure('Name',['cell',encoding.cellID{i}],'Position',[0,0,1400,700]);
     
-    T = tiledlayout(2,4,'TileSpacing','compact');
+    T = tiledlayout(3,4,'TileSpacing','compact');
     for j = 1:numel(kernelNames)
         nexttile();
         
