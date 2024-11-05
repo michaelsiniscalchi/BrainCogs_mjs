@@ -192,7 +192,7 @@ ax(i).trialType     = ["left", "right"];
 ax(i).window        = [-1, 5];
 ax(i).color         = {colors.left,colors.right};
 ax(i).lineStyle     = {'-','-'};
-ax(i).xLabel        = 'Time from start (s)';  % XLabel
+ax(i).xLabel        = 'Time from turn (s)';  % XLabel
 i=i+1;
 
 ax(i).title      = 'First Puff';
