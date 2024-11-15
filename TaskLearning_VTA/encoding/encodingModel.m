@@ -143,4 +143,5 @@ end
 
 %Metadata
 glm.eventNames = eventNames;
+glm.impulse = impulse;
 glm.bSpline = bSpline;

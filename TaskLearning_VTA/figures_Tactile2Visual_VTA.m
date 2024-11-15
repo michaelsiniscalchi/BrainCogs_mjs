@@ -31,6 +31,10 @@ if figures.session_summary
         subject = load(mat_file.img_beh(i), 'ID', 'sessions', 'trialData', 'trials'); %Leave out logs
         figs = fig_session_summary( subject, 'glm2', colors );
         save_multiplePlots(figs,saveDir);
+
+         %GLM1 towers_puffs_bias
+        figs = fig_session_summary( subject, 'glm1', colors );
+        save_multiplePlots(figs, saveDir);
     end
 end
 

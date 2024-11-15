@@ -43,9 +43,15 @@ for i = 1:numel(subjects)
         X = struct(...
             'bias', ones(size(rightTowers)),... %Need field, but column of ones not used for glmfit(); used previously with fitglm()
             'towers', effectCode(rightTowers),... %Cueside(n)
-            'puffs', effectCode(rightPuffs)...
+            'puffs', effectCode(rightPuffs),...
+            'priorChoice', effectCode(rightPriorChoice)...
             );
         response = rightChoice;
+
+        %**If history terms are included**
+        if isfield(X,'priorChoice')
+            exclIdx = exclIdx | priorExclIdx;
+        end
 
         subjects(i).sessions(j).glm1 = logisticStats(X, response, trials, trialData, exclIdx, nBins_psychometric);
         b0 = subjects(i).sessions(j).glm1.bias.beta;
@@ -69,9 +75,15 @@ for i = 1:numel(subjects)
             'nTowersLeft', normCode(nTowersLeft),...
             'nTowersRight', normCode(nTowersRight),...
             'nPuffsLeft', normCode(nPuffsLeft),...
-            'nPuffsRight', normCode(nPuffsRight)...
+            'nPuffsRight', normCode(nPuffsRight),...
+            'priorChoice', rightPriorChoice...
             );
        
+        %**If history terms are included**
+        if isfield(X,'priorChoice')
+            exclIdx = exclIdx | priorExclIdx;
+        end
+        
         response = rightChoice;
         subjects(i).sessions(j).glm2 = logisticStats(X, response, trials, trialData, exclIdx, nBins_psychometric);
         b0 = subjects(i).sessions(j).glm2.bias.beta;
@@ -162,6 +174,8 @@ regStruct.sensitivity.puffs = ...
 regStruct.sensitivity.towers = calcSensitivity(regStruct.bias.beta, response, trials.rightTowers(~exclIdx)');
 
 %Additional outputs
+regStruct.R2                = mdl.Rsquared.Ordinary;
+regStruct.R2_adj            = mdl.Rsquared.AdjGeneralized;
 regStruct.N                 = numel(response);
 regStruct.R_predictors      = corrcoef(predictors,'Rows','pairwise');
 regStruct.conditionNum      = condNum;
