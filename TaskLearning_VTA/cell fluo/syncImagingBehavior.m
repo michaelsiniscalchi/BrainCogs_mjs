@@ -15,19 +15,11 @@ for i = 1:numel(vrTime)
     end
 end
 
-%Method 2: gives slightly different values (on order of 10e-4 s)
-% sessionTimeMat = get_trial_iteration_time_matrix(behavior.logs); %Session time matrix from U19 Pipeline; Columns are Time, Block, Trial, Iteration
-% for i = 1:numel(vrTime)
-%     vrTimeMask = ... %Seems very time-consuming
-%         all(sessionTimeMat(:,2:4) == [blockIdx trialIdx iter], 2);
-%     vrTime(i) = sessionTimeMat(vrTimeMask, 1);
-% end
-
 %% Assign one timestamp to each frame
 %Initialize
 frameNum = unique(stackInfo.I2C.frameNumber); %Unique frame numbers
 meanTime = zeros(size(frameNum)); %ViRMEn time
-stackInfo.t = zeros(sum(stackInfo.nFrames),1); %Iterpolated ViRMEn time for each frame in stack
+% stackInfo.t = zeros(sum(stackInfo.nFrames),1); %Iterpolated ViRMEn time for each frame in stack
 
 %Assign mean value of multiple timestamps per frame figure; plot(vrTime==vrTime2);
 for i = 1:numel(frameNum)
@@ -46,18 +38,12 @@ end
 %   Rationale: Each timestamp contains an error equal to the duration of the associated iteration;
 %       accordingly, "long" iterations > 1 frame in duration are unreliable for sychronization
 missing = ~ismember(1:sum(stackInfo.nFrames),frameNum); %Idxs of frames missing I2C data
-missing(end) = 0; %Assign last frame as end of run in case session ends with missing frames
-priorMissIdx = find(diff([0,missing])==-1); %First frame following each run of missing data
-exclIdx = ismember(frameNum,priorMissIdx); %Idx for time values to exclude
+% missing(end) = 0; %Assign last frame as end of run in case session ends with missing frames
+priorMissIdx = diff([0,missing])==-1; %First frame following each run of missing data; inaccurate timing info from long virmen iterations
+droppedIdx = frameNum>sum(stackInfo.nFrames); %frameNumber from ImageDescription in last file of session sometimes exceeds actual frame number
+exclIdx = ismember(frameNum, find(priorMissIdx || droppedIdx)); %Idx for time values to exclude
 frameNum = frameNum(~exclIdx);
 meanTime = meanTime(~exclIdx);
-
-% %Diagnostic plot 2
-% nanTime = NaN(sum(stackInfo.nFrames),1);
-% nanTime(frameNum) = meanTime;
-% figure; plot(1:length(nanTime),nanTime,'.');
-% ylabel('Time (s)');
-% xlabel('Frame number');
 
 %Interpolate missing time values
 stackInfo.t = interp1(frameNum, meanTime, frameNum(1):frameNum(end),...
