@@ -38,10 +38,9 @@ end
 %   Rationale: Each timestamp contains an error equal to the duration of the associated iteration;
 %       accordingly, "long" iterations > 1 frame in duration are unreliable for sychronization
 missing = ~ismember(1:sum(stackInfo.nFrames),frameNum); %Idxs of frames missing I2C data
-% missing(end) = 0; %Assign last frame as end of run in case session ends with missing frames
-priorMissIdx = diff([0,missing])==-1; %First frame following each run of missing data; inaccurate timing info from long virmen iterations
-droppedIdx = frameNum>sum(stackInfo.nFrames); %frameNumber from ImageDescription in last file of session sometimes exceeds actual frame number
-exclIdx = ismember(frameNum, find(priorMissIdx || droppedIdx)); %Idx for time values to exclude
+priorMissIdx = find(diff([0,missing])==-1); %First frame following each run of missing data; inaccurate timing info from long virmen iterations
+droppedIdx = frameNum > sum(stackInfo.nFrames); %frameNumber from ImageDescription in last file of session sometimes exceeds actual frame number
+exclIdx = ismember(frameNum, priorMissIdx) | droppedIdx; %Idx for time values to exclude
 frameNum = frameNum(~exclIdx);
 meanTime = meanTime(~exclIdx);
 
