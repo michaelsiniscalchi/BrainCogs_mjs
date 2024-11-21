@@ -44,10 +44,9 @@ end
 if figures.FOV_mean_projection
     save_dir = fullfile(dirs.figures,'FOV mean projections');   %Figures directory: cellular fluorescence
     create_dirs(save_dir); %Create dir for these figures
-    expIdx = restrictExpIdx({expData.sub_dir},params.figs.fovProj.expIDs); %Restrict to specific sessions, if desired
-
+    
     % Calculate or re-calculate mean projection from substacks
-    figData = getFigData(dirs,expData,expIdx,mat_file,'FOV_mean_projections',params);
+    figData = getFigData(dirs, expData, mat_file,'FOV_mean_projections',params);
 
     % Generate figures: mean projection with optional ROI and/or neuropil masks
     figs = gobjects(numel(expIdx),1); %Initialize figures

@@ -335,14 +335,3 @@ expData(i).subjectID = "mjs20_32";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
-
-
-
-% 230929-m103-maze7
-
-% 230922-m105-maze7
-% 231004-m105-maze7
-% 231006-m105-maze7
-% 231009-m105-maze8
-% 231017-m105-maze8
-% 231101-m105-maze8
