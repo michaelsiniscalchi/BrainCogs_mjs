@@ -6,6 +6,7 @@ if nargin<3
 end
 
 %% CALCULATE OR RE-CALCULATE RESULTS
+% calculate.behavior                  = true;
 calculate.combined_data             = false;  %Combine relevant behavioral and imaging data in one MAT file ; truncate if necessary
 calculate.cellF                     = false; %Extract cellf and neuropilf from ROIs, excluding overlapping regions and extremes of the FOV
 calculate.dFF                       = false; %Calculate dF/F, with optional neuropil subtraction
@@ -80,7 +81,7 @@ mat_file.summary.selectivity    = fullfile(dirs.summary,'selectivity.mat');
 mat_file.stats                  = fullfile(dirs.summary,'summary_stats.mat');
 mat_file.validation             = fullfile(dirs.summary,'validation.mat');
 %Figure Data
-mat_file.figData.fovProj        = fullfile(dirs.figures,'FOV mean projections','figData.mat'); %Directory created in code block for figure
+mat_file.figData.fovProj        = @(sessionID) fullfile(dirs.figures,'FOV mean projections',['figData-',sessionID,'.mat']); %Directory created in code block for figure
 
 %% HYPERPARAMETERS FOR ANALYSIS
 
@@ -111,23 +112,6 @@ params.encoding.bSpline_nSamples    = 150; %N time points for spline basis set
 params.encoding.bSpline_degree      = 3; %degree of each (Bernstein polynomial) term
 params.encoding.bSpline_df          = 21; %number of terms:= order + N internal knots
 
-% ------- Single-unit decoding -------
-% params.decode.decode_type     = ...
-%     {'choice_sound','choice_action','prior_choice','prior_choice_action',...
-%     'outcome','prior_outcome','rule_SL','rule_SR'}; %MUST have same number of elements as rows in trialSpec. Eg, = {'choice','outcome','rule_SL','rule_SR'}
-% params.decode.trialSpec       = params.bootAvg.trialSpec; %Spec for each trial subset for comparison (conjunction of N fields from 'trials' structure.)
-
-% [p.decodeType, p.trialSpec]    = list_trialSpecs('bootAvg'); %Spec for each trial subset for comparison (conjunction of N fields from 'trials' structure.)
-% p.dsFactor        = params.bootAvg.dsFactor; %Downsample from interpolated rate of 1/params.interdt
-% p.nReps           = params.bootAvg.nReps; %Number of bootstrap replicates
-% p.nShuffle        = 1000; %Number of shuffled replicates
-% p.CI              = 95; %params.bootAvg.CI; %Confidence interval as percentage
-% p.sig_method      = 'shuffle';  %Method for determining chance-level: 'bootstrap' or 'shuffle'
-% p.sig_duration    = 1;  %Number of consecutive seconds exceeding chance-level
-% p.t0              = 0; %params.behavior.timeWindow(1);  %Use eg params.behavior.timeWindow(1), or 0 for trigger time
-% params.decode = p;
-% clearvars p;
-
 %% SUMMARY STATISTICS
 colors = getFigColors();
 params.summary.trialAvg = specSummaryTrialAvgParams(colors);
@@ -143,7 +127,6 @@ c = [zeros(256,1) linspace(0,1,256)' zeros(256,1)];
 params.figs.fovProj.colormap        = c;
 params.figs.fovProj.overlay_ROIs    = true; %Overlay outlines of ROIs
 params.figs.fovProj.overlay_npMasks = false; %Overlay outlines of neuropil masks
-
 
 %% FIGURE: CELLULAR FLUORESCENCE TIMESERIES FOR ALL NEURONS
 p = params.figs.all; %Global figure settings: colors structure, etc.
@@ -176,20 +159,6 @@ clearvars p
 params.figs.encoding.panels = specEncodingPanels( params.figs );
 
 %% FIGURE: MODULATION INDEX: CHOICE, OUTCOME, AND RULE
-
-% % Single-unit plots
-% p                       = params.figs.all; %Get global colors, etc.
-% p.fig_type              = 'singleUnit';
-% [p.decodeType, p.trialSpec]    = list_trialSpecs('bootAvg');
-% p.panels = list_panelSpecs('bootAvg',params); %Get variables and plotting params for each figure panel
-% [p.expIDs,p.cellIDs]    = list_exampleCells('bootAvg'); %Same cells used for trial average and decode
-% % p.expIDs = []
-% % p.cellIDs = [];
-% p.shading               = 'bootstrap'; %'shuffle' or 'bootstrap'
-% p.CI                    = params.bootAvg.CI; 
-% 
-% params.figs.decode_single_units = p;
-% clearvars p ax;
 
 % Heatmaps
 params.figs.mod_heatmap.fig_type        = 'heatmap';
