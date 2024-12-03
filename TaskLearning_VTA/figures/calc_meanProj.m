@@ -7,9 +7,12 @@ frames = cell(numel(reg_path),1);
 parfor i = 1:numel(reg_path)
     % Load Stack
     disp(['Loading [parallel] ' char(reg_path(i)) '...']);
-    stack =  loadtiffseq(reg_path{i}); % load raw stack (.tif)
+    % stack =  loadtiffseq(reg_path{i}); % load raw stack (.tif)
+    % %Shift dims for cat operation
+    % frames{i} = shiftdim(stack,2);
+
     %Shift dims for cat operation
-    frames{i} = shiftdim(stack,2);
+    frames{i} = shiftdim(loadtiffseq(reg_path{i}),2);
 end
 
 %Concatenate trials
