@@ -1,4 +1,4 @@
-function meanProj = calc_meanProj( reg_path )
+function [ meanProj, varProj ] = calc_meanProj( reg_path )
 
 %Typically one matfile per trial, derived from motion-corrected TIFFs using 'tiff2mat.m'
 
@@ -12,9 +12,10 @@ parfor i = 1:numel(reg_path)
     % frames{i} = shiftdim(stack,2);
 
     %Shift dims for cat operation
-    frames{i} = shiftdim(loadtiffseq(reg_path{i}),2);
+    frames{i} = mean(shiftdim(loadtiffseq(reg_path{i}),2),1);
 end
 
 %Concatenate trials
 M = cell2mat(frames);
 meanProj = squeeze(mean(M,1));
+varProj = squeeze(var(M,0,1));
