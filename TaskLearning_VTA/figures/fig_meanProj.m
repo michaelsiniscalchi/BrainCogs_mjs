@@ -38,7 +38,7 @@ if params.overlay_ROIs
 end
 
 %Square unenumerated axes 
-set(ax,'XTick',[],'YTick',[],'CLim',p); %Set properties
+set(ax,'XTick',[],'YTick',[],'CLim', p(:)'); %Set properties
 colormap(params.colormap);
 axis square;
 
