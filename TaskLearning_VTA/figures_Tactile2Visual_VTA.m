@@ -47,14 +47,15 @@ if figures.FOV_mean_projection
     
     % Calculate or re-calculate mean projection from substacks
     figData = getFigData(dirs, expData, mat_file,'FOV_mean_projections',params);
+    figData.roi_dir = fullfile(dirs.data, expData.sub_dir, expData.roi_dir);
 
     % Generate figures: mean projection with optional ROI and/or neuropil masks
-    figs = gobjects(numel(expIdx),1); %Initialize figures
-    for i = 1:numel(expIdx)
-        figs(i) = fig_meanProj(figData, expIdx(i), params.figs.fovProj); %***WIP***
-        figs(i).Name = expData(expIdx(i)).sub_dir;
-        if ~isempty(params.figs.fovProj.cellIDs)
-            figs(i).Name = [expData(expIdx(i)).sub_dir,'_ROIs'];
+    figs = gobjects(numel(expData),1); %Initialize figures
+    for i = 1:numel(expData)
+        figs(i) = fig_meanProj(figData, params.figs.fovProj); %***WIP***
+        figs(i).Name = expData(i).sub_dir;
+        if isfield(params.figs.fovProj, "cellIDs") && ~isempty(params.figs.fovProj.cellIDs)
+            figs(i).Name = [expData(i).sub_dir,'_ROIs'];
         end
     end
     save_multiplePlots(figs,save_dir,'pdf'); %Save figure
