@@ -7,6 +7,7 @@ img = imagesc(ax, figData.meanProj); hold on;
 
 %B&W levels as lower and upper percentiles
 p = prctile(img.CData,[params.blackLevel params.whiteLevel],'all'); 
+disp(['FOV black/white levels: ', num2str(p(:)')]);
 
 %Overlay ROIs, if specified
 if params.overlay_ROIs
