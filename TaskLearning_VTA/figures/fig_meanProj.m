@@ -3,7 +3,7 @@ function fig = fig_meanProj( figData, params )
 % Initialize figure
 fig = figure('Visible','on');
 ax = gca;
-img = imagesc(ax, figData.meanProj); hold on;
+img = imagesc(ax, figData.(params.projType)); hold on;
 
 %B&W levels as lower and upper percentiles
 p = prctile(img.CData,[params.blackLevel params.whiteLevel],'all'); 

@@ -42,20 +42,20 @@ end
 
 % Generate Mean Projection Image for each field-of-view
 if figures.FOV_mean_projection
-    save_dir = fullfile(dirs.figures,'FOV mean projections');   %Figures directory: cellular fluorescence
+    save_dir = fullfile(dirs.figures,'FOV projections');   %Figures directory: cellular fluorescence
     create_dirs(save_dir); %Create dir for these figures
     
     % Calculate or re-calculate mean projection from substacks
-    figData = getFigData(dirs, expData, mat_file,'FOV_mean_projections',params);
+    figData = getFigData(dirs, expData, mat_file,'FOV_projections',params);
     figData.roi_dir = fullfile(dirs.data, expData.sub_dir, expData.roi_dir);
 
     % Generate figures: mean projection with optional ROI and/or neuropil masks
     figs = gobjects(numel(expData),1); %Initialize figures
     for i = 1:numel(expData)
         figs(i) = fig_meanProj(figData, params.figs.fovProj); %***WIP***
-        figs(i).Name = expData(i).sub_dir;
+        figs(i).Name = [expData(i).sub_dir, '-', params.figs.fovProj.projType];
         if isfield(params.figs.fovProj, "cellIDs") && ~isempty(params.figs.fovProj.cellIDs)
-            figs(i).Name = [expData(i).sub_dir,'_ROIs'];
+            figs(i).Name = [figs(i).Name,'-ROIs'];
         end
     end
     save_multiplePlots(figs,save_dir,'pdf'); %Save figure

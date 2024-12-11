@@ -2,7 +2,7 @@ function figData = getFigData( dirs, expData, mat_file, figID, params )
 
 switch figID
     
-    case 'FOV_mean_projections'
+    case 'FOV_projections'
        
         % Initialize file
         fname = mat_file.figData.fovProj(expData.sub_dir);

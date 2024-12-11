@@ -81,7 +81,7 @@ mat_file.summary.selectivity    = fullfile(dirs.summary,'selectivity.mat');
 mat_file.stats                  = fullfile(dirs.summary,'summary_stats.mat');
 mat_file.validation             = fullfile(dirs.summary,'validation.mat');
 %Figure Data
-mat_file.figData.fovProj        = @(sessionID) fullfile(dirs.figures,'FOV mean projections',['figData-',sessionID,'.mat']); %Directory created in code block for figure
+mat_file.figData.fovProj        = @(sessionID) fullfile(dirs.figures,'FOV projections',['figData-',sessionID,'.mat']); %Directory created in code block for figure
 
 %% HYPERPARAMETERS FOR ANALYSIS
 
@@ -120,6 +120,7 @@ params.summary.trialAvg = specSummaryTrialAvgParams(colors);
 params.figs.all.colors = colors;
 
 %% FIGURE: MEAN PROJECTION FROM EACH FIELD-OF-VIEW
+params.figs.fovProj.projType        = 'varProj'; %'meanProj' or 'varProj'
 params.figs.fovProj.calcProj        = true; %Calculate or re-calculate projection from substacks for each trial (time consuming).
 params.figs.fovProj.blackLevel      = 30; %As percentile 20
 params.figs.fovProj.whiteLevel      = 99.7; %As percentile 99.7
