@@ -242,7 +242,7 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-% %M570
+%M570
 
 
 %M571
@@ -332,6 +332,13 @@ expData(i).npCorrFactor = 0.3;
 i = i+1;
 expData(i).sub_dir = '240917-m32-maze7'; 
 expData(i).subjectID = "mjs20_32";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
+%m199
+expData(i).sub_dir = '241206-m199-maze7'; 
+expData(i).subjectID = "mjs20_199";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;

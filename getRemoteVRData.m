@@ -251,7 +251,6 @@ for i = 1:numel(subjects)
             Trials = logs.block(k).trial;
 
             %Visual cues
-            %             nTowers = cellfun(@numel,reshape([Trials.cuePos],2,numel(Trials)))';
             nTowers = trialData(j).nTowers(blockIdx==k,:); %temp
             leftTowers(blockIdx==k) = nTowers(:,1) > nTowers(:,2); %Trials where towers rule instructs left (ie, nLeft>nRight)
             rightTowers(blockIdx==k) = nTowers(:,1) < nTowers(:,2);%Towers rule indicates "right"
