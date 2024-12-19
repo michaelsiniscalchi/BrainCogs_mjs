@@ -18,6 +18,9 @@ addpath(genpath(fullfile(dirs.code, 'mym', 'distribution', 'mexa64'))); %For Dat
 expData = expData(contains({expData(:).sub_dir}', search_filter)); %Filter by data-directory name, etc.
 
 % Set parameters for analysis
+if ~exist('options','var')
+    options = struct();
+end
 [calculate, ~, figures, mat_file, params] = params_Tactile2Visual_VTA(dirs, expData, options);
 expData = get_imgPaths(dirs, expData, calculate, figures); %Append additional paths for imaging data if required by 'calculate'
 
