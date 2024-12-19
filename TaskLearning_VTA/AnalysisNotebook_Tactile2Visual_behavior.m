@@ -1,7 +1,7 @@
 function [matfiles, dirs, subjects] = AnalysisNotebook_Tactile2Visual_behavior( subjectID, sessionDate )
 
 %Parse inputs
-subject.ID = subjectID;
+subject.ID = string(subjectID);
 key = struct;
 if exist("sessionDate","var")
     key.session_date = datestr(sessionDate,'yyyy-mm-dd');
