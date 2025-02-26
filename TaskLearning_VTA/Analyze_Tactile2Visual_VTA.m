@@ -177,8 +177,7 @@ if calculate.fluorescence
             encodingMdl.session = metadata.session;
 
             %Save results
-                save(mat_file.results.encoding(i),...
-                     '-struct', 'encodingMdl');          
+                save(mat_file.results.encoding(i),'-struct', 'encodingMdl', '-v7.3');          
         end
 
     end
