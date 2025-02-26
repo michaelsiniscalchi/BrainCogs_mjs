@@ -16,9 +16,13 @@ setup_figprops('timeseries')  %set up default figure plotting parameters
 
 cellIdx = 1:numel(glm.cellID);
 
+% % Initialize figures
+% figs = gobjects(numel(cellIdx),1); %Initialize
+% fig_pos = [100,400,1000,800]; %LBWH
+% legend_loc = 'bestoutside';
 % Initialize figures
 figs = gobjects(numel(cellIdx),1); %Initialize
-fig_pos = [100,400,1000,800]; %LBWH
+fig_pos = [100,400,450,300]; %LBWH
 legend_loc = 'bestoutside';
 if numel(panels)>1
     fig_pos = [100,400,300*(numel(panels)),300]; %LBWH
@@ -37,12 +41,16 @@ for i = 1:numel(cellIdx)
     idx = cellIdx(i); %Index in 'cells' structure for cell with corresponding cell ID
     disp(['Plotting event kernels for ' num2str(i) '/' num2str(numel(cellIdx)) '...']);
     for j = 1:numel(panels)
+               
         varName = panels(j).varName;
         for k = 1:numel(varName)
+            %Time/position axis
+            wIndex = glm.kernel(i).(varName(k)).t >= panels(j).window(1) &...
+                glm.kernel(i).(varName(k)).t <= panels(j).window(2); %Domain from specBootAvgPanels()
      
             if ~isfield(glm.kernel, varName(k)) || isempty(varName(k))
-                panels(j).signal{k} = NaN();
-                panels(j).CI{k} = NaN();
+                panels(j).signal{k} = NaN(size(wIndex));
+                panels(j).CI{k} = NaN(2,size(wIndex,2));
                 continue;
             end
 
@@ -51,11 +59,11 @@ for i = 1:numel(cellIdx)
                 strjoin([varName(k), "response"]); %Leading trial specifier, all others should generally be fixed
 
             %Signal and confidence bounds
-            panels(j).x = glm.kernel(i).(varName(k)).t;
-            panels(j).signal{k} = glm.kernel(i).(varName(k)).estimate;
-            panels(j).CI{k} = glm.kernel(i).(varName(k)).se;
+            panels(j).x = glm.kernel(i).(varName(k)).t(wIndex);
+            panels(j).signal{k} = glm.kernel(i).(varName(k)).estimate(wIndex);
+            panels(j).CI{k} = glm.kernel(i).(varName(k)).se(:, wIndex);
         
-            panels(j).color = panels(j).color(end);
+            % panels(j).color = panels(j).color(end);
         end
 
         %Labels

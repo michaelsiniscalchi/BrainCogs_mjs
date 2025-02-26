@@ -256,5 +256,6 @@ condNum = cond(moment); %Condition number
 
 function sensitivity_LR = calcSensitivity( b0, rightChoice, rightCues )
 % Absolute difference between eg (pRight|rightCue) and pRight (approx by bias)
+%***Update after incusion of zero-cues trials--need mean(rightChoice(leftCues))
 bias = exp(b0)/(1+exp(b0)); %P = odds/(1+odds)
 sensitivity_LR = abs([mean(rightChoice(~rightCues)), mean(rightChoice(rightCues))]-bias);

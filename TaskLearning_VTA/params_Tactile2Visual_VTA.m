@@ -121,7 +121,7 @@ params.figs.all.colors = colors;
 
 %% FIGURE: MEAN PROJECTION FROM EACH FIELD-OF-VIEW
 params.figs.fovProj.projType        = 'varProj'; %'meanProj' or 'varProj'
-params.figs.fovProj.calcProj        = true; %Calculate or re-calculate projection from substacks for each trial (time consuming).
+params.figs.fovProj.calcProj        = false; %Calculate or re-calculate projection from substacks for each trial (time consuming).
 params.figs.fovProj.blackLevel      = 30; %As percentile 20
 params.figs.fovProj.whiteLevel      = 99.7; %As percentile 99.7
 c = [zeros(256,1) linspace(0,1,256)' zeros(256,1)];
@@ -158,6 +158,7 @@ clearvars p
 %% FIGURE: Single-unit encoding model
 
 params.figs.encoding.panels = specEncodingPanels( params.figs );
+params.figs.encoding.panels_contrast = specEncodingPanels_contrast( params.figs );
 
 %% FIGURE: MODULATION INDEX: CHOICE, OUTCOME, AND RULE
 

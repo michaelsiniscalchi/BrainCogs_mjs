@@ -113,33 +113,33 @@ if figures.encoding_model
         expID = expData(i).sub_dir;
         glm = load(mat_file.results.encoding(i),'bootAvg','kernel','session','cellID');
         img = load(mat_file.results.cellFluo(i),'bootAvg');
-        save_dir = fullfile(dirs.figures,'Encoding model', 'Observed vs Predicted dFF', expID);
-        comparisons = unique([params.figs.encoding.panels.comparison],'stable');
-        for j = 1:numel(comparisons)
-            panelIdx = find([params.figs.encoding.panels.comparison]==comparisons(j));
-            panels = params.figs.encoding.panels(panelIdx);
-            trigger = [params.figs.encoding.panels(panelIdx(1)).trigger];
-            figs = fig_observedVsPredictedDFF(...
-                img.bootAvg.(trigger), glm.bootAvg.(trigger), glm.cellID, expID, panels);
-            save_multiplePlots(figs, save_dir); %save as FIG and PNG
-        end
-        clearvars figs
-
-        save_dir = fullfile(dirs.figures,'Encoding model', 'Predicted dFF', expData(i).sub_dir);
-        comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
-        for j = 1:numel(comparisons)
-            panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
-            event = [params.figs.bootAvg.panels(panelIdx(1)).trigger];
-            figs = plot_trialAvgDFF(glm.bootAvg.(event), glm.cellID, glm.session,...
-                params.figs.bootAvg.panels(panelIdx));
-            save_multiplePlots(figs, save_dir); %save as FIG and PNG
-        end
-        clearvars figs
+        % save_dir = fullfile(dirs.figures,'Encoding model', 'Observed vs Predicted dFF', expID);
+        % comparisons = unique([params.figs.encoding.panels.comparison],'stable');
+        % for j = 1:numel(comparisons)
+        %     panelIdx = find([params.figs.encoding.panels.comparison]==comparisons(j));
+        %     panels = params.figs.encoding.panels(panelIdx);
+        %     trigger = [params.figs.encoding.panels(panelIdx(1)).trigger];
+        %     figs = fig_observedVsPredictedDFF(...
+        %         img.bootAvg.(trigger), glm.bootAvg.(trigger), glm.cellID, expID, panels);
+        %     save_multiplePlots(figs, save_dir); %save as FIG and PNG
+        % end
+        % clearvars figs
+        % 
+        % save_dir = fullfile(dirs.figures,'Encoding model', 'Predicted dFF', expData(i).sub_dir);
+        % comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
+        % for j = 1:numel(comparisons)
+        %     panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
+        %     event = [params.figs.bootAvg.panels(panelIdx(1)).trigger];
+        %     figs = plot_trialAvgDFF(glm.bootAvg.(event), glm.cellID, glm.session,...
+        %         params.figs.bootAvg.panels(panelIdx));
+        %     save_multiplePlots(figs, save_dir); %save as FIG and PNG
+        % end
+        % clearvars figs
 
         %Plot Response Kernels
         save_dir = fullfile(dirs.figures,'Encoding model', 'Response kernels', expID);   %Figures directory: single units
         create_dirs(save_dir); %Create dir for these figures
-        panels = params.figs.encoding.panels;
+        panels = params.figs.encoding.panels_contrast;
         panels = panels(cellfun(@(C) ~isempty(C), {panels.varName})); %Remove non-event variables
         for j = 1:numel(panels)
             figs = plot_eventKernel(glm, panels(j));
