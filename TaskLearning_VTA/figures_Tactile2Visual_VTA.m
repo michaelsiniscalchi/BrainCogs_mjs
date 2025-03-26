@@ -111,7 +111,7 @@ if figures.encoding_model
     for i = 1:numel(expData)
         %Load data
         expID = expData(i).sub_dir;
-        glm = load(mat_file.results.encoding(i),'bootAvg','kernel','session','cellID');
+        glm = load(mat_file.results.encoding(i),'bootAvg','kernel','session','cellID','predictorIdx');
         img = load(mat_file.results.cellFluo(i),'bootAvg');
         % save_dir = fullfile(dirs.figures,'Encoding model', 'Observed vs Predicted dFF', expID);
         % comparisons = unique([params.figs.encoding.panels.comparison],'stable');
@@ -137,15 +137,30 @@ if figures.encoding_model
         % clearvars figs
 
         %Plot Response Kernels
-        save_dir = fullfile(dirs.figures,'Encoding model', 'Response kernels', expID);   %Figures directory: single units
+        % save_dir = fullfile(dirs.figures,'Encoding model', 'Response kernels', expID);   %Figures directory: single units
+        % create_dirs(save_dir); %Create dir for these figures
+        % panels = params.figs.encoding.panels_contrast;
+        % panels = panels(cellfun(@(C) ~isempty(C), {panels.varName})); %Remove non-event variables
+        % for j = 1:numel(panels)
+        %     figs = plot_eventKernel(glm, panels(j));
+        %     save_multiplePlots(figs, save_dir); %save as FIG and PNG
+        % end
+        % clearvars figs
+
+        save_dir = fullfile(dirs.figures,'Encoding model', 'Session Coefficients', expID);   %Figures directory: single units
         create_dirs(save_dir); %Create dir for these figures
-        panels = params.figs.encoding.panels_contrast;
-        panels = panels(cellfun(@(C) ~isempty(C), {panels.varName})); %Remove non-event variables
-        for j = 1:numel(panels)
-            figs = plot_eventKernel(glm, panels(j));
+        figs = gobjects(numel(glm.cellID),4); %Initialize graphics objects
+        predictorNames = ["start","firstLeftTower","firstRightTower","firstLeftPuff","firstRightPuff",...
+            "leftTowers","rightTowers","leftPuffs","rightPuffs","leftChoice","rightChoice",...
+            "reward","noReward","position","viewAngle","velocity","acceleration"]; %To achieve desired order
+        for j = 1:numel(glm.cellID)
+            S = load(fullfile(fileparts(mat_file.results.encoding(i)),...
+                ['encodingMdl_','cell', glm.cellID{j}]));
+            figs(j,:) = fig_encodingMdlCoefs(glm, S.mdl, expID, glm.cellID, j, predictorNames, colors);
             save_multiplePlots(figs, save_dir); %save as FIG and PNG
+            clearvars figs
         end
-        clearvars figs
+        
 
     end
 end
