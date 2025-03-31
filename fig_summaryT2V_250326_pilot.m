@@ -1,6 +1,6 @@
 clearvars;
 
-dataDir = fullfile("X:","michael","tactile2visual","results","mjs_tactile2visual");
+dataDir = fullfile("X:","michael","mjs_tactile2visual","results");
 matfiles = ["mjs20_22","mjs20_23","mjs20_24","mjs20_25","mjs20_26"];
 nSwitches = [2,2,2,15,4]; %Counted manually
 
@@ -14,7 +14,7 @@ for i = 1:numel(subjects)
     perf = [subjects(i).sessions.pCorrect];
     bias = [subjects(i).sessions.bias];
     rule = [subjects(i).sessions.taskRule];
-    criterion = @(lvl,levelIdx) perf(lvl==levelIdx)>0.8 & bias(lvl==levelIdx)<0.2;
+    criterion = @(lvl,levelIdx) perf(lvl==levelIdx)>0.7 & bias(lvl==levelIdx)<0.2;
 
     if sum(criterion(level,7))
         nSessions.rule1(i) = find(criterion(level,7),1,'first');
@@ -35,7 +35,7 @@ for i = 1:numel(subjects)
 end
 
 %Box plot of nSessions for each maze condition
-fig = figure('Name','SessionsToCriterion');
+fig = figure('Name','SessionsToCriterion_pilot','Position',[300 300 1000 400]);
 t=tiledlayout(1,4,'TileSpacing','loose');
 cbrew = brewColorSwatches;
 boxWidth = 0.5;
@@ -95,6 +95,7 @@ ylabel('Number of blocks');
 xticks([]);
 axis square;
 xlim([0,2]);
+ylim([0,15]);
 
 medianSwitchesPer100 = median(switchesPer100);
 meanSwitchesPer100 = mean(switchesPer100);
@@ -103,7 +104,7 @@ disp(['medianSwitchesPer100 = ' num2str(medianSwitchesPer100)]);
 disp(['meanSwitchesPer100 = ' num2str(meanSwitchesPer100)]);
 disp(['semSwitchesPer100 = ' num2str(semSwitchesPer100)]);
 
-saveDir = 'X:\michael\tactile2visual';
+saveDir = 'X:\michael\mjs_tactile2visual';
 save_multiplePlots(fig,saveDir);
 
 % %Sessions to Criterion, Visual-to-Tactile Rule

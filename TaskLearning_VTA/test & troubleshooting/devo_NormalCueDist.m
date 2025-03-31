@@ -16,13 +16,13 @@ dist.norm = truncate(makedist('Normal','mu', meanNumCues,'sigma', sd), 0, maxNum
 dist.pois = truncate(makedist('Poisson','lambda', meanNumCues), 0, maxNumCues);
 
 %%
-figure; 
+fig = figure('Name','devo_NormalCueDist','Position',[250 500 1200 400]); 
 
 subplot(1,2,1)
 x = 0:maxNumCues;
 plot(x, pdf(dist.norm, x),'b','LineWidth', 2, 'DisplayName', 'Normal'); hold on;
 plot(x, pdf(dist.pois, x),'m','LineWidth', 2, 'DisplayName', 'Poisson');
-plot(x,ones(size(x))*0.05,':k','LineWidth', 2);
+plot(x,ones(size(x))*0.05,':k','LineWidth', 2, 'DisplayName', 'P(nCues=0)');
 
 axis square tight;
 xlabel("Total number of cues");
@@ -34,7 +34,7 @@ legend('Location','eastoutside');
 subplot(1,2,2)
 plot(x, cdf(dist.norm, x),'b','LineWidth', 2, 'DisplayName', 'Normal'); hold on;
 plot(x, cdf(dist.pois, x),'m','LineWidth', 2, 'DisplayName', 'Poisson');
-plot(x,ones(size(x))*0.05,':k','LineWidth', 2);
+plot(x,ones(size(x))*0.05,':k','LineWidth', 2, 'DisplayName', 'P(nCues=0)');
 
 axis square tight;
 xlabel("Total number of cues");
@@ -44,5 +44,6 @@ title("Cue Freq. CDFs");
 legend('Location','eastoutside');
 
 %%
-
+save_dir = 'C:\Users\mjs20\Documents\GitHub\BrainCogs_mjs\TaskLearning_VTA\test & troubleshooting';
+save_multiplePlots(fig , save_dir);
 
