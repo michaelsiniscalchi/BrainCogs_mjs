@@ -83,8 +83,8 @@ expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%% VTA Cohort #2 (N=4)
-%M18
+%% VTA Cohort #2 (N=4; DAT-cre;AAV-GCaMP or DAT-cre;Ai148;AAV-mCherry)
+%M18 (AAV9-syn-flex-GCaMP8f)
 expData(i).sub_dir = '240126-m18-maze7'; 
 expData(i).subjectID = "mjs20_018";
 expData(i).mainMaze = 7;
@@ -132,7 +132,7 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%M173
+%M173 (DAT-cre;Ai148;AAVdj-mCherry)
 expData(i).sub_dir = '240119-m173-maze7'; 
 expData(i).subjectID = "mjs20_173";
 expData(i).mainMaze = 7;
@@ -194,7 +194,7 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%M175
+%M175 (DAT-cre;Ai148;AAVdj-mCherry)
 expData(i).sub_dir = '240216-m175-maze7'; 
 expData(i).subjectID = "mjs20_175";
 expData(i).mainMaze = 7;
@@ -222,7 +222,7 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%M177
+%M177 (DAT-cre;Ai148 ask Addie re: AAV?)
 expData(i).sub_dir = '240118-m177-maze7'; 
 expData(i).subjectID = "mjs20_177";
 expData(i).mainMaze = 7;
@@ -235,17 +235,12 @@ expData(i).session_number = 1; %Idx starts with 0
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%M179
-expData(i).sub_dir = '240104-m179-maze7'; 
-expData(i).subjectID = "mjs20_179";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
+%% VTA Cohort #3 (N=5 DAT-cre::Ai148)
 
-%M570
+%M570 (3 blocks)
 
 
-%M571
+%M571 (3 blocks)
 expData(i).sub_dir = '240528-m571-maze7'; 
 expData(i).subjectID = "mjs20_571";
 expData(i).mainMaze = 7;
@@ -272,39 +267,9 @@ expData(i).mainMaze = 9;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%M834
-expData(i).sub_dir = '240920-m834-maze7'; 
-expData(i).subjectID = "mjs20_834";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '241001-m834-maze7'; 
-expData(i).subjectID = "mjs20_834";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '241011-m834-maze7'; 
-expData(i).subjectID = "mjs20_834";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '241016-m834-maze7'; 
-expData(i).subjectID = "mjs20_834";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '241028-m834-maze8'; 
-expData(i).subjectID = "mjs20_834";
-expData(i).mainMaze = 8;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '241104-m834-maze8'; 
-expData(i).subjectID = "mjs20_834";
-expData(i).mainMaze = 8;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
+%M33 (2 blocks)
 
-%M32
+%M32 (1 block completed) 
 expData(i).sub_dir = '240821-m32-maze7'; 
 expData(i).subjectID = "mjs20_32";
 expData(i).mainMaze = 7;
@@ -336,9 +301,54 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%m199
+%m199 (1 block completed)
 expData(i).sub_dir = '241206-m199-maze7'; 
 expData(i).subjectID = "mjs20_199";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+
+%M834 (1 block completed)
+expData(i).sub_dir = '240920-m834-maze7'; 
+expData(i).subjectID = "mjs20_834";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '241001-m834-maze7'; 
+expData(i).subjectID = "mjs20_834";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '241011-m834-maze7'; 
+expData(i).subjectID = "mjs20_834";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '241016-m834-maze7'; 
+expData(i).subjectID = "mjs20_834";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '241028-m834-maze8'; 
+expData(i).subjectID = "mjs20_834";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '241104-m834-maze8'; 
+expData(i).subjectID = "mjs20_834";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
+%% VTA Cohort #4 (N=3)
+
+%M40 (4 blocks)
+
+%M42 (4 blocks)
+expData(i).sub_dir = '250127-m42-maze7'; 
+expData(i).subjectID = "mjs20_42";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
+%M913 (2 blocks)
