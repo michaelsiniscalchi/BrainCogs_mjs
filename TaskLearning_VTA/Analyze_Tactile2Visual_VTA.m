@@ -73,6 +73,10 @@ if calculate.combined_data
         behavior = analyzeTaskStrategy2(behavior, params.behavior.nBins_psychometric);
 
         %Synchronize imaging frames with behavioral time basis
+        if ~isfield(stackInfo,'I2C')
+            S = getRawStackInfo(sessionPath); %get I2C data normally collected with iCorre()
+            stackInfo.I2C = S.I2C;
+        end
         stackInfo = syncImagingBehavior(stackInfo, behavior);
         %Save processed data
         create_dirs(fileparts(mat_file.img_beh(i))); %Create save directory
