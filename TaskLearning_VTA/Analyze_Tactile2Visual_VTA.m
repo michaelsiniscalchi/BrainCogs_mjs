@@ -74,7 +74,7 @@ if calculate.combined_data
 
         %Synchronize imaging frames with behavioral time basis
         if ~isfield(stackInfo,'I2C')
-            S = getRawStackInfo(sessionPath); %get I2C data normally collected with iCorre()
+            S = getRawStackInfo(fullfile(dirs.data, expData(i).sub_dir)); %get I2C data normally collected with iCorre()
             stackInfo.I2C = S.I2C;
         end
         stackInfo = syncImagingBehavior(stackInfo, behavior);
