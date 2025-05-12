@@ -122,8 +122,8 @@ params.figs.all.colors = colors;
 %% FIGURE: MEAN PROJECTION FROM EACH FIELD-OF-VIEW
 params.figs.fovProj.projType        = 'varProj'; %'meanProj' or 'varProj'
 params.figs.fovProj.calcProj        = true; %Calculate or re-calculate projection from substacks for each trial (time consuming).
-params.figs.fovProj.blackLevel      = 30; %As percentile 20
-params.figs.fovProj.whiteLevel      = 99.7; %As percentile 99.7
+params.figs.fovProj.blackLevel      = 20; %As percentile 20
+params.figs.fovProj.whiteLevel      = 99.9; %As percentile 99.7
 c = [zeros(256,1) linspace(0,1,256)' zeros(256,1)];
 params.figs.fovProj.colormap        = c;
 params.figs.fovProj.overlay_ROIs    = true; %Overlay outlines of ROIs
