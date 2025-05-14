@@ -64,7 +64,6 @@ for i = 1:numel(subject.sessions)
     ax(4)=nexttile;
     if ~isempty(S(i).(glmName))
         plotSessionGLM(S(i), glmName, colors);
-
     end
 
     %--- Psychometric curves for Towers -- all/congruent/conflict trials

@@ -1,6 +1,6 @@
 cd('/jukebox/Bezos/michael/_code/General')
 
-search_filter = '250117';
+search_filter = '250213';
 
 % Set path
 dirs = getRoots();

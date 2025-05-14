@@ -219,4 +219,4 @@ end
 
 %% FIGURES
 
-figures_Tactile2Visual_VTA(search_filter, options); %In a separate script for brevity.
+figures_Tactile2Visual_VTA(search_filter, options); %In a separate function for brevity.

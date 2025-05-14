@@ -13,10 +13,10 @@ end
 %Make bar graph 
 bar(1:numel(factors),data,'FaceColor',colors.blue,'LineStyle','none'); hold on
 errorbar(data, sem, 'Color', colors.blue, 'LineWidth', 1, 'LineStyle','none'); %symmetric error bars
-ylim([-4,4]);
-if string(glmName)=="glm1"
-    ylim([-1.5,1.5]);
-end
+% ylim([-4,4]);
+% if string(glmName)=="glm1"
+%     ylim([-1.5,1.5]);
+% end
 
 %Title and Axis Labels
 title('Logistic Regression');
@@ -25,5 +25,5 @@ ax = gca;
 ax.XTickLabels = factors;
 xlim([0,numel(factors)+1]);
 
-axis square;
+axis square tight;
 
