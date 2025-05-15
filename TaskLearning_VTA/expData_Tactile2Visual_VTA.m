@@ -343,6 +343,11 @@ i = i+1;
 %% VTA Cohort #4 (N=3)
 
 %M40 (4 blocks)
+expData(i).sub_dir = '250203-m40-maze7'; 
+expData(i).subjectID = "mjs20_40";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 
 %M42 (4 blocks)
 expData(i).sub_dir = '250117-m42-maze7'; 

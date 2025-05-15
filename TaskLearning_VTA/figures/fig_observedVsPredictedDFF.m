@@ -35,7 +35,7 @@ for i = 1:numel(cellIdx)
 
     % Assign specified signals to each structure in the array 'panels'
     idx = cellIdx(i); %Index in 'cells' structure for cell with corresponding cell ID
-    disp(['Plotting trial-averaged dF/F for cell ' num2str(i) '/' num2str(numel(cellIdx)) '...']);
+    disp(['Plotting predicted vs. observed dF/F for cell ' num2str(i) '/' num2str(numel(cellIdx)) '...']);
     for j = 1:numel(panels)
 
         %Time/position axis  
@@ -54,16 +54,6 @@ for i = 1:numel(cellIdx)
                 continue;
             end
 
-%             %Signal for observed fluorescence
-%             panels(j).signal{k} = bootAvg_img.(trialSpec).cells(idx).signal(wIndex);
-%             panels(j).CI{k} = NaN(2,sum(wIndex)); %Omit CI for mean signal
-%             
-%             %Mean signal and confidence bounds from encoding model
-%             predictedIdx = k + numel(panels(j).trialType);
-%             panels(j).signal{predictedIdx} =...
-%                 bootAvg_encoding.(trialSpec).cells(idx).signal(wIndex);
-%             panels(j).CI{predictedIdx} = bootAvg_encoding.(trialSpec).cells(idx).CI(:,wIndex);
- 
             %Mean signal and confidence bounds from encoding model
             panels(j).signal{k} = bootAvg_encoding.(trialSpec).cells(idx).signal(wIndex);
             panels(j).CI{k} = bootAvg_encoding.(trialSpec).cells(idx).CI(:,wIndex);
@@ -71,9 +61,7 @@ for i = 1:numel(cellIdx)
             observedIdx = k + numel(panels(j).trialType);
             panels(j).signal{observedIdx} =...
                 bootAvg_img.(trialSpec).cells(idx).signal(wIndex);
-            %             panels(j).CI{observedIdx} = NaN(2,sum(wIndex)); %Omit CI for mean signal
             panels(j).CI{observedIdx} = bootAvg_img.(trialSpec).cells(idx).CI(:,wIndex);
-
 
             panels(j).legend_names{k} = "predicted";
             panels(j).legend_names{observedIdx}  = "observed";
