@@ -1,7 +1,7 @@
 function stack = cropStack( stack, margins )
 
 %Scalar value for symmetric margins
-if numel(margins)==1
+if isscalar(margins)
     margins = repmat(margins,1,4); %[top, bottom, left, right]
 elseif numel(margins)==3 %[top, left, width_out]
     bottom = size(stack,1) - margins(1) - margins(3); %Img_height - top margin - output_height

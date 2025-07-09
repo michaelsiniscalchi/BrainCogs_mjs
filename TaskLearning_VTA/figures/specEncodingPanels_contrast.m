@@ -29,84 +29,53 @@ ax(i).window        = [-1, 3];
 ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).xLabel        = 'Time from cue (s)';
-% i=i+1;
-% ax(i).title         = "First Tower (Right)";
-% ax(i).comparison    = "firstTower";
-% ax(i).trigger       = "firstTower";
-% ax(i).trialType     = "rightTowers";
-% ax(i).varName       = "firstRightTower";
-% ax(i).window        = [-1, 3];
-% ax(i).color         = {colors.data2,colors.right}; 
-% ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Time from cue (s)';
-% i=i+1;
+i=i+1;
 
 %First Puff
 ax(i).title         = "First Puff";
 ax(i).comparison    = "firstPuff";
 ax(i).trigger       = "firstPuff";
-ax(i).trialType     = "leftPuffs";
 ax(i).varName       = ["firstLeftPuff", "firstRightPuff"];
 ax(i).window        = [-1, 3];
 ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).xLabel        = 'Time from cue (s)';
-% i=i+1;
-% ax(i).title         = "First Puff (Right)";
-% ax(i).comparison    = "firstPuff";
-% ax(i).trigger       = "firstPuff";
-% ax(i).trialType     = "rightPuffs";
-% ax(i).varName       = "firstRightPuff";
-% ax(i).window        = [-1, 3];
-% ax(i).color         = {colors.data2,colors.right};% {pred1,pred2,obs1,obs2}
-% ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Time from cue (s)';
-% i=i+1;
+i=i+1;
 
-% %All Towers
-% ax(i).title         = "Towers (Left)";
-% ax(i).comparison    = "towers";
-% ax(i).trigger       = "towers";
-% ax(i).trialType     = "leftTowers";
-% ax(i).varName       = "leftTowers";
-% ax(i).window        = [-1, 3];
-% ax(i).color         = {colors.data2,colors.left}; 
-% ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Time from cue (s)';
-% i=i+1;
-% ax(i).title         = "Towers (Right)";
-% ax(i).comparison    = "towers";
-% ax(i).trigger       = "towers";
-% ax(i).trialType     = "rightTowers";
-% ax(i).varName       = "rightTowers";
-% ax(i).window        = [-1, 3];
-% ax(i).color         = {colors.data2,colors.right}; 
-% ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Time from cue (s)';
-% i=i+1;
-% 
+%All Towers
+ax(i).title         = "Towers";
+ax(i).comparison    = "towers";
+ax(i).trigger       = "towers";
+ax(i).varName       = ["leftTowers", "rightTowers"];
+ax(i).window        = [-1, 3];
+ax(i).color         = {colors.left, colors.right}; 
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).xLabel        = 'Time from cue (s)';
+i=i+1;
+
 % %All Puffs
-% ax(i).title         = "Puff Onset (Left)";
-% ax(i).comparison    = "puffs";
-% ax(i).trigger       = "puffs";
-% ax(i).trialType       = "leftPuffs";
-% ax(i).varName       = "leftPuffs";
-% ax(i).window        = [-1, 3];
-% ax(i).color         = {colors.data2,colors.left}; 
-% ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Time from cue (s)';
-% i=i+1;
-% ax(i).title         = "Puff Onset (Right)";
-% ax(i).comparison    = "puffs";
-% ax(i).trigger       = "puffs";
-% ax(i).trialType     = "rightPuffs";
-% ax(i).varName       = "rightPuffs";
-% ax(i).window        = [-1, 3];
-% ax(i).color         = {colors.data2,colors.right};% {pred1,pred2,obs1,obs2}
-% ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Time from cue (s)';
-% i=i+1;
-% 
+ax(i).title         = "Puffs";
+ax(i).comparison    = "puffs";
+ax(i).trigger       = "puffs";
+ax(i).varName       = ["leftPuffs", "rightPuffs"];
+ax(i).window        = [-1, 3];
+ax(i).color         = {colors.left, colors.right}; 
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).xLabel        = 'Time from cue (s)';
+i=i+1;
+ 
+%Outcome
+ax(i).title         = "Outcome";
+ax(i).comparison    = "outcome";
+ax(i).trigger       = "outcome";
+ax(i).trialType     = "forward";
+ax(i).varName       = ["reward", "noReward"];
+ax(i).window        = [-1, 3];
+ax(i).color         = {colors.correct, colors.err}; 
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).xLabel        = 'Time from outcome (s)';
+i=i+1;
+
 % %Left vs. Right Choice
 % %Explore whether this should be a whole-trial variable, or a regression
 % %spline from start or turn

@@ -1,14 +1,25 @@
-function syncedVars = getTrialDataByTime( trialData, time )
+function syncedVars = getTrialDataByTime( trialData, time, pos_initFcn )
 
 initCell = {cell(size(trialData.time))};
+initKinematicVar = @(varName, trialIdx)...
+    pos_initFcn(size(trialData.time{trialIdx},1), size(trialData.(varName){trialIdx},2))...
+    .*trialData.(varName){trialIdx}(end,:); %equal to final value if init_fcn is @ones; NaN if @nan
+
 B = struct("time", initCell, "trialIdx", initCell ,...
     "position", initCell, "velocity", initCell);
 fields = ["position","velocity"];
 for i = 1:numel([trialData.eventTimes.start])
     for j = 1:numel(fields)
         %Initialize position/velocity to be indexed by session-time
-        B.(fields(j)){i} = ...
-            zeros(size(trialData.time{i},1), size(trialData.(fields(j)){i},2)); %Initialize cell as matrix of zeros, length nTimepoints
+        % B.(fields(j)){i} = initKinematicVar(fields(j), i); %Initialize cell as matrix of nan, length nTimepoints
+        switch fields(j)
+            case "position"
+                B.(fields(j)){i} = initKinematicVar(fields(j), i);
+
+            case "velocity"
+                B.(fields(j)){i} = ...
+                    zeros(size(trialData.time{i},1), size(trialData.(fields(j)){i},2)); %Initialize cell as matrix of zeros, length nTimepoints
+        end      
         B.(fields(j)){i}(1:size(trialData.(fields(j)){i},1),:) =...
             trialData.(fields(j)){i}; %Populate rows up to ITI
     end
@@ -16,7 +27,7 @@ for i = 1:numel([trialData.eventTimes.start])
     %Convert trial-relative time to session-time
     B.time{i} = trialData.time{i} + trialData.eventTimes(i).start;
 
-    %Assign trial-wide variables
+    %Assign trial-wide variables: trial idx for each frame
     B.trialIdx{i} = i * ones(size(trialData.time{i}));
 
 end

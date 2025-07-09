@@ -168,7 +168,7 @@ for i = 1:numel(subjects)
 
             %Running velocity, time, and position
             velocity(blockIdx==k)  = cellfun(@double,{Trials.velocity},'UniformOutput',false); %Raw from sensors
-            position(blockIdx==k)  = cellfun(@double,{Trials.position},'UniformOutput',false); %Derived from ViRMEn w/ collision detection, possible scaling, etc
+            position(blockIdx==k)  = cellfun(@double,{Trials.position},'UniformOutput',false); %Derived from ViRMEn w/ collision detection, possible scaling, etc          
             time(blockIdx==k)  = cellfun(@double,{Trials.time},'UniformOutput',false);
 
             %X-position and view angle as matrices
@@ -178,7 +178,7 @@ for i = 1:numel(subjects)
 
             %Time at first crossing of each Y-position
             time_trajectory{k} = getTimebyPosition(Trials, eventTimes(blockIdx==k), queryPts);
-            positionRange{k} = queryPts([1,end])';
+            positionRange{k}(1,:) = queryPts([1,end])';
 
             %Collision locations along main stem
             yLimits = [0, str2double(maze(k).lCue)];
@@ -203,7 +203,7 @@ for i = 1:numel(subjects)
         end
 
         %Concatenate as matrix if only one maze
-        if numel(unique(cellfun(@(T) size(T,1),x_trajectory)))==1
+        if isscalar(unique(cellfun(@(T) size(T,1),x_trajectory)))
             x_trajectory = [x_trajectory{:}];
             theta_trajectory = [theta_trajectory{:}];
             time_trajectory = [time_trajectory{:}];
@@ -257,7 +257,7 @@ for i = 1:numel(subjects)
 
             %Tactile cues
             if isfield(Trials,"puffPos") && any(~cellfun(@isempty,[Trials.puffPos]))
-                %                 nPuffs = cellfun(@numel,reshape([Trials.puffPos],2,numel(Trials)))';
+                % nPuffs = cellfun(@numel,reshape([Trials.puffPos],2,numel(Trials)))';
                 nPuffs = trialData(j).nPuffs(blockIdx==k,:); %temp
                 leftPuffs(blockIdx==k) = nPuffs(:,1) > nPuffs(:,2);
                 rightPuffs(blockIdx==k) = nPuffs(:,1) < nPuffs(:,2);

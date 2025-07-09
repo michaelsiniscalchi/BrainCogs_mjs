@@ -1,4 +1,4 @@
-function [ psf, img ] = estimatePSF( data_dir, crop_margins, perctile_thresh, um_per_pixel )
+function [ psf, img ] = estimatePSF( data_dir, img_width, crop_margins, perctile_thresh, um_per_pixel )
 
 tic;
 %Get mean projection of each slice (1 TIFF/slice)
@@ -8,24 +8,30 @@ fname = string({fileList(:).name}');
 %Load all tiffs, get z-projection, and determine margins for cropping
 %eg, smooth and use max +/-  
 
-if numel(fileList)>1
-    nX = crop_margins(3); % crop_margins:=[top, left, box_width]
-    nY = crop_margins(3);
+if numel(fileList)>1 %One file per slice
+    nX = img_width; % Assume square
+    nY = img_width;
     nZ = numel(fileList);
     slices = NaN(nX,nY,nZ); %Pre-allocate memory with hard-coded XY dimensions
     parfor i = 1:nZ
         %[ stack, tags, ImageDescription ] = loadtiffseq( full_path, channel, method )
         if i==1
             [stack, tags(i)] = loadtiffseq(fullfile(data_dir,fname(i)));
-            slices(:,:,i) = mean(cropStack(stack,crop_margins),3,"omitnan"); %Obtain mean projection across frames
+            slices(:,:,i) = mean(stack,3,"omitnan"); %Obtain mean projection across frames
         else
-            stack = cropStack(loadtiffseq(fullfile(data_dir,fname(i))),crop_margins);
+            stack = loadtiffseq(fullfile(data_dir,fname(i)));
             slices(:,:,i) = mean(stack,3,"omitnan"); %Obtain mean projection across frames
         end
     end
-else
+     %Crop to box of spec width around max pixel in smoothed z-projection
+     zProj = imgaussfilt(mean(slices,3),2);
+     [y,x] = find(zProj==max(zProj,[],"all"));
+     crop_margins = [y-0.5*crop_margins, x-0.5*crop_margins, crop_margins];
+     slices = cropStack(slices, crop_margins);
+     [nY,nX,nZ] = size(slices);
+else %One image per slice
     [stack, tags] = loadtiffseq(fullfile(data_dir,fname));
-    if numel(crop_margins)==1 %Only box-width specified
+    if isscalar(crop_margins) %Only box-width specified
         %Crop to box of spec width around max pixel in smoothed z-projection
         zProj = imgaussfilt(mean(stack,3),2); 
         [y,x] = find(zProj==max(zProj,[],"all"));

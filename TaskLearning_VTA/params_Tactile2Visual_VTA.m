@@ -34,8 +34,14 @@ figures.FOV_mean_projection             = false;
 figures.timeseries                      = false; %Plot all timeseries for each session
 % Combined
 figures.trial_average_dFF               = false;  %Overlay traces for distinct choices, outcomes, and rules (CO&R)
-figures.encoding_model                  = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
+
+figures.encoding_observedVsPredicted    = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
+figures.encoding_predictedTrialAvg      = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
+figures.encoding_eventKernels           = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
+figures.encoding_coefficients           = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
+
 figures.heatmap_modulation_idx          = false;  %Heatmap of selectivity idxs for COR for each session
+
 % Summary
 figures.summary_behavior                = false;    %Summary of descriptive stats, eg, nTrials and {trials2crit, pErr, oErr} for each rule
 figures.summary_selectivity_heatmap     = false;     %Heatmap of time- or position-locked selectivity
@@ -59,12 +65,22 @@ if isfield(options, 'figures') %For setting params from SLURM, etc.
     end
 end
 
+%General data for cellular fluorescence 
 calculate.fluorescence = false;
 if any([calculate.cellF, calculate.dFF,... 
         calculate.align_signals,...
         calculate.trial_average_dFF,...
 		calculate.encoding_model])
 	calculate.fluorescence = true;
+end
+
+%Load data for main figures
+figures.encoding_model = false;
+if any([figures.encoding_observedVsPredicted,... 
+        figures.encoding_predictedTrialAvg,...
+        figures.encoding_eventKernels,...
+		figures.encoding_coefficients])
+	figures.encoding_model = true;
 end
 
 %% PATHS TO SAVED DATA
@@ -92,7 +108,7 @@ params.behavior.nBins_psychometric = 4;
 params.fluo.exclBorderWidth     = 10; %For calc_cellF: n-pixel border of FOV to be excluded from analysis
 
 % Interpolation and alignment
-params.align.timeWindow     = [-1 5]; %Also used for bootavg, etc.
+params.align.timeWindow     = [-3 7]; %Also used for bootavg, etc.
 params.align.positionWindow = [-30 300]; %Also used for bootavg, etc.
 params.align.interdt        = []; %Query intervals for interpolation in seconds (must be <0.5x original dt; preferably much smaller.)
 params.align.binWidth       = 10; %Spatial bins in cm
@@ -111,6 +127,8 @@ params.encoding.dsFactor            = 1; %Downsample from interpolated rate of 1
 params.encoding.bSpline_nSamples    = 150; %N time points for spline basis set
 params.encoding.bSpline_degree      = 3; %degree of each (Bernstein polynomial) term
 params.encoding.bSpline_df          = 21; %number of terms:= order + N internal knots
+params.encoding.modelName           = 'FM';
+params.encoding                     = specEncodingParams(params.encoding);
 
 %% SUMMARY STATISTICS
 colors = getFigColors();
@@ -188,3 +206,7 @@ params.figs.mod_heatmap.rule_SL.color   = c(1,:);
 
 params.figs.mod_heatmap.rule_SR.cmap    = [flipud(cbrewer('seq','Blues',128));cbrewer('seq','Greys',128)];
 params.figs.mod_heatmap.rule_SR.color   = c(2,:);
+
+
+
+

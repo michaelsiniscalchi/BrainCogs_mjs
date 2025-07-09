@@ -455,7 +455,7 @@ exp(i).um_per_pixel = 55.5/256;
 exp(i).crop_margins = 40;
 i=i+1;
 
-calc_psf = false;
+calc_psf = true;
 fig_summaryPSF = false;
 fig_summary = true;
 
@@ -465,7 +465,7 @@ if calc_psf
     for i = 1:numel(exp)
         %Estimate PSF
         [ psf, img ] =...
-            estimatePSF( exp(i).dir, exp(i).crop_margins, 95, exp(i).um_per_pixel);
+            estimatePSF( exp(i).dir, 512, exp(i).crop_margins, 95, exp(i).um_per_pixel);
         %Generate figure and save
         fig = plotPSF(psf, img, exp(i).sessionID);
         save_dir = fileparts(exp(i).dir); %Save in main data dir

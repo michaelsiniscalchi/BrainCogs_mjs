@@ -156,8 +156,17 @@ if calculate.fluorescence
 
         % Encoding model
         if calculate.encoding_model
+            %Load combined imaging & behavioral data
             img_beh = load(mat_file.img_beh(i),'dFF','t','cellID','trialData','trials');
-            encodingMdl = encodingModel(img_beh, params.encoding);
+            %Format predictors
+            % params.encoding.predictorNames = ["start",...
+            %     "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
+            %     "leftPuffs","rightPuffs","leftTowers","rightTowers",...
+            %     "reward","noReward",...
+            %     "trialIdx","position","viewAngle","velocity","acceleration"]; 
+            [ predictors, encodingData ] = encoding_makePredictors( img_beh, params.encoding );
+            %Run encoding model
+            encodingMdl = encodingModel(predictors, img_beh.dFF, encodingData);
             
             %Align model-predicted dFF 
             cells = struct('dFF', {encodingMdl.predictedDFF}, 't', img_beh.t);
@@ -179,14 +188,22 @@ if calculate.fluorescence
             metadata = load(mat_file.results.cellFluo(i), 'cellID', 'session');
             encodingMdl.cellID = metadata.cellID;
             encodingMdl.session = metadata.session;
+            
+            % ***TO DO: Determine relative contributions of each variable
+            % for j = 1:numel(encodingMdl.model)
+            %     mdl = encodingMdl.model{j}; %One variable per cell (otherwise struct will exceed 2GB limit)
+            %     mdlComp = ;
+            % end
 
-            %Save results
+            %Save results for each cell
             for j = 1:numel(encodingMdl.model)
                 mdl = encodingMdl.model{j}; %One variable per cell (otherwise struct will exceed 2GB limit)
                 save(fullfile(fileparts(mat_file.results.encoding(i)),...
                     ['encodingMdl_','cell', encodingMdl.cellID{j}]), "mdl");                    
             end
             encodingMdl = rmfield(encodingMdl, "model"); %Remove field after unpacking
+            
+            %Save metadata
             save(mat_file.results.encoding(i), '-struct', 'encodingMdl');
         end
 

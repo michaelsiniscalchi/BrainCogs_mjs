@@ -12,7 +12,7 @@ colors = [colors {'pink',c(8,:),'pink2',c2(8,:),'gray',c(9,:),'gray2',[0.7,0.7,0
 cbrew = struct(colors{:}); %Merge palettes
 clearvars colors
 
-% %Define color codes for cell types, etc.
+%Define color codes for cell types, etc.
 choiceColors = {'left',cbrew.red,'left2',cbrew.red2,'right',cbrew.blue,'right2',cbrew.blue2};
 ruleColors = {'all',cbrew.black,'alternation',cbrew.purple,'alternation2',cbrew.purple2,...
     'congruent',cbrew.black,'congruent2',cbrew.gray,'conflict',cbrew.red,'conflict2',cbrew.red2};
@@ -23,7 +23,7 @@ performanceColors = {'bias',cbrew.green2};
 kinematicsColors =...
     {'viewAngle', cbrew.black, 'position',cbrew.black,...
     'velocity',cbrew.black,'acceleration',cbrew.black};
-dataColors = {'data',cbrew.black,'data2',cbrew.gray};
+dataColors = {'data',cbrew.black,'data2',cbrew.gray,'time',cbrew.black,'trialIdx',cbrew.black};
 colors = struct(choiceColors{:}, ruleColors{:}, outcomeColors{:}, performanceColors{:},...
     kinematicsColors{:}, dataColors{:});
 

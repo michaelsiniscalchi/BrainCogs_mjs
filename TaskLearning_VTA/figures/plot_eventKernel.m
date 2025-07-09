@@ -22,7 +22,7 @@ cellIdx = 1:numel(glm.cellID);
 % legend_loc = 'bestoutside';
 % Initialize figures
 figs = gobjects(numel(cellIdx),1); %Initialize
-fig_pos = [100,400,450,300]; %LBWH
+fig_pos = [100,400,600,400]; %LBWH
 legend_loc = 'bestoutside';
 if numel(panels)>1
     fig_pos = [100,400,300*(numel(panels)),300]; %LBWH
@@ -35,14 +35,16 @@ end
 
 for i = 1:numel(cellIdx)
 
-% isempty(varName(k))
-
     % Assign specified signals to each structure in the array 'panels'
     idx = cellIdx(i); %Index in 'cells' structure for cell with corresponding cell ID
     disp(['Plotting event kernels for ' num2str(i) '/' num2str(numel(cellIdx)) '...']);
     for j = 1:numel(panels)
                
         varName = panels(j).varName;
+        if ~isfield(glm.kernel,varName)
+            continue
+        end
+
         for k = 1:numel(varName)
             %Time/position axis
             wIndex = glm.kernel(i).(varName(k)).t >= panels(j).window(1) &...
