@@ -267,8 +267,6 @@ expData(i).mainMaze = 9;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%M33 (2 blocks)
-
 %M32 (1 block completed) 
 expData(i).sub_dir = '240821-m32-maze7'; 
 expData(i).subjectID = "mjs20_32";
@@ -300,6 +298,24 @@ expData(i).subjectID = "mjs20_32";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+
+%M33 (2 blocks)
+expData(i).sub_dir = '241031-m33-maze7'; 
+expData(i).subjectID = "mjs20_33";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '241105-m33-maze7'; 
+expData(i).subjectID = "mjs20_33";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '241206-m33-maze7'; 
+expData(i).subjectID = "mjs20_33";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
 
 %m199 (1 block completed)
 expData(i).sub_dir = '241206-m199-maze7'; 
@@ -483,3 +499,5 @@ expData(i).subjectID = "mjs20_913";
 expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+
+%
