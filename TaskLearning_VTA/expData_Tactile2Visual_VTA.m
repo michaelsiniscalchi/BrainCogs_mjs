@@ -358,14 +358,14 @@ i = i+1;
 
 %% VTA Cohort #4 (N=3)
 
-%M40 (4 blocks)
+%M40 DAT-cre::jGCaMP8s (4 blocks)
 expData(i).sub_dir = '250203-m40-maze7'; 
 expData(i).subjectID = "mjs20_40";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%M42 (4 blocks)
+%M42 DAT-cre::jGCaMP8s + Fellin Lens (4 blocks)
 expData(i).sub_dir = '250117-m42-maze7'; 
 expData(i).subjectID = "mjs20_42";
 expData(i).mainMaze = 7;
@@ -447,8 +447,7 @@ expData(i).mainMaze = 10;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-
-%M913 (2 blocks)
+%M913 DAT-cre::jGCaMP8s (2 blocks)
 expData(i).sub_dir = '250116-m913-maze7'; 
 expData(i).subjectID = "mjs20_913";
 expData(i).mainMaze = 7;
@@ -500,14 +499,7 @@ expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%M480
-expData(i).sub_dir = '250630-m480-maze7'; 
-expData(i).subjectID = "mjs20_480";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-
-%M478 (2 blocks but probably only one neuron)
+%M478 DAT-cre::jGCaMP8s (2 blocks but probably only one neuron)
 expData(i).sub_dir = '250603-m478-maze7'; 
 expData(i).subjectID = "mjs20_478";
 expData(i).mainMaze = 7;
@@ -534,7 +526,29 @@ expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
+%M480 DAT-cre::jGCaMP8s
+expData(i).sub_dir = '250630-m480-maze7'; 
+expData(i).subjectID = "mjs20_480";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
 %M713 DAT-cre::RiboL1-jGCaMP8s
+expData(i).sub_dir = '250702-m713-maze7'; 
+expData(i).subjectID = "mjs20_713";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250709-m713-maze7'; 
+expData(i).subjectID = "mjs20_713";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250715-m713-maze7'; 
+expData(i).subjectID = "mjs20_713";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 
 %M714 DAT-cre::RiboL1-jGCaMP8s
 expData(i).sub_dir = '250703-m714-maze7'; 
