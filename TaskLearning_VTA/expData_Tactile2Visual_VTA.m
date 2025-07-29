@@ -527,6 +527,11 @@ expData(i).npCorrFactor = 0.3;
 i = i+1;
 
 %M480 DAT-cre::jGCaMP8s
+expData(i).sub_dir = '250623-m480-maze7'; 
+expData(i).subjectID = "mjs20_480";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 expData(i).sub_dir = '250630-m480-maze7'; 
 expData(i).subjectID = "mjs20_480";
 expData(i).mainMaze = 7;
