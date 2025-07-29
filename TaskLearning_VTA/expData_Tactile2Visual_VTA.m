@@ -533,3 +533,19 @@ expData(i).subjectID = "mjs20_478";
 expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+
+%M713 DAT-cre::RiboL1-jGCaMP8s
+
+%M714 DAT-cre::RiboL1-jGCaMP8s
+expData(i).sub_dir = '250703-m714-maze7'; 
+expData(i).subjectID = "mjs20_714";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250710-m714-maze7'; 
+expData(i).subjectID = "mjs20_714";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
+%M650 DAT-cre::RiboL1-jGCaMP8s
