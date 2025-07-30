@@ -68,15 +68,15 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
 
-ax(i).title         = "Rule Conflict";
-ax(i).comparison    = "conflict-cue-region";
-ax(i).trigger       = "cueRegion";
-ax(i).trialType     = ["congruent", "conflict"];
-ax(i).window        = [-50, 300];
-ax(i).color         = {colors.congruent, colors.conflict}; %Choice: left/hit/sound vs right/hit/sound
-ax(i).lineStyle     = {'-','-'};
-ax(i).xLabel        = 'Distance (cm)';  % XLabel
-i=i+1;
+% ax(i).title         = "Rule Conflict";
+% ax(i).comparison    = "conflict-cue-region";
+% ax(i).trigger       = "cueRegion";
+% ax(i).trialType     = ["congruent", "conflict"];
+% ax(i).window        = [-50, 300];
+% ax(i).color         = {colors.congruent, colors.conflict}; %Choice: left/hit/sound vs right/hit/sound
+% ax(i).lineStyle     = {'-','-'};
+% ax(i).xLabel        = 'Distance (cm)';  % XLabel
+% i=i+1;
 
 ax(i).title         = "Position";
 ax(i).comparison    = "position";
@@ -87,16 +87,6 @@ ax(i).color         = {colors.data}; %Choice: left/hit/sound vs right/hit/sound
 ax(i).lineStyle     = {'-'};
 ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
-
-% ax(i).title         = "Time";
-% ax(i).comparison    = "time";
-% ax(i).trigger       = "cueEntry";
-% ax(i).trialType     = ["forward"];
-% ax(i).window        = [-1, 3];
-% ax(i).color         = {colors.data}; %Choice: left/hit/sound vs right/hit/sound
-% ax(i).lineStyle     = {'-'};
-% ax(i).xLabel        = 'Time from cue entry (s)';  % XLabel
-% i=i+1;
 
 ax(i).title         = 'Rewarded';
 ax(i).comparison    = "prior-outcome";
@@ -222,7 +212,7 @@ ax(i).trialType = ["leftPuffs", "rightPuffs"];
 ax(i).window    = [-1, 3];
 ax(i).color      = {colors.left,colors.right}; 
 ax(i).lineStyle  = {'-','-'};
-ax(i).xLabel = 'Time from first cue (s)';  % XLabel
+ax(i).xLabel = 'Time from last cue (s)';  % XLabel
 i=i+1;
 
 ax(i).title      = 'Last Tower';
@@ -232,7 +222,7 @@ ax(i).trialType = ["leftTowers", "rightTowers"];
 ax(i).window    = [-1, 3];
 ax(i).color      = {colors.left,colors.right}; 
 ax(i).lineStyle  = {'-','-'};
-ax(i).xLabel = 'Time from first cue (s)';  % XLabel
+ax(i).xLabel = 'Time from last cue (s)';  % XLabel
 i=i+1;
 
 ax(i).title         = "Tower Responses";
