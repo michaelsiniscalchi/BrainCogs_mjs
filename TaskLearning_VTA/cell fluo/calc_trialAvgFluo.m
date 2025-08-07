@@ -66,7 +66,7 @@ for i = 1:numel(trial_dff)
         end
 
         %Subtract baseline, if specified
-        if isfield(params,'subtractBaseline') && params.subtractBaseline
+        if subtractBaseline
             if isfield(bootAvg,'t')
                 baseline = mean(dff(:,bootAvg.t<=0),2,"omitnan"); %Baseline = mean of windowed timepoints prior to event
             else
