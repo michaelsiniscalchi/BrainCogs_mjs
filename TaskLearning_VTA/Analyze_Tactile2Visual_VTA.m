@@ -64,7 +64,7 @@ if calculate.combined_data
             stackInfo = load(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'));
         else
             stackInfo = getRawStackInfo(fullfile(dirs.data, expData(i).sub_dir)); %get I2C data normally collected with iCorre()
-            save(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'),'struct','stackInfo');
+            save(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'),'-struct','stackInfo');
         end
         
         %Run basic behavioral processing for each imaging session
