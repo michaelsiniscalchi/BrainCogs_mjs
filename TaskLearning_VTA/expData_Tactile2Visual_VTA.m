@@ -499,6 +499,28 @@ expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
+%M477 DAT-cre::jGCaMP8s (2 blocks but probably few neurons)
+expData(i).sub_dir = '250603-m477-maze7'; 
+expData(i).subjectID = "mjs20_477";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250619-m477-maze7'; 
+expData(i).subjectID = "mjs20_477";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250624-m477-maze7'; 
+expData(i).subjectID = "mjs20_477";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250630-m477-maze8'; 
+expData(i).subjectID = "mjs20_477";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
 %M478 DAT-cre::jGCaMP8s (2 blocks but probably only one neuron)
 expData(i).sub_dir = '250603-m478-maze7'; 
 expData(i).subjectID = "mjs20_478";

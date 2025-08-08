@@ -58,22 +58,16 @@ end
 if calculate.combined_data
     for i = 1:numel(expData)
         %Synchronize imaging frames with behavioral time basis
-        if ~isfield(stackInfo,'I2C')
-            S = getRawStackInfo(fullfile(dirs.data, expData(i).sub_dir)); %get I2C data normally collected with iCorre()
-            stackInfo.I2C = S.I2C;
-        end
-        stackInfo = syncImagingBehavior(stackInfo, behavior);
-        %Save processed data
-        create_dirs(fileparts(mat_file.img_beh(i))); %Create save directory
-        if ~exist(mat_file.img_beh(i),'file')
-            save(mat_file.img_beh(i),'-struct','behavior');
+        
+        %Load stackInfo from file
+        if exist(mat_file.img_beh(i),'file')
+            stackInfo = load(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'));
         else
-            save(mat_file.img_beh(i),'-struct','behavior','-append');
+            stackInfo = getRawStackInfo(fullfile(dirs.data, expData(i).sub_dir)); %get I2C data normally collected with iCorre()
+            save(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'),'struct','stackInfo');
         end
-        save(mat_file.img_beh(i),'-struct','stackInfo','-append');
-
+        
         %Run basic behavioral processing for each imaging session
-        stackInfo = load(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'));
         subject.ID = expData(i).subjectID;
         key.session_date = datestr(stackInfo.startTime,'yyyy-mm-dd');
         if isfield(expData,'session_number') && ~isempty([expData.session_number])
@@ -85,7 +79,19 @@ if calculate.combined_data
         behavior = restrictImgTrials(behavior, expData(i).mainMaze, expData(i).excludeBlock);
         behavior = filterSessionStats(behavior);
         %Logistic regression
-        behavior = analyzeTaskStrategy2(behavior, params.behavior.nBins_psychometric);      
+        behavior = analyzeTaskStrategy2(behavior, params.behavior.nBins_psychometric);   
+ 
+        %Append behavior data to stackInfo
+        stackInfo = syncImagingBehavior(stackInfo, behavior);
+        
+        %Save processed data
+        create_dirs(fileparts(mat_file.img_beh(i))); %Create save directory
+        if ~exist(mat_file.img_beh(i),'file')
+            save(mat_file.img_beh(i),'-struct','behavior');
+        else
+            save(mat_file.img_beh(i),'-struct','behavior','-append');
+        end
+        save(mat_file.img_beh(i),'-struct','stackInfo','-append');
     end
     clearvars -except search_filter data_dir dirs expData calculate summarize figures mat_file params options;
 end

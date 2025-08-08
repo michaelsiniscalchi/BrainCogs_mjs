@@ -1,4 +1,3 @@
-tif_paths = 'Y:\michael\241011-m834-maze7\241011-m834-maze7_00001_00001.tif';
-
-[stack, tags, ImageDescription] =  loadtiffseq(...
-        tif_paths); % load raw stack (.tif)
+path ='Y:\michael\250307-m913-maze8';
+fname = '250307-m913-maze8_00002_00001.tif';
+[ stack, tags, ImageDescription ] = loadtiffseq(fullfile(path,fname));
