@@ -57,21 +57,6 @@ end
 %% CHECK DATA CONSISTENCY AND INITIALIZE FILE FOR COMBINED IMAGING-BEHAVIOR DATA
 if calculate.combined_data
     for i = 1:numel(expData)
-        %Run basic behavioral processing for each imaging session
-        stackInfo = load(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'));
-        subject.ID = expData(i).subjectID;
-        key.session_date = datestr(stackInfo.startTime,'yyyy-mm-dd');
-        if isfield(expData,'session_number') && ~isempty([expData.session_number])
-            key.session_number = expData.session_number;
-        end
-        %Extract basic behavioral data
-        behavior = getRemoteVRData( experiment, subject, key );
-        %Restrict stats to main maze and exclude specified blocks 
-        behavior = restrictImgTrials(behavior, expData(i).mainMaze, expData(i).excludeBlock);
-        behavior = filterSessionStats(behavior);
-        %Logistic regression
-        behavior = analyzeTaskStrategy2(behavior, params.behavior.nBins_psychometric);
-
         %Synchronize imaging frames with behavioral time basis
         if ~isfield(stackInfo,'I2C')
             S = getRawStackInfo(fullfile(dirs.data, expData(i).sub_dir)); %get I2C data normally collected with iCorre()
@@ -86,6 +71,21 @@ if calculate.combined_data
             save(mat_file.img_beh(i),'-struct','behavior','-append');
         end
         save(mat_file.img_beh(i),'-struct','stackInfo','-append');
+
+        %Run basic behavioral processing for each imaging session
+        stackInfo = load(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'));
+        subject.ID = expData(i).subjectID;
+        key.session_date = datestr(stackInfo.startTime,'yyyy-mm-dd');
+        if isfield(expData,'session_number') && ~isempty([expData.session_number])
+            key.session_number = expData.session_number;
+        end
+        %Extract basic behavioral data
+        behavior = getRemoteVRData( experiment, subject, key );
+        %Restrict stats to main maze and exclude specified blocks 
+        behavior = restrictImgTrials(behavior, expData(i).mainMaze, expData(i).excludeBlock);
+        behavior = filterSessionStats(behavior);
+        %Logistic regression
+        behavior = analyzeTaskStrategy2(behavior, params.behavior.nBins_psychometric);      
     end
     clearvars -except search_filter data_dir dirs expData calculate summarize figures mat_file params options;
 end

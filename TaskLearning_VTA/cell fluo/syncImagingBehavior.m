@@ -21,7 +21,7 @@ frameNum = unique(stackInfo.I2C.frameNumber); %Unique frame numbers
 meanTime = zeros(size(frameNum)); %ViRMEn time
 % stackInfo.t = zeros(sum(stackInfo.nFrames),1); %Iterpolated ViRMEn time for each frame in stack
 
-%Assign mean value of multiple timestamps per frame figure; plot(vrTime==vrTime2);
+%Assign mean value of multiple timestamps per frame 
 for i = 1:numel(frameNum)
     frIdx = stackInfo.I2C.frameNumber==frameNum(i);
         meanTime(i) = mean(vrTime(frIdx)); %Assign using mean time value from multiple packets
