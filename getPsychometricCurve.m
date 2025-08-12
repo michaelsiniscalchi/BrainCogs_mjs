@@ -46,11 +46,12 @@ for f = string(fieldnames(diffCues))'
     %Probability of right choice (binned)
     nBins = min(nBins, max(abs(diffCues.(f)))); %If no nBins is specified, determine number of bins using max of data
     binWidth = ceil(max(abs(diffCues.(f)))/nBins);
-    edges = 1 : binWidth : nBins*binWidth+1;
-    edges = [sort(-(edges-1)), edges(2:end)]; %Edges are in general E[x-1, x); E[x-1, x] for last edge
+    edges = 0 : binWidth : nBins*binWidth+1;
+    %Include 1 bin for X==0
+    edges = unique([(-(edges-1)), 0, 1, edges(2:end)]); %Edges are in general E[x-1, x); E[x-1, x] for last edge; note unique() sorts by default
     
-    bins = binWidth : binWidth : nBins*binWidth; %Aligned to most extreme value in each bin
-    psychStruct.(f).bins = sort([-bins, bins]); %Sort
+    bins = binWidth-1 : binWidth : (nBins*binWidth)-1; %Aligned to most extreme value in each bin
+    psychStruct.(f).bins = unique([-bins, 0, bins]); %Sort;  %Include 1 bin for X==0
 
     [nTrials, ~, bInd] = histcounts(diffCues.(f)(~omitMask), edges); %Frequency of each cue count; exclude omissions
     psychStruct.(f).pRight_binned = histcounts(diffCues.(f)(choiceMask), edges) ./ nTrials;

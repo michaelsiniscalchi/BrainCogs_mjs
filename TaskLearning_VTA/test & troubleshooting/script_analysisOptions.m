@@ -12,11 +12,10 @@ AnalysisNotebook_Tactile2Visual_behavior(search_filter);
 
 %%
 
-search_filter ='250404';
-% search_filter ='240412-m175';
+search_filter ='250212-m913-maze7';
 % options.calculate = struct('align_signals', true, 'trial_average_dFF', true,'encoding_model', true);
-options.calculate = struct('encoding_model', true);
-options.figures.encoding_model = true;
+options.calculate = struct('combined_data',true);
+% options.figures.encoding_model = true;
 Analyze_Tactile2Visual_VTA(search_filter, options);
 
 

@@ -96,7 +96,7 @@ if plots.collision_locations
 end
 
 %Plot Individual Longitudinal Performance
-if plots.longitudinal_performance
+if plots.longitudinal_performance && numel(subjects.sessions)>1
     %Full performance data for each subject
     %FUTURE: write a function using contains() an split() to plot from arbitrary
     %fields containing structs, eg ["glm1.sensitivity.puffs.left"]
@@ -131,7 +131,7 @@ if plots.session_summary
     end
 end
 
-if plots.longitudinal_glm
+if plots.longitudinal_glm && numel(subjects.sessions)>1
     saveDir = fullfile(dirs.results,'GLM_TowerSide_PuffSide');
     vars = {'towers','puffs','bias'};
     figs = fig_longitudinal_glm( subjects, vars, 'glm1', colors );
