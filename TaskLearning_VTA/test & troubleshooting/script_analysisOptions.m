@@ -22,7 +22,7 @@ Analyze_Tactile2Visual_VTA(search_filter, options);
 
 %%
 %Figures
-search_filter ='250404';
-options.figures.encoding_coefficients = true;
-% options.figures.trial_average_dFF = true;
+search_filter ='250212';
+% options.figures.encoding_coefficients = true;
+options.figures.trial_average_dFF = true;
 figures_Tactile2Visual_VTA(search_filter, options); %In a separate script for brevity.
