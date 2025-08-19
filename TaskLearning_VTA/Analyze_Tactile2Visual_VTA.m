@@ -75,9 +75,7 @@ if calculate.combined_data
         end
         %Extract basic behavioral data
         behavior = getRemoteVRData( experiment, subject, key );
-        nQuantiles = 3;
-        behavior = get_CueQuantiles(behavior, nQuantiles); %Generate trial masks for each quantile of cue count
-
+        
         %Restrict stats to main maze and exclude specified blocks 
         behavior = restrictImgTrials(behavior, expData(i).mainMaze, expData(i).excludeBlock);
         behavior = filterSessionStats(behavior);
