@@ -39,18 +39,14 @@ plots = struct(...
 if exe.reloadData
     clearvars subjects;
     
-    % subjects.ID = ...
-    %     {"mjs20_32","mjs20_32",...
-    %     "mjs20_32","mjs20_32",...
-    %     "mjs20_32","mjs20_32","mjs20_32","mjs20_32",...
-    %     };
-
     %Switch data source
     if dataSource.remoteLogData && ~dataSource.experimentData
         setupDataJoint_mjs();
         subjects = getRemoteVRData( experiment, subject, key );
-        %Exclude warmup trials from correct rate for Main Mazes
+       
+        %Exclude warmup trials from stats for Main Mazes
         subjects = filterSessionStats(subjects);
+
     elseif dataSource.experimentData
         subjects = loadExperData([subjects.ID],dirs);
     end

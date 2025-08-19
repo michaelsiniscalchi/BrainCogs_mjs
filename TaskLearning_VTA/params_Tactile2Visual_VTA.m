@@ -102,7 +102,7 @@ mat_file.figData.fovProj        = @(sessionID) fullfile(dirs.figures,'FOV projec
 %% HYPERPARAMETERS FOR ANALYSIS
 
 % Behavior
-params.behavior.nBins_psychometric = 4;
+params.behavior.nBins_psychometric = 4; %number of bins (+1 for 0-cues)
 
 % Cellular fluorescence calculations
 params.fluo.exclBorderWidth     = 10; %For calc_cellF: n-pixel border of FOV to be excluded from analysis
@@ -120,6 +120,7 @@ params.bootAvg.dsFactor         = 1; %Downsample from interpolated rate of 1/par
 params.bootAvg.nReps            = 1000; %Number of bootstrap replicates
 params.bootAvg.CI               = 90; %Confidence interval as decimal
 params.bootAvg.subtractBaseline = false;
+params.bootAvg.cueSplitPerctile = 25; %Lower and upper percentile for trial averaging by cue type
 params.bootAvg   = specBootAvgParams(params.bootAvg); %params.bootAvg.trigger(1:3) = "start","firstcue","outcome", etc...
 
 % Encoding model

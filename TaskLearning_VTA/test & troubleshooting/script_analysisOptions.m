@@ -7,8 +7,9 @@ options.figures = struct('FOV_mean_projection', false, 'session_summary', true, 
 figures_Tactile2Visual_VTA('240222', options);
 
 %%
-search_filter ='018';
-AnalysisNotebook_Tactile2Visual_behavior(search_filter);
+subjectID ='mjs20_913';
+sessionDate = '2025-02-12';
+AnalysisNotebook_Tactile2Visual_behavior( subjectID, sessionDate );
 
 %%
 

@@ -5,7 +5,8 @@ fields.params = ["taskRule","level","reward_scale","maxSkidAngle","lCue","lMem",
 fields.counts = ["nTrials","nCompleted","nForward"];
 fields.mean = ["pCorrect","pCorrect_congruent","pCorrect_conflict",...
     "pLeftTowers","pLeftPuffs","pLeftCues","pOmit","pStuck"];
-fields.other = ["median_velocity","median_pSkid","median_stuckTime","bias"];
+fields.other = ["median_velocity","median_pSkid","median_stuckTime",...
+    "median_duration_cueRegion","bias"];
 
 for i = 1:numel(subjects)
     exclSessionIdx = false(size(subjects(i).sessions));

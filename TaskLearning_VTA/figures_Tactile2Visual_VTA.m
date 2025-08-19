@@ -97,7 +97,7 @@ if figures.trial_average_dFF
 
         for j = 1:numel(comparisons)
             panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
-            event = [params.figs.bootAvg.panels(panelIdx(1)).trigger];
+            event = [params.figs.bootAvg.panels(panelIdx(1)).trigger]; %All panels in comparison need to have same trigger
             figs = plot_trialAvgDFF(bootAvg.(event), cellID, expData(i).sub_dir,...
                 params.figs.bootAvg.panels(panelIdx));
             save_multiplePlots(figs, save_dir); %save as FIG and PNG
