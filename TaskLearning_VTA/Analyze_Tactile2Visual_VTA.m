@@ -60,7 +60,7 @@ if calculate.combined_data
         %Synchronize imaging frames with behavioral time basis
         
         %Load stackInfo from file
-        if exist(mat_file.img_beh(i),'file')
+        if exist(mat_file.stack_info(i),'file')
             stackInfo = load(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'));
         else
             stackInfo = getRawStackInfo(fullfile(dirs.data, expData(i).sub_dir)); %get I2C data normally collected with iCorre()
