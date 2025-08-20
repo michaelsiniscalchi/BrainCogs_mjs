@@ -93,8 +93,8 @@ if figures.trial_average_dFF
         save_dir = fullfile(dirs.figures,'Cellular fluorescence', expData(i).sub_dir);   %Figures directory: single units
         create_dirs(save_dir); %Create dir for these figures
         %Save figure for each cell plotting all combinations of choice x outcome
-        % comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
-        comparisons = "first-tower"; %TEMP
+        comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
+        % comparisons = "first-tower"; %TEMP
         for j = 1:numel(comparisons)
             panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
             event = [params.figs.bootAvg.panels(panelIdx(1)).trigger]; %All panels in comparison need to have same trigger
