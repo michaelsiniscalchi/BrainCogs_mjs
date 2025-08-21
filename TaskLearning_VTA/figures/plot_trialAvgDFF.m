@@ -60,13 +60,13 @@ for i = 1:numel(cellIdx)
             end
 
             %Legend entries
-            leg_name =  replace(trialSpec,'_',' ');
+            leg_name =  split(char(trialSpec),'_');
             panels(j).legend_names{k} =  string([upper(leg_name{1}(1)), leg_name{1}(2:end)]); %Leading trial specifier, all others should generally be fixed
 
             if panels(j).verboseLegend
                 %Remaining (fixed) trial conditions, if desired
-                for kk = 2:numel(trialSpec) %
-                    panels(j).legend_names{k} = [panels(j).legend_names{k} ' ' trialSpec{kk}];
+                for kk = 2:numel(leg_name) %
+                    panels(j).legend_names{k} = join([panels(j).legend_names{k}, leg_name{kk}]);
                 end
             end
 
