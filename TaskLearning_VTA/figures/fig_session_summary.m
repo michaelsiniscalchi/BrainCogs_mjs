@@ -3,11 +3,11 @@ function figs = fig_session_summary(subject, glmName, colors)
 figs = gobjects(numel(subject.sessions),1);
 S = subject.sessions;
 for i = 1:numel(subject.sessions)
-    if S(i).taskRule=="forcedChoice"
+    if S(i).taskRule=="forcedChoice" || S(i).nTrials<100
         continue
-    elseif numel(S(i).movmeanAccuracy)>1
-        disp('');
     end
+
+    % || all(arrayfun(@(f) isempty(S(i).(f)), ["glm1","glm2"]))
 
     figs(i) = ...
         figure('Name', strjoin([subject.ID, datestr(S(i).session_date,'yymmdd'), S(i).taskRule, string(glmName)],'-'),...
@@ -68,17 +68,11 @@ for i = 1:numel(subject.sessions)
 
     %--- Psychometric curves for Towers -- all/congruent/conflict trials
     ax(5)=nexttile;
+    S(i).psychometric.data = S(i).psychometric; %Rename field for all (congruent|conflict) to "data"
+    S(i).psychometric = rmfield(S(i).psychometric,{'towers','puffs','all'});
     if ~isempty(S(i).psychometric)
         if ~isempty(S(i).(glmName).psychometric)
             S(i).psychometric.model = S(i).(glmName).psychometric;
-            S(i).psychometric.data = S(i).psychometric.all; %Rename field for all (congruent|conflict) to "data"
-            S(i).psychometric =...
-                rmfield(S(i).psychometric,"all"); %Rename field for all (congruent|conflict) to "data"
-            %Remove special fields for congruent & conflict trials
-            if any(isfield(S(i).psychometric,["congruent","conflict"]))
-                S(i).psychometric =...
-                    rmfield(S(i).psychometric,["congruent","conflict"]); %Replace congruent/incongruent with Data/Model
-            end
         end
     lgd = plotPsychometric(S(i).psychometric, "towers", colors, ""); %p = plotPsychometric(psychStruct, cueName, colors, title_str)
     lgd.Visible='off';

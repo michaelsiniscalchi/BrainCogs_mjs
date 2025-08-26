@@ -16,8 +16,8 @@ calculate.encoding_model            = false; %Encoding model
 
 
 %% SUMMARIZE RESULTS
-summarize.trialDFF              = false;
-summarize.imaging               = false;
+summarize.trialDFF              = true;
+
 summarize.selectivity           = false;
 
 summarize.stats                     = false; %Descriptive stats; needed for all summary plots
@@ -89,10 +89,12 @@ mat_file.stack_info         = @(idx) fullfile(dirs.data,expData(idx).sub_dir,'st
 mat_file.img_beh            = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'img_beh.mat');
 mat_file.results.cellFluo   = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'results.mat');
 mat_file.results.encoding   = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'encoding.mat');
-%Aggregated
+%Aggregated by subject
+mat_file.summary.trialAvgFluo    = @(subjID) fullfile(dirs.summary, subjID, 'trialAvgFluo.mat');
+
+%Aggregated across subjects
 mat_file.summary.behavior       = fullfile(dirs.summary,'behavior.mat');
 mat_file.summary.imaging        = fullfile(dirs.summary,'imaging.mat');
-mat_file.summary.trialAvgDFF    = fullfile(dirs.summary,'trialAvgDFF.mat');
 mat_file.summary.selectivity    = fullfile(dirs.summary,'selectivity.mat');
 mat_file.stats                  = fullfile(dirs.summary,'summary_stats.mat');
 mat_file.validation             = fullfile(dirs.summary,'validation.mat');

@@ -53,20 +53,15 @@ for i = 1:numel(subjects)
             exclIdx = exclIdx | priorExclIdx;
         end
 
+        %Skip sessions with missing predictors
+        f = fieldnames(X);
+        if any(cellfun(@(f) all(isnan(X.(f))), f))
+            continue
+        end
+
         subjects(i).sessions(j).glm1 = logisticStats(X, response, trials, trialData, exclIdx, nBins_psychometric);
         b0 = subjects(i).sessions(j).glm1.bias.beta;
         subjects(i).sessions(j).glm1_bias = exp(b0)/(1+exp(b0)); %P = odds/(1+odds)
-
-%         %Append psychometric curve based on model parameters
-%         trials.right(~exclIdx) = subjects(i).sessions(j).glm1.predictedChoice; %Model/curve based on right-choice trials, omitted trials excluded within function
-%         subjects(i).sessions(j).glm1.psychometric = getPsychometricCurve(trialData, trials, ~exclIdx);
-% 
-%         %Side-specific cue sensitivity (similar to "slope" in Garcia, Lak et al., bioRxiv 2023)
-%         %Absolute difference between eg (pRight|rightCue) and pRight (approx by bias)
-%         b0 = subjects(i).sessions(j).glm1.bias.beta; %ln(odds)
-%         subjects(i).sessions(j).glm1.sensitivity.puffs = calcSensitivity(b0, rightChoice, rightPuffs);
-%         subjects(i).sessions(j).glm1.sensitivity.towers = calcSensitivity(b0, rightChoice, rightTowers);
-
         
         %% GLM 2: Logistic regression of Choices based on nCues_L, nCues_R
         % Y = B0 + nTowers_L*X + nTowers_R*X + nPuffs_L*X + nPuffs_R*X + error

@@ -221,24 +221,15 @@ end
 
 %% SUMMARY
 
+%Aggregate longitudinal data by subject
+%Trace individual cells
+%   -organize session data in structure for comparisons and longit. plotting
+%   -start with summary measures (peak & mean dF/F across 2-s following trigger)
+%Also calculate mean dF/F across cells
 if summarize.trialDFF
-    idx.sensory = find([expData.mainMaze]==6);
-    idx.alternation = find([expData.mainMaze]==7);
-    for rule = ["sensory","alternation"]
-        for i = 1:numel(idx.(rule))
-            S(i) = load(mat_file.results(idx.(rule)(i)),'bootAvg','cellID'); %Mean traces from each session %'subject','session',
-        end
-        %Temp--Later update results files to include subjectID & sessionID
-        for i = 1:numel(idx.(rule)) 
-            S(i).subject = expData(idx.(rule)(i)).subjectID;  
-            S(i).session = expData(idx.(rule)(i)).sub_dir; 
-        end
-        
-        [trialAvg.(rule), selectivity.(rule)] = getSummaryTrialAvg(S, params.summary.trialAvg);
+    
         save(mat_file.summary.trialAvgDFF,'-struct','trialAvg');
-        save(mat_file.summary.selectivity,'-struct','selectivity');
         clearvars S;
-    end
 end
 
 %% FIGURES

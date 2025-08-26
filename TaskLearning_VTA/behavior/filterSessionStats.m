@@ -14,6 +14,8 @@ for i = 1:numel(subjects)
 
         %Get main task rule (excl. isolated forced-choice blocks, etc.)
         S = subjects(i).sessions(j);
+        
+        disp(['Filtering session data from ' char(S.session_date)]) %Temp DEVO
 
         ruleNames = ["visual","tactile","sensory","alternation"];
         inclBlockIdx = ismember(S.taskRule, ruleNames);
@@ -137,14 +139,8 @@ for i = 1:numel(subjects)
         
         if S.pLeftCues
             %Psychometric
-            S.psychometric.all = getPsychometricCurve(trialData, trials, forwardMask, 4); %All trials
-            if any(trials.conflict) %Congruent and conflict trials separately
-                S.psychometric.congruent =...
-                    getPsychometricCurve(trialData, trials, trials.congruent & forwardMask, 4);
-                S.psychometric.conflict =...
-                    getPsychometricCurve(trialData, trials, trials.conflict & forwardMask, 4);
-            end
-
+            S.psychometric = getPsychometricCurve(trialData, trials, forwardMask, 4); %All trials
+  
             %Cue histogram
             edges = -max(abs(trialData.nTowers(:))):max(abs(trialData.nTowers(:))+1);
             S.cueHistogram.towers = histcounts(diff(trialData.nTowers, [], 2), edges);
