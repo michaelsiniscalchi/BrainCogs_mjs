@@ -77,5 +77,5 @@ for i = 1:numel(trial_dff)
         
         dff = dff(~isnan(sum(dff,2)),:); %Exclude traces that include NaNs
         bootAvg.(subset_label).cells(i) = getTrialBoot(dff,subset_label,params);
-    end   
+    end
 end

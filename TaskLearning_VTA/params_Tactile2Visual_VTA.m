@@ -59,6 +59,13 @@ if isfield(options, 'calculate') %For setting params from SLURM, etc.
     end
 end
 
+%Amend params based on input options
+if isfield(options, 'summarize') %For setting params from SLURM, etc.
+    for f = string(fieldnames(options.summarize))'
+        summarize.(f) = options.summarize.(f);
+    end
+end
+
 if isfield(options, 'figures') %For setting params from SLURM, etc.
     for f = string(fieldnames(options.figures))'
         figures.(f) = options.figures.(f);
@@ -122,7 +129,8 @@ params.bootAvg.dsFactor         = 1; %Downsample from interpolated rate of 1/par
 params.bootAvg.nReps            = 1000; %Number of bootstrap replicates
 params.bootAvg.CI               = 90; %Confidence interval as decimal
 params.bootAvg.subtractBaseline = false;
-params.bootAvg.cueSplitPerctile = 25; %Lower and upper percentile for trial averaging by cue type
+params.bootAvg.smoothWin        = 6; %Smoothing window in samples for peak finding, averaging, etc.
+params.bootAvg.avgWin           = 2; %Time interval post-cue, or surrounding peak, for averaging
 params.bootAvg   = specBootAvgParams(params.bootAvg); %params.bootAvg.trigger(1:3) = "start","firstcue","outcome", etc...
 
 % Encoding model

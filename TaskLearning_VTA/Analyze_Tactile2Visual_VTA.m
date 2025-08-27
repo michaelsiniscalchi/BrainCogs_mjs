@@ -143,20 +143,27 @@ if calculate.fluorescence
         % Event-related cellular fluorescence
         if calculate.trial_average_dFF %Trial averaged dF/F with bootstrapped CI
             load(mat_file.img_beh(i),'trialDFF','trials','cellID');
+            % load(mat_file.results.cellFluo(i)); %Load bootAvg ***DEVO
+
             for j = 1:numel(params.bootAvg) %For each trigger event
-                if ~exist('bootAvg') || ~isfield(bootAvg, params.bootAvg(j).trigger)
-                    bootAvg.(params.bootAvg(j).trigger) = struct();
+            % for j = 6 %***DEVO just outcome
+                P = params.bootAvg(j);
+                if ~exist('bootAvg') || ~isfield(bootAvg, P.trigger)
+                    bootAvg.(P.trigger) = struct();
                 end
-                bootAvg.(params.bootAvg(j).trigger) = calc_trialAvgFluo(trialDFF, trials,...
-                    params.bootAvg(j), bootAvg.(params.bootAvg(j).trigger)); %Include var bootAvg if multiple params.bootAvg use the same trigger (eg, w/o baseline subtraction)
+
+                bootAvg.(P.trigger) = calc_trialAvgFluo(trialDFF, trials, P, bootAvg.(P.trigger));
+                if P.timeAvg
+                    bootAvg.(P.trigger) = calcTimeAvgFluo(bootAvg.(P.trigger), P);
+                end
             end
 
             %Save results
-            session = expData(i).sub_dir; %Before running fresh, Stick these lines in <<if ~exist... >>
+            sessionID = expData(i).sub_dir; %Before running fresh, Stick these lines in <<if ~exist... >>
             subject = expData(i).subjectID;
             if ~exist(mat_file.results.cellFluo(i),'file')
-                save(mat_file.results.cellFluo(i),'subject','session','cellID','bootAvg'); %Save
-            else, save(mat_file.results.cellFluo(i),'subject','session','cellID','bootAvg','-append');
+                save(mat_file.results.cellFluo(i),'subject','sessionID','cellID','bootAvg'); %Save
+            else, save(mat_file.results.cellFluo(i),'subject','sessionID','cellID','bootAvg','-append');
             end
             clearvars trialDFF trials cellID bootAvg
         end
@@ -166,11 +173,6 @@ if calculate.fluorescence
             %Load combined imaging & behavioral data
             img_beh = load(mat_file.img_beh(i),'dFF','t','cellID','trialData','trials');
             %Format predictors
-            % params.encoding.predictorNames = ["start",...
-            %     "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
-            %     "leftPuffs","rightPuffs","leftTowers","rightTowers",...
-            %     "reward","noReward",...
-            %     "trialIdx","position","viewAngle","velocity","acceleration"]; 
             [ predictors, encodingData ] = encoding_makePredictors( img_beh, params.encoding );
             %Run encoding model
             encodingMdl = encodingModel(predictors, img_beh.dFF, encodingData);
@@ -192,9 +194,9 @@ if calculate.fluorescence
             end
 
             %Get metadata from cellular fluorescence file
-            metadata = load(mat_file.results.cellFluo(i), 'cellID', 'session');
+            metadata = load(mat_file.results.cellFluo(i), 'cellID', 'sessionID');
             encodingMdl.cellID = metadata.cellID;
-            encodingMdl.session = metadata.session;
+            encodingMdl.session = metadata.sessionID;
             
             % ***TO DO: Determine relative contributions of each variable
             % for j = 1:numel(encodingMdl.model)
@@ -227,9 +229,22 @@ end
 %   -start with summary measures (peak & mean dF/F across 2-s following trigger)
 %Also calculate mean dF/F across cells
 if summarize.trialDFF
-    
-        save(mat_file.summary.trialAvgDFF,'-struct','trialAvg');
-        clearvars S;
+    % Get all sessions from subject
+    subjectID = expData.subjectID;
+    [~, expData] = expData_Tactile2Visual_VTA(dirs);
+    expData = expData(contains([expData(:).subjectID]', subjectID)); %Filter by data-directory name, etc.
+    trialAvg = struct();
+    for i = 1:numel(expData)
+        I = load(mat_file.img_beh(i),'sessions','trialData','trials'); 
+        S = load(mat_file.results.cellFluo(i));
+        %Get peak and mean dF/F for each bootAvg and append to results file
+        %FUTURE: move to trialAvgDFF section?
+        %Find peak and calculate mean within post-trigger window
+
+
+        save(mat_file.results.cellFluo(i),"-struct","trialAvg");
+    end
+    clearvars S;
 end
 
 %% FIGURES
