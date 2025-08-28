@@ -24,7 +24,7 @@ if trigger ~= "cueRegion"
     % Index and truncate time vector if specified
     wIndex = time >= params.timeWindow(1) & time <= params.timeWindow(2);
     bootAvg.t = time(wIndex);
-    
+
 else %Separate analysis for dF/F binned by spatial position
     % Truncate dFF and position vector if specified
     wIndex = position >= params.positionWindow(1) & position <= params.positionWindow(2);
@@ -41,14 +41,14 @@ end
 
 % Calculate event-averaged dF/F
 for i = 1:numel(trial_dff)
-    disp(['Calculating trial-averaged dF/F for cell ' num2str(i) '/' num2str(numel(trial_dff))]);  
+    disp(['Calculating trial-averaged dF/F for cell ' num2str(i) '/' num2str(numel(trial_dff))]);
     for k = 1:numel(trialSpec)
         if numel(trialSpec{k})>1
             subset_label = join(trialSpec{k},'_');
         else
             subset_label = trialSpec{k};
         end
-                
+
         %Get dFF in time/position window for specified subset of trials
         trialMask = getMask(trials, trialSpec{k}); %Logical mask for specified combination of trials
         if any(trialMask)
@@ -59,23 +59,28 @@ for i = 1:numel(trial_dff)
             dff = nan(size(bootAvg.position));
         end
         disp(strjoin([subset_label ', ' num2str(sum(trialMask)) ' trials.'],''));
-        
+
         %Convert trialwise cell arrays to matrices
         if iscell(dff)
             dff = cell2mat(dff);
         end
 
+        %Specify appropriate domain (time or position)
+        if isfield(bootAvg, 't')
+            x = bootAvg.t;
+        else
+            x = bootAvg.position;
+        end
+        
         %Subtract baseline, if specified
         if subtractBaseline
-            if isfield(bootAvg,'t')
-                baseline = mean(dff(:,bootAvg.t<=0),2,"omitnan"); %Baseline = mean of windowed timepoints prior to event
-            else
-                baseline = mean(dff(:,bootAvg.position<=0),2,"omitnan");
-            end
+            baseline = mean(dff(:,x<=0),2,"omitnan"); %Baseline = mean of windowed timepoints prior to event
             dff = dff - baseline;
         end
         
+        %Bootstrap dF/F for each subset of trials
         dff = dff(~isnan(sum(dff,2)),:); %Exclude traces that include NaNs
-        bootAvg.(subset_label).cells(i) = getTrialBoot(dff,subset_label,params);
-    end
+        [bootAvg.(subset_label).cells(i)] = getTrialBoot(dff, x, subset_label, params);
+        
+    end %End trial subsets
 end

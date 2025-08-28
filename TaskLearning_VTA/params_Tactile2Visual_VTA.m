@@ -16,10 +16,8 @@ calculate.encoding_model            = false; %Encoding model
 
 
 %% SUMMARIZE RESULTS
-summarize.trialDFF              = true;
-
-summarize.selectivity           = false;
-
+summarize.trialAvgFluo              = true;
+summarize.selectivity               = false;
 summarize.stats                     = false; %Descriptive stats; needed for all summary plots
 summarize.table_experiments         = false;
 summarize.table_descriptive_stats   = false;

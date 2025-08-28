@@ -94,8 +94,6 @@ end
 %Plot Individual Longitudinal Performance
 if plots.longitudinal_performance && numel(subjects.sessions)>1
     %Full performance data for each subject
-    %FUTURE: write a function using contains() an split() to plot from arbitrary
-    %fields containing structs, eg ["glm1.sensitivity.puffs.left"]
     saveDir = fullfile(dirs.results,'Performance');
 
     params = struct('colors', colors, 'lineWidth', 1.5,...

@@ -64,7 +64,7 @@ if calculate.combined_data
             stackInfo = load(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'));
         else
             stackInfo = getRawStackInfo(fullfile(dirs.data, expData(i).sub_dir)); %get I2C data normally collected with iCorre()
-            save(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'),'-struct','stackInfo');
+            save(mat_file.stack_info(i),'-struct','stackInfo');
         end
         
         %Run basic behavioral processing for each imaging session
@@ -143,23 +143,17 @@ if calculate.fluorescence
         % Event-related cellular fluorescence
         if calculate.trial_average_dFF %Trial averaged dF/F with bootstrapped CI
             load(mat_file.img_beh(i),'trialDFF','trials','cellID');
-            % load(mat_file.results.cellFluo(i)); %Load bootAvg ***DEVO
-
-            for j = 1:numel(params.bootAvg) %For each trigger event
-            % for j = 6 %***DEVO just outcome
+            % % for j = 1:numel(params.bootAvg) %For each trigger event
+            for j = 6 %***DEVO just outcome
                 P = params.bootAvg(j);
                 if ~exist('bootAvg') || ~isfield(bootAvg, P.trigger)
                     bootAvg.(P.trigger) = struct();
                 end
-
                 bootAvg.(P.trigger) = calc_trialAvgFluo(trialDFF, trials, P, bootAvg.(P.trigger));
-                if P.timeAvg
-                    bootAvg.(P.trigger) = calcTimeAvgFluo(bootAvg.(P.trigger), P);
-                end
             end
 
             %Save results
-            sessionID = expData(i).sub_dir; %Before running fresh, Stick these lines in <<if ~exist... >>
+            sessionID = expData(i).sub_dir; 
             subject = expData(i).subjectID;
             if ~exist(mat_file.results.cellFluo(i),'file')
                 save(mat_file.results.cellFluo(i),'subject','sessionID','cellID','bootAvg'); %Save
@@ -221,32 +215,15 @@ if calculate.fluorescence
     disp(['Total time needed for cellular fluorescence analyses: ' num2str(toc) 'sec.']);
 end
 
-%% SUMMARY
+%% SUMMARY (Separate later into stand alone function)
 
 %Aggregate longitudinal data by subject
 %Trace individual cells
 %   -organize session data in structure for comparisons and longit. plotting
 %   -start with summary measures (peak & mean dF/F across 2-s following trigger)
 %Also calculate mean dF/F across cells
-if summarize.trialDFF
-    % Get all sessions from subject
-    subjectID = expData.subjectID;
-    [~, expData] = expData_Tactile2Visual_VTA(dirs);
-    expData = expData(contains([expData(:).subjectID]', subjectID)); %Filter by data-directory name, etc.
-    trialAvg = struct();
-    for i = 1:numel(expData)
-        I = load(mat_file.img_beh(i),'sessions','trialData','trials'); 
-        S = load(mat_file.results.cellFluo(i));
-        %Get peak and mean dF/F for each bootAvg and append to results file
-        %FUTURE: move to trialAvgDFF section?
-        %Find peak and calculate mean within post-trigger window
 
-
-        save(mat_file.results.cellFluo(i),"-struct","trialAvg");
-    end
-    clearvars S;
-end
 
 %% FIGURES
-
+summarize_Tactile2Visual_VTA(search_filter, options);
 figures_Tactile2Visual_VTA(search_filter, options); %In a separate function for brevity.
