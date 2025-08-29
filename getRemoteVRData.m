@@ -89,7 +89,7 @@ for i = 1:numel(subjects)
             'median_pSkid',[],'median_stuckTime',[],...
             'median_duration_cueRegion', [],...
             'bias', [],...
-            'psychometric', struct('congruent',struct(),'conflict',struct(),'all',struct()),...
+            'psychometric', struct('towers',struct(),'puffs',struct(),'all',struct()),...
             'cueHistogram', struct('towers',struct(),'puffs',struct(),'cueCounts',[]),...
             'excludeBlocks', [],...
             'new_remote_path_behavior_file', []);
@@ -462,13 +462,14 @@ for i = 1:numel(subjects)
         %Psychometric curves & histogram of cue counts for whole session
         cueHistogram = struct('puffs',[],'towers',[],'edges',[]);
         nBins = 4; %bins per cueSide
-        psychometric.all = getPsychometricCurve(trialData(j), trials(j), ~trials(j).exclude, nBins);
-        if any(trials(j).conflict) %Multimodal sessions
-            trialSubset = trials(j).congruent & ~trials(j).exclude;
-            psychometric.congruent = getPsychometricCurve(trialData(j), trials(j), trialSubset, nBins);
-            trialSubset = trials(j).conflict & ~trials(j).exclude;
-            psychometric.conflict = getPsychometricCurve(trialData(j), trials(j), trialSubset, nBins);
-        end
+        psychometric = getPsychometricCurve(trialData(j), trials(j), ~trials(j).exclude, nBins);
+        %***Remove? Probably not needed:
+        % if any(trials(j).conflict) %Multimodal sessions
+        %     trialSubset = trials(j).congruent & ~trials(j).exclude;
+        %     psychometric.congruent = getPsychometricCurve(trialData(j), trials(j), trialSubset, nBins);
+        %     trialSubset = trials(j).conflict & ~trials(j).exclude;
+        %     psychometric.conflict = getPsychometricCurve(trialData(j), trials(j), trialSubset, nBins);
+        % end
 
         %Cue histogram
         nTowers = trialData(j).nTowers;
@@ -483,6 +484,7 @@ for i = 1:numel(subjects)
         cueHistogram.omit.puffs = histcounts(diff(nPuffs(trials(j).omit,:),[],2), edges);
 
         %Store session data
+        %**FUTURE: include pCorrect and pError as function of trial type (cueCount, etc)
         sessions(j) = struct(...
             'session_date', datetime(sessionDate(j)),...
             'level', mazeLevel,...
