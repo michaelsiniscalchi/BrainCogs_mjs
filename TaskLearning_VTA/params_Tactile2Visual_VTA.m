@@ -123,12 +123,12 @@ params.align.binWidth       = 10; %Spatial bins in cm
 % Trial averaging
 params.bootAvg.timeWindow       = params.align.timeWindow; %Also used for bootavg, etc.
 params.bootAvg.positionWindow   = params.align.positionWindow; %Also used for bootavg, etc.
-params.bootAvg.dsFactor         = 1; %Downsample from interpolated rate of 1/params.interdt
+params.bootAvg.dsFactor         = 6; %Downsample from interpolated rate of 1/params.interdt
 params.bootAvg.nReps            = 1000; %Number of bootstrap replicates
 params.bootAvg.CI               = 90; %Confidence interval as decimal
 params.bootAvg.subtractBaseline = false;
 params.bootAvg.smoothWin        = 6; %Smoothing window in samples for peak finding, averaging, etc.
-params.bootAvg.avgWin           = 2; %Time interval post-cue, or surrounding peak, for averaging
+params.bootAvg.avgWin           = 2; %Time interval (s) post-cue, or surrounding peak, for averaging
 params.bootAvg   = specBootAvgParams(params.bootAvg); %params.bootAvg.trigger(1:3) = "start","firstcue","outcome", etc...
 
 % Encoding model
