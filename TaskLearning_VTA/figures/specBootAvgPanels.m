@@ -269,7 +269,7 @@ ax(i).xLabel = 'Time from outcome (s)';  % XLabel
 i=i+1;
 
 ax(i).title         = 'Time';
-ax(i).comparison    = "start";
+ax(i).comparison    = "time";
 ax(i).trigger       = "start";
 ax(i).trialType     = "forward";
 ax(i).window        = [-3, 7];
@@ -291,7 +291,7 @@ i=i+1;
 ax(i).title         = 'Choice';
 ax(i).comparison    = "choice-turn";
 ax(i).trigger       = "turnEntry";
-ax(i).trialType     = ["left", "right"];
+ax(i).trialType     = ["left_forward", "right_forward"];
 ax(i).window        = [-1, 3];
 ax(i).color         = {colors.left, colors.right};
 ax(i).lineStyle     = {'-','-'};
