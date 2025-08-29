@@ -143,8 +143,8 @@ if calculate.fluorescence
         % Event-related cellular fluorescence
         if calculate.trial_average_dFF %Trial averaged dF/F with bootstrapped CI
             load(mat_file.img_beh(i),'trialDFF','trials','cellID');
-            % % for j = 1:numel(params.bootAvg) %For each trigger event
-            for j = 6 %***DEVO just outcome
+            for j = 1:numel(params.bootAvg) %For each trigger event
+                % for j = 6 %***DEVO just outcome
                 P = params.bootAvg(j);
                 if ~exist('bootAvg') || ~isfield(bootAvg, P.trigger)
                     bootAvg.(P.trigger) = struct();
@@ -225,5 +225,5 @@ end
 
 
 %% FIGURES
-summarize_Tactile2Visual_VTA(search_filter, options);
+% summarize_Tactile2Visual_VTA(search_filter, options);
 figures_Tactile2Visual_VTA(search_filter, options); %In a separate function for brevity.
