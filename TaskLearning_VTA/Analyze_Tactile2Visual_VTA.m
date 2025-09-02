@@ -102,7 +102,7 @@ end
 if calculate.fluorescence
     tic; %Reset timer
     disp(['Processing cellular fluorescence data. ' int2str(numel(expData)) ' sessions total.']);
-    f = waitbar(0,'');
+    % f = waitbar(0,'');
     for i = 1:numel(expData)
         %Display waitbar
         msg = ['Session ' num2str(i) '/' num2str(numel(expData)) '...'];
@@ -211,7 +211,7 @@ if calculate.fluorescence
         end
 
     end
-    close(f);
+    % close(f);
     disp(['Total time needed for cellular fluorescence analyses: ' num2str(toc) 'sec.']);
 end
 
