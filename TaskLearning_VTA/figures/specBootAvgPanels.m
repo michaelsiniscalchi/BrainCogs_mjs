@@ -68,15 +68,25 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
 
-% ax(i).title         = "Rule Conflict";
-% ax(i).comparison    = "conflict-cue-region";
-% ax(i).trigger       = "cueRegion";
-% ax(i).trialType     = ["congruent", "conflict"];
-% ax(i).window        = [-50, 300];
-% ax(i).color         = {colors.congruent, colors.conflict}; %Choice: left/hit/sound vs right/hit/sound
-% ax(i).lineStyle     = {'-','-'};
-% ax(i).xLabel        = 'Distance (cm)';  % XLabel
-% i=i+1;
+ax(i).title         = "All Trials";
+ax(i).comparison    = "conflict-cue-region";
+ax(i).trigger       = "cueRegion";
+ax(i).trialType     = ["congruent", "conflict"];
+ax(i).window        = [-50, 300];
+ax(i).color         = {colors.congruent, colors.conflict}; %Choice: left/hit/sound vs right/hit/sound
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Distance (cm)';  % XLabel
+i=i+1;
+
+ax(i).title         = "Correct Trials";
+ax(i).comparison    = "conflict-cue-region";
+ax(i).trigger       = "cueRegion";
+ax(i).trialType     = ["congruent_correct", "conflict_correct"];
+ax(i).window        = [-50, 300];
+ax(i).color         = {colors.congruent, colors.conflict}; %Choice: left/hit/sound vs right/hit/sound
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Distance (cm)';  % XLabel
+i=i+1;
 
 ax(i).title         = "Position";
 ax(i).comparison    = "position";
