@@ -88,7 +88,7 @@ if calculate.combined_data
         %Save processed data
         create_dirs(fileparts(mat_file.img_beh(i))); %Create save directory
         if ~exist(mat_file.img_beh(i),'file')
-            save(mat_file.img_beh(i),'-struct','behavior');
+            save(mat_file.img_beh(i),'-struct','behavior','-v7.3');
         else
             save(mat_file.img_beh(i),'-struct','behavior','-append');
         end
