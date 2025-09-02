@@ -106,7 +106,7 @@ if calculate.fluorescence
     for i = 1:numel(expData)
         %Display waitbar
         msg = ['Session ' num2str(i) '/' num2str(numel(expData)) '...'];
-        waitbar(i/numel(expData),f,msg);
+        % waitbar(i/numel(expData),f,msg);
 
         %Load behavioral data and metadata from image stacks
         expData(i).img_beh = load(mat_file.img_beh(i),...
