@@ -73,7 +73,7 @@ ax(i).comparison    = "conflict-cue-region";
 ax(i).trigger       = "cueRegion";
 ax(i).trialType     = ["congruent", "conflict"];
 ax(i).window        = [-50, 300];
-ax(i).color         = {colors.congruent, colors.conflict}; %Choice: left/hit/sound vs right/hit/sound
+ax(i).color         = {colors.congruent, colors.conflict}; 
 ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
@@ -288,6 +288,7 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from start (s)';  % XLabel
 i=i+1;
 
+%---Turn Onset----------
 ax(i).title         = 'Choice';
 ax(i).comparison    = "choice-start";
 ax(i).trigger       = "start";
@@ -307,6 +308,46 @@ ax(i).color         = {colors.left, colors.right};
 ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from turn (s)';  % XLabel
 i=i+1;
+
+ax(i).title         = "Congruent Trials";
+ax(i).comparison    = "choice-turn-conflict";
+ax(i).trigger       = "turnEntry";
+ax(i).trialType     = ["left_congruent", "right_congruent"];
+ax(i).window        = [-1, 3];
+ax(i).color         = {colors.left, colors.right};
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+i=i+1;
+ax(i).title         = "Conflict Trials";
+ax(i).comparison    = "choice-turn-conflict";
+ax(i).trigger       = "turnEntry";
+ax(i).trialType     = ["left_conflict", "right_conflict"];
+ax(i).window        = [-1, 3];
+ax(i).color         = {colors.left, colors.right};
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+i=i+1;
+
+ax(i).title         = "All Trials";
+ax(i).comparison    = "conflict-turnEntry";
+ax(i).trigger       = "turnEntry";
+ax(i).trialType     = ["congruent", "conflict"];
+ax(i).window        = [-1, 3];
+ax(i).color         = {colors.congruent, colors.conflict}; 
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+i=i+1;
+
+ax(i).title         = "Correct Trials";
+ax(i).comparison    = "conflict-turnEntry";
+ax(i).trigger       = "turnEntry";
+ax(i).trialType     = ["congruent_correct", "conflict_correct"];
+ax(i).window        = [-1, 3];
+ax(i).color         = {colors.congruent, colors.conflict}; 
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+i=i+1;
+%------------
 
 ax(i).title      = 'Air Puff Responses';
 ax(i).comparison   = 'first-puff';
@@ -363,26 +404,6 @@ ax(i).color      = {colors.left, colors.right};
 ax(i).lineStyle  = {'-','-'};
 ax(i).xLabel = 'Time from first cue (s)';  % XLabel
 i=i+1;
-
-% ax(i).title      = 'Last Puff';
-% ax(i).comparison   = 'last-puff';
-% ax(i).trigger   = "lastPuff";
-% ax(i).trialType = ["leftPuffs", "rightPuffs"];
-% ax(i).window    = [-1, 3];
-% ax(i).color      = {colors.left,colors.right}; 
-% ax(i).lineStyle  = {'-','-'};
-% ax(i).xLabel = 'Time from last cue (s)';  % XLabel
-% i=i+1;
-% 
-% ax(i).title      = 'Last Tower';
-% ax(i).comparison   = 'last-tower';
-% ax(i).trigger   = "lastTower";
-% ax(i).trialType = ["leftTowers", "rightTowers"];
-% ax(i).window    = [-1, 3];
-% ax(i).color      = {colors.left,colors.right}; 
-% ax(i).lineStyle  = {'-','-'};
-% ax(i).xLabel = 'Time from last cue (s)';  % XLabel
-% i=i+1;
 
 ax(i).title         = "Tower Side";
 ax(i).comparison    = "tower-onset";
