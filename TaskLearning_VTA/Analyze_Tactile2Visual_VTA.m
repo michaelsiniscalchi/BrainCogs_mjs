@@ -156,7 +156,7 @@ if calculate.fluorescence
             sessionID = expData(i).sub_dir; 
             subject = expData(i).subjectID;
             if ~exist(mat_file.results.cellFluo(i),'file')
-                save(mat_file.results.cellFluo(i),'subject','sessionID','cellID','bootAvg'); %Save
+                save(mat_file.results.cellFluo(i),'subject','sessionID','cellID','bootAvg','-v7.3'); %Save
             else, save(mat_file.results.cellFluo(i),'subject','sessionID','cellID','bootAvg','-append');
             end
             clearvars trialDFF trials cellID bootAvg
