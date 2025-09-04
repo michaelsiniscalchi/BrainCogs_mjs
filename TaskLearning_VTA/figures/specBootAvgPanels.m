@@ -172,7 +172,7 @@ ax(i).trialType     = ["congruent_leftCues", "conflict_leftCues"];
 ax(i).window        = [-50, 300];
 ax(i).color         = {colors.congruent, colors.conflict};
 ax(i).lineStyle     = {'-','-'};
-ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
 ax(i).title         = "Relevant Cue Right";
 ax(i).comparison    = "cueRegion-cueSide-conflict";
@@ -181,7 +181,7 @@ ax(i).trialType     = ["congruent_rightCues", "conflict_rightCues"];
 ax(i).window        = [-50, 300];
 ax(i).color         = {colors.congruent, colors.conflict};
 ax(i).lineStyle     = {'-','-'};
-ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
 
 %%-------------------------------------------------------
