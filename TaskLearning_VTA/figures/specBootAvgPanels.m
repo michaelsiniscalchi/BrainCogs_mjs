@@ -12,7 +12,7 @@ colors = params.all.colors;
 
 i=1;
 
-%Summary Figure for Cue Region of Maze
+%---Summary Figure for Cue Region of Maze----------------------------------
 ax(i).title         = "Choice";
 ax(i).comparison    = "cue-region";
 ax(i).trigger       = "cueRegion";
@@ -68,8 +68,10 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
 
+%---OTHER CUE REGION COMPARISONS-------------------------------------------
+
 ax(i).title         = "All Trials";
-ax(i).comparison    = "conflict-cue-region";
+ax(i).comparison    = "cueRegion-conflict";
 ax(i).trigger       = "cueRegion";
 ax(i).trialType     = ["congruent", "conflict"];
 ax(i).window        = [-50, 300];
@@ -79,7 +81,7 @@ ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
 
 ax(i).title         = "Correct Trials";
-ax(i).comparison    = "conflict-cue-region";
+ax(i).comparison    = "cueRegion-conflict";
 ax(i).trigger       = "cueRegion";
 ax(i).trialType     = ["congruent_correct", "conflict_correct"];
 ax(i).window        = [-50, 300];
@@ -88,18 +90,8 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
 
-ax(i).title         = "Position";
-ax(i).comparison    = "position";
-ax(i).trigger       = "cueRegion";
-ax(i).trialType     = ["forward"];
-ax(i).window        = [-50, 300];
-ax(i).color         = {colors.data}; %Choice: left/hit/sound vs right/hit/sound
-ax(i).lineStyle     = {'-'};
-ax(i).xLabel        = 'Distance (cm)';  % XLabel
-i=i+1;
-
 ax(i).title         = "Air Puffs";
-ax(i).comparison    = "cueRegion-cue-count";
+ax(i).comparison    = "cueRegion-cueCount";
 ax(i).trigger       = "cueRegion";
 ax(i).trialType     = ["loPuffs","hiPuffs"];
 ax(i).window        = [-50, 300];
@@ -108,7 +100,7 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
 ax(i).title         = "Towers";
-ax(i).comparison    = "cueRegion-cue-count";
+ax(i).comparison    = "cueRegion-cueCount";
 ax(i).trigger       = "cueRegion";
 ax(i).trialType     = ["loTowers","hiTowers"];
 ax(i).window        = [-50, 300];
@@ -172,6 +164,27 @@ ax(i).color         = {colors.correct, colors.err}; %Outcome: hit/priorHit vs er
 ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
+
+ax(i).title         = "Relevant Cue Left";
+ax(i).comparison    = "cueRegion-cueSide-conflict";
+ax(i).trigger       = "cueRegion";
+ax(i).trialType     = ["congruent_leftCues", "conflict_leftCues"];
+ax(i).window        = [-50, 300];
+ax(i).color         = {colors.congruent, colors.conflict};
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+i=i+1;
+ax(i).title         = "Relevant Cue Right";
+ax(i).comparison    = "cueRegion-cueSide-conflict";
+ax(i).trigger       = "cueRegion";
+ax(i).trialType     = ["left_conflict", "right_conflict"];
+ax(i).window        = [-50, 300];
+ax(i).color         = {colors.congruent, colors.conflict};
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+i=i+1;
+
+%%-------------------------------------------------------
 
 ax(i).title         = 'Rewarded';
 ax(i).comparison    = "prior-outcome";
@@ -288,7 +301,7 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from start (s)';  % XLabel
 i=i+1;
 
-%---Turn Onset----------
+%---TURN ENTRY RESPONSES---------------------------------------------------
 ax(i).title         = 'Choice';
 ax(i).comparison    = "choice-start";
 ax(i).trigger       = "start";
@@ -305,6 +318,16 @@ ax(i).trigger       = "turnEntry";
 ax(i).trialType     = ["left", "right"];
 ax(i).window        = [-1, 3];
 ax(i).color         = {colors.left, colors.right};
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+i=i+1;
+
+ax(i).title         = 'Accuracy';
+ax(i).comparison    = "accuracy-turn";
+ax(i).trigger       = "turnEntry";
+ax(i).trialType     = ["correct", "error"];
+ax(i).window        = [-1, 3];
+ax(i).color         = {colors.correct, colors.err};
 ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from turn (s)';  % XLabel
 i=i+1;
@@ -443,6 +466,14 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from cue onset (s)';  % XLabel
 i=i+1;
 
+ax(i).title         = "Position";
+ax(i).comparison    = "position";
+ax(i).trigger       = "cueRegion";
+ax(i).trialType     = "forward";
+ax(i).window        = [-50, 300];
+ax(i).color         = {colors.data}; %Choice: left/hit/sound vs right/hit/sound
+ax(i).lineStyle     = {'-'};
+ax(i).xLabel        = 'Distance (cm)';  % XLabel
 
 [ax(:).yLabel]          = deal('Cellular Fluorescence (dF/F)');
 [ax(:).verboseLegend]   = deal(false);

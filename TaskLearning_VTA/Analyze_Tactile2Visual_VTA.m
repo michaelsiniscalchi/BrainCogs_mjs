@@ -64,7 +64,7 @@ if calculate.combined_data
             stackInfo = load(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'));
         else
             stackInfo = getRawStackInfo(fullfile(dirs.data, expData(i).sub_dir)); %get I2C data normally collected with iCorre()
-            save(mat_file.stack_info(i),'-struct','stackInfo');
+            save(mat_file.stack_info(i),'-struct','stackInfo','-v7.3');
         end
         
         %Run basic behavioral processing for each imaging session
@@ -207,7 +207,7 @@ if calculate.fluorescence
             encodingMdl = rmfield(encodingMdl, "model"); %Remove field after unpacking
             
             %Save metadata
-            save(mat_file.results.encoding(i), '-struct', 'encodingMdl');
+            save(mat_file.results.encoding(i), '-struct', 'encodingMdl', '-v7.3');
         end
 
     end
