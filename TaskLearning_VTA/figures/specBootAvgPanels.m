@@ -184,7 +184,7 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
 
-%%-------------------------------------------------------
+%%---OUTCOME RESPONSES-----------------------------------------------------
 
 ax(i).title         = 'Rewarded';
 ax(i).comparison    = "prior-outcome";
@@ -370,9 +370,10 @@ ax(i).color         = {colors.congruent, colors.conflict};
 ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from turn (s)';  % XLabel
 i=i+1;
-%------------
 
-ax(i).title      = 'Air Puff Responses';
+%---CUE RESPONSES----------------------------------------------------------
+
+ax(i).title      = 'Air Puff Response';
 ax(i).comparison   = 'first-puff';
 ax(i).trigger    = "firstPuff";
 ax(i).trialType  = ["leftPuffs", "rightPuffs"];
@@ -380,7 +381,16 @@ ax(i).window     = [-1, 3];
 ax(i).color      = {colors.left, colors.right}; 
 ax(i).lineStyle  = {'-','-'};
 ax(i).xLabel = 'Time from first cue (s)';  % XLabel
+ax(i).title      = 'Choice Contrast';
+ax(i).comparison   = 'first-puff';
+ax(i).trigger    = "firstPuff";
+ax(i).trialType  = ["left", "right"];
+ax(i).window     = [-1, 3];
+ax(i).color      = {colors.left, colors.right}; 
+ax(i).lineStyle  = {'-','-'};
+ax(i).xLabel = 'Time from first cue (s)';  % XLabel
 i=i+1;
+
 ax(i).title      = 'Low Count Trials';
 ax(i).comparison   = 'first-puff-count';
 ax(i).trigger   = "firstPuff";
@@ -400,7 +410,7 @@ ax(i).lineStyle  = {'-','-'};
 ax(i).xLabel = 'Time from first cue (s)';  % XLabel
 i=i+1;
 
-ax(i).title      = 'Tower Responses';
+ax(i).title      = 'Tower Response';
 ax(i).comparison   = 'first-tower';
 ax(i).trigger   = "firstTower";
 ax(i).trialType = ["leftTowers", "rightTowers"];
@@ -409,6 +419,16 @@ ax(i).color      = {colors.left, colors.right};
 ax(i).lineStyle  = {'-','-'};
 ax(i).xLabel = 'Time from first cue (s)';  % XLabel
 i=i+1;
+ax(i).title      = 'Choice Contrast';
+ax(i).comparison   = 'first-tower';
+ax(i).trigger    = "firstTower";
+ax(i).trialType  = ["left", "right"];
+ax(i).window     = [-1, 3];
+ax(i).color      = {colors.left, colors.right}; 
+ax(i).lineStyle  = {'-','-'};
+ax(i).xLabel = 'Time from first cue (s)';  % XLabel
+i=i+1;
+
 ax(i).title      = 'Low Count Trials';
 ax(i).comparison   = 'first-tower-count';
 ax(i).trigger   = "firstTower";
@@ -466,14 +486,17 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from cue onset (s)';  % XLabel
 i=i+1;
 
-ax(i).title         = "Position";
-ax(i).comparison    = "position";
-ax(i).trigger       = "cueRegion";
-ax(i).trialType     = "forward";
-ax(i).window        = [-50, 300];
-ax(i).color         = {colors.data}; %Choice: left/hit/sound vs right/hit/sound
-ax(i).lineStyle     = {'-'};
-ax(i).xLabel        = 'Distance (cm)';  % XLabel
+%%---POSITION (omit for now)-----------------------------------------------
+
+% ax(i).title         = "Position";
+% ax(i).comparison    = "position";
+% ax(i).trigger       = "cueRegion";
+% ax(i).trialType     = "forward";
+% ax(i).window        = [-50, 300];
+% ax(i).color         = {colors.data}; %Choice: left/hit/sound vs right/hit/sound
+% ax(i).lineStyle     = {'-'};
+% ax(i).xLabel        = 'Distance (cm)';  % XLabel
+
 
 [ax(:).yLabel]          = deal('Cellular Fluorescence (dF/F)');
 [ax(:).verboseLegend]   = deal(false);
