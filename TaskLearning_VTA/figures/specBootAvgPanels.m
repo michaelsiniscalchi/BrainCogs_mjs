@@ -381,6 +381,7 @@ ax(i).window     = [-1, 3];
 ax(i).color      = {colors.left, colors.right}; 
 ax(i).lineStyle  = {'-','-'};
 ax(i).xLabel = 'Time from first cue (s)';  % XLabel
+i=i+1;
 ax(i).title      = 'Choice Contrast';
 ax(i).comparison   = 'first-puff';
 ax(i).trigger    = "firstPuff";
