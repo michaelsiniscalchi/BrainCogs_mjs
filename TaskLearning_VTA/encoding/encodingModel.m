@@ -32,17 +32,20 @@ for i = 1:numel(dFF)
 
     %Estimate response kernels for each event-related predictor
     %***FOR SE, we need to linearly combine the MSE and take the square root! (you can't just take the weighted sum of the SEs) 
-    %*** or square the SE, do the matrix multiplication, and then take the SQRT...
+    %*** square the SE, do the matrix multiplication, and then take the SQRT...
     for varName = string(encodingData.eventNames)'
         estimate = bSpline * mdl.Coefficients.Estimate(idx.(varName)); %(approx. resp func) = bSpline * Beta
-        se = bSpline * mdl.Coefficients.SE(idx.(varName)); %***SEE NOTE ABOVE AND MODIFY***
+        % se = bSpline * mdl.Coefficients.SE(idx.(varName)); %***SEE NOTE ABOVE AND MODIFY***
+        mse = (mdl.Coefficients.SE(idx.(varName))).^2; %Calculate MSE, which is SE^2
+        se = sqrt(bSpline * mse); %Square root of weighted MSE
         glm.kernel(i).(varName).estimate = estimate'; %transpose for plotting
         glm.kernel(i).(varName).se = (estimate + [1,-1].*se)'; %Express as estimate +/- se; transpose for plotting
         glm.kernel(i).(varName).t = 0:dt:dt*(size(bSpline,1)-1);
         %AUC
         winDuration = range(glm.kernel(i).(varName).t);
         glm.kernel(i).(varName).AUC = mean(estimate)*winDuration;
-        glm.kernel(i).(varName).AUC_se = mean(se).*winDuration;
+        % glm.kernel(i).(varName).AUC_se = mean(se).*winDuration; %***SEE NOTE ABOVE AND MODIFY***
+        glm.kernel(i).(varName).AUC_se = sqrt(mean(mse).*winDuration);
         %Peak
         peak = max(abs(estimate)); %Find extreme value
         peakIdx = estimate==peak | estimate==-peak; %Get idx of extreme value
