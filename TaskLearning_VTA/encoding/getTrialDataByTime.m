@@ -5,7 +5,7 @@ initKinematicVar = @(varName, trialIdx)...
     pos_initFcn(size(trialData.time{trialIdx},1), size(trialData.(varName){trialIdx},2))...
     .*trialData.(varName){trialIdx}(end,:); %equal to final value if init_fcn is @ones; NaN if @nan
 
-B = struct("time", initCell, "trialIdx", initCell ,...
+B = struct("time", initCell, "trialIdx", initCell, "ITI", initCell,...
     "position", initCell, "velocity", initCell);
 fields = ["position","velocity"];
 for i = 1:numel([trialData.eventTimes.start])
@@ -29,6 +29,10 @@ for i = 1:numel([trialData.eventTimes.start])
 
     %Assign trial-wide variables: trial idx for each frame
     B.trialIdx{i} = i * ones(size(trialData.time{i}));
+
+    %ITI indicator variable
+    itiStart = trialData.eventTimes(i).outcome; %ITI spans time of outcome to start of next trial
+    B.ITI{i} = double(B.time{i}>itiStart); %Convert to double; model requires NaN for excluded time points
 
 end
 

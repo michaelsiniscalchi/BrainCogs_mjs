@@ -37,14 +37,15 @@ end
 
 %Summarize Longitudinal Trial-Averaged Data by Subject
 if summarize.trialAvgFluo
-   
     for i = 1:numel(expData)
         Beh(i) = load(mat_file.img_beh(i),'sessions','trialData','trials'); 
         Img(i) = load(mat_file.results.cellFluo(i));
-        S = load(mat_file.results.cellFluo(i));
     end
     S = aggregateTrialBoot(Img, Beh);
-    
     save(mat_file.summary.trialAvgFluo(subjectID),"-struct","S");
     clearvars S;
 end
+
+% pklfile_psytrack = 'X:\michael\tactile2visual-vta\summary\913_psytrack_all_sessions.pkl';
+% predictor_names = ["leftTowers","rightTowers","leftPuffs","rightPuffs"];
+% struct_out = psytrack_pickle2Mat(pklfile_psytrack, predictor_names);
