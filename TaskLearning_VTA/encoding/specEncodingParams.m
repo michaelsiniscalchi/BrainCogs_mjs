@@ -10,7 +10,7 @@ switch params.modelName
             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
             "leftPuffs","rightPuffs","leftTowers","rightTowers",...
             "reward","noReward",...
-            "position","ITI","viewAngle","velocity","acceleration"];
+            "position","viewAngle","velocity","acceleration","ITI"];
         params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
 
     case 'Pos_rew'
@@ -69,5 +69,17 @@ switch params.modelName
             "position","viewAngle","velocity","acceleration"];
         params.initFcn_position = @nan;
 
+end
+
+%List variables by type
+pNames = params.predictorNames;
+varNames.eventVars = ["start",...
+            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
+            "leftPuffs","rightPuffs","leftTowers","rightTowers",...
+            "reward","noReward"];
+varNames.indicatorVars = ["ITI","trialIdx","accuracy","priorOutcome"];
+varNames.kinematicVars = ["position","viewAngle","velocity","acceleration"];
+for f = string(fieldnames(varNames))'
+    params.(f) = pNames(ismember(pNames,varNames.(f)));
 end
 

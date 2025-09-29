@@ -97,7 +97,7 @@ for event = string(fieldnames(impulse))'
 end
 
 %Position splines
-binEdges = trialData.positionRange(1):params.binWidth_position:trialData.positionRange(2);
+binEdges = trialData.positionRange(1):params.bSpline_position_binWidth:trialData.positionRange(2);
 predictors.position(predictors.position<trialData.positionRange(1)) =...
     trialData.positionRange(1); %Trials where mouse moves backward from start position will likely be excluded, but need idx for implementation of position splines
 posIdx = discretize(predictors.position, binEdges); %Index each cm across position range; with wider bins, use discretize()
@@ -126,9 +126,10 @@ F = F(~ismember(F, params.predictorNames)); %Get fields not specified in input a
 impulse = rmfield(impulse, F);
 
 %Metadata & hyperparams
-encodingData.eventNames = fieldnames(impulse);
-encodingData.impulse = impulse;
-encodingData.bSpline = bSpline;
 encodingData.dt = mean(diff(t),'omitnan'); %Use mean dt
-encodingData.bSpline_pos = bSpline_pos;
-encodingData.params = params;
+for f = string(fieldnames(params))' %Store all input hyperparams
+    encodingData.(f) = params.(f);
+end
+encodingData.impulse = impulse; %event-times as delta functions in imaging time frame
+encodingData.bSpline = bSpline; %Store series of basis functions
+encodingData.bSpline_pos = bSpline_pos; %Basis funcs for position

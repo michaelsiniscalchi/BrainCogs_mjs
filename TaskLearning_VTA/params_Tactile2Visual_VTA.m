@@ -137,7 +137,7 @@ params.encoding.bSpline_nSamples    = 150; %N time points for spline basis set
 params.encoding.bSpline_degree      = 3; %degree of each (Bernstein polynomial) term
 params.encoding.bSpline_df          = 21; %number of terms:= order + N internal knots
 
-params.encoding.binWidth_position           = 1; %bin width in cm
+params.encoding.bSpline_position_binWidth   = 1; %bin width in cm
 params.encoding.bSpline_position_degree     = 3; %degree for position splines
 params.encoding.bSpline_position_df         = 5; %number of terms for position splines
 

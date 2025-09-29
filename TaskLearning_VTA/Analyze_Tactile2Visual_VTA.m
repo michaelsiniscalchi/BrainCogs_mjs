@@ -170,6 +170,15 @@ if calculate.fluorescence
             [ predictors, encodingData ] = encoding_makePredictors( img_beh, params.encoding );
             %Run encoding model
             encodingMdl = encodingModel(predictors, img_beh.dFF, encodingData);
+
+            %Determine relative contributions of each predictor
+            %Generate pseudo-sessions of behavior for approximating null distribution
+            % pseudoData = generatePseudoSessions(); %Design matrices X from shuffled trial data
+            % for j = 1:numel(encodingMdl.model)
+            %     % encodingMdl.relativeContribution =...
+            %     %     calcRelContrib(encodingMdl.model{j}, encodingMdl.predictorIdx);
+            %     [ RC, F, p ] = calcRelContrib(encodingMdl.model{j}, idx);
+            % end
             
             %Align model-predicted dFF 
             cells = struct('dFF', {encodingMdl.predictedDFF}, 't', img_beh.t);
@@ -192,12 +201,6 @@ if calculate.fluorescence
             encodingMdl.cellID = metadata.cellID;
             encodingMdl.session = metadata.sessionID;
             
-            % ***TO DO: Determine relative contributions of each variable
-            % for j = 1:numel(encodingMdl.model)
-            %     mdl = encodingMdl.model{j}; %One variable per cell (otherwise struct will exceed 2GB limit)
-            %     mdlComp = ;
-            % end
-
             %Save results for each cell
             for j = 1:numel(encodingMdl.model)
                 mdl = encodingMdl.model{j}; %One variable per cell (otherwise struct will exceed 2GB limit)

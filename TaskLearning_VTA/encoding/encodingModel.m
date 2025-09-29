@@ -30,32 +30,45 @@ for i = 1:numel(dFF)
     mdl = fitglm(X, dFF{i}, 'PredictorVars', varNames);
     glm.model{i} = mdl;
 
-    %Estimate response kernels for each event-related predictor
+    %Estimate response kernels for each event-related predictor (and other spline-bases) 
     %***FOR SE, we need to linearly combine the MSE and take the square root! (you can't just take the weighted sum of the SEs) 
     %*** square the SE, do the matrix multiplication, and then take the SQRT...
-    for varName = string(encodingData.eventNames)'
+    for varName = [string(encodingData.eventVars), "position"] %All event- & position-splines
+        if varName=="position"
+            bSpline = encodingData.bSpline_pos; %series of basis functions for position
+            binWidth = encodingData.bSpline_position_binWidth; %spatial bin width in cm
+        else
+            bSpline = encodingData.bSpline; %series of basis functions of time following event
+            binWidth = encodingData.dt; %Mean timestep per sample dF/F
+        end
         estimate = bSpline * mdl.Coefficients.Estimate(idx.(varName)); %(approx. resp func) = bSpline * Beta
-        % se = bSpline * mdl.Coefficients.SE(idx.(varName)); %***SEE NOTE ABOVE AND MODIFY***
         mse = (mdl.Coefficients.SE(idx.(varName))).^2; %Calculate MSE, which is SE^2
         se = sqrt(bSpline * mse); %Square root of weighted MSE
         glm.kernel(i).(varName).estimate = estimate'; %transpose for plotting
         glm.kernel(i).(varName).se = (estimate + [1,-1].*se)'; %Express as estimate +/- se; transpose for plotting
-        glm.kernel(i).(varName).t = 0:dt:dt*(size(bSpline,1)-1);
+        glm.kernel(i).(varName).x = 0:binWidth:binWidth*(size(bSpline,1)-1);
         %AUC
-        winDuration = range(glm.kernel(i).(varName).t);
+        winDuration = range(glm.kernel(i).(varName).x);
         glm.kernel(i).(varName).AUC = mean(estimate)*winDuration;
-        % glm.kernel(i).(varName).AUC_se = mean(se).*winDuration; %***SEE NOTE ABOVE AND MODIFY***
         glm.kernel(i).(varName).AUC_se = sqrt(mean(mse).*winDuration);
         %Peak
         peak = max(abs(estimate)); %Find extreme value
         peakIdx = estimate==peak | estimate==-peak; %Get idx of extreme value
         glm.kernel(i).(varName).peak = estimate(peakIdx); %Recover sign
         glm.kernel(i).(varName).peak_se = se(peakIdx,:)';
+        %L2 Norm of kernel estimate
+        glm.kernel(i).(varName).L2 = norm(estimate); %Approx vector magnitude
     end
 
 %Predict full time series from model
 glm.predictedDFF{i,:} = mdl.Fitted.Response;
 
+%Calculate condition number for inversion of moment matrix
+Xi = X(~isnan(sum(X,2)),:); %Omit nan rows, which are also omitted in regression
+moment = Xi'*Xi; %Moment matrix of regressors; note that X is already z-scored
+glm.conditionNum{i,:} = cond(moment); %Condition number
+glm.rank{i,:} = rank(moment); %Rank
+glm.corrMatrix{i,:} = corrcoef(Xi);
 end
 
 %Metadata

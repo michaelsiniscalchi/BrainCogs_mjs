@@ -31,7 +31,7 @@ Analyze_Tactile2Visual_VTA(search_filter, options);
 %%
 %Figures
 search_filter ='250212-m913-maze7';
-options.figures=struct('encoding_eventKernels',true,'encoding_coefficients', true);
+options.figures=struct('encoding_eventKernels',false,'encoding_coefficients', true);
 figures_Tactile2Visual_VTA(search_filter, options); %In a separate script for brevity.
 
 %% Summary
