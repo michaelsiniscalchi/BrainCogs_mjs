@@ -16,10 +16,6 @@ setup_figprops('timeseries')  %set up default figure plotting parameters
 
 cellIdx = 1:numel(glm.cellID);
 
-% % Initialize figures
-% figs = gobjects(numel(cellIdx),1); %Initialize
-% fig_pos = [100,400,1000,800]; %LBWH
-% legend_loc = 'bestoutside';
 % Initialize figures
 figs = gobjects(numel(cellIdx),1); %Initialize
 fig_pos = [100,400,600,400]; %LBWH
@@ -46,10 +42,11 @@ for i = 1:numel(cellIdx)
         end
 
         for k = 1:numel(varName)
-            %Time/position axis
-            wIndex = glm.kernel(i).(varName(k)).t >= panels(j).window(1) &...
-                glm.kernel(i).(varName(k)).t <= panels(j).window(2); %Domain from specBootAvgPanels()
-     
+            
+            %Truncate domain as specified in params
+            wIndex = glm.kernel(i).(varName(k)).x >= panels(j).window(1) &...
+                glm.kernel(i).(varName(k)).x <= panels(j).window(2); %Domain from specBootAvgPanels()
+            %Initialize panel fields for time series
             if ~isfield(glm.kernel, varName(k)) || isempty(varName(k))
                 panels(j).signal{k} = NaN(size(wIndex));
                 panels(j).CI{k} = NaN(2,size(wIndex,2));
@@ -61,7 +58,7 @@ for i = 1:numel(cellIdx)
                 strjoin([varName(k), "response"]); %Leading trial specifier, all others should generally be fixed
 
             %Signal and confidence bounds
-            panels(j).x = glm.kernel(i).(varName(k)).t(wIndex);
+            panels(j).x = glm.kernel(i).(varName(k)).x(wIndex);
             panels(j).signal{k} = glm.kernel(i).(varName(k)).estimate(wIndex);
             panels(j).CI{k} = glm.kernel(i).(varName(k)).se(:, wIndex);
         
@@ -69,8 +66,12 @@ for i = 1:numel(cellIdx)
         end
 
         %Labels
-        xLabel = 'Time from event (s)';
-        yLabel = 'Norm. response (dF/F)';
+        if varName=="position"
+            xLabel = 'Distance from start (cm)'; %Labels
+        else
+            xLabel = 'Time from event (s)'; %Labels
+        end
+        yLabel = 'Response (dF/F)';
     end
 
     ax_titles = {panels(:).title}'; %Specified in params.panels

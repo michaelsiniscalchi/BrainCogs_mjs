@@ -133,3 +133,4 @@ end
 encodingData.impulse = impulse; %event-times as delta functions in imaging time frame
 encodingData.bSpline = bSpline; %Store series of basis functions
 encodingData.bSpline_pos = bSpline_pos; %Basis funcs for position
+encodingData.position = binEdges(1:end-1); %Positions for domain of basis funcs

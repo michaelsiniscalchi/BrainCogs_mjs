@@ -20,8 +20,6 @@ for P = pNames
     idx.(P) = 1 + size(X,2) + (1:nTerms); %1st term reserved for intercept
     X = [X, predictors.(P)]; %#ok<AGROW> 
 end
-dt = encodingData.dt; %Mean timestep per sample dF/F
-bSpline = encodingData.bSpline;
 %Z-score the predictor matrix
 X = (X - mean(X,1,'omitnan')) ./ std(X,0,1,"omitnan"); %MATLAB zscore() does not allow 'omitnan'
 
@@ -37,16 +35,18 @@ for i = 1:numel(dFF)
         if varName=="position"
             bSpline = encodingData.bSpline_pos; %series of basis functions for position
             binWidth = encodingData.bSpline_position_binWidth; %spatial bin width in cm
+            x_min = encodingData.position(1); %Start location (cm)
         else
             bSpline = encodingData.bSpline; %series of basis functions of time following event
             binWidth = encodingData.dt; %Mean timestep per sample dF/F
+            x_min = 0; %time from event
         end
         estimate = bSpline * mdl.Coefficients.Estimate(idx.(varName)); %(approx. resp func) = bSpline * Beta
         mse = (mdl.Coefficients.SE(idx.(varName))).^2; %Calculate MSE, which is SE^2
         se = sqrt(bSpline * mse); %Square root of weighted MSE
         glm.kernel(i).(varName).estimate = estimate'; %transpose for plotting
         glm.kernel(i).(varName).se = (estimate + [1,-1].*se)'; %Express as estimate +/- se; transpose for plotting
-        glm.kernel(i).(varName).x = 0:binWidth:binWidth*(size(bSpline,1)-1);
+        glm.kernel(i).(varName).x = x_min:binWidth:binWidth*(size(bSpline,1)-1);
         %AUC
         winDuration = range(glm.kernel(i).(varName).x);
         glm.kernel(i).(varName).AUC = mean(estimate)*winDuration;
