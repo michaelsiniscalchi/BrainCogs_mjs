@@ -76,6 +76,18 @@ ax(i).lineStyle     = ["-","-"];
 ax(i).xLabel        = 'Time from outcome (s)';
 i=i+1;
 
+%Position
+ax(i).title         = "Position";
+ax(i).comparison    = "position";
+ax(i).trigger       = "cueRegion";
+ax(i).trialType     = "forward";
+ax(i).varName       = ["position"];
+ax(i).window        = [-30, 250];
+ax(i).color         = {colors.data}; 
+ax(i).lineStyle     = ["-"]; 
+ax(i).xLabel        = 'Position (cm)';
+i=i+1;
+
 % %Left vs. Right Choice
 % %Explore whether this should be a whole-trial variable, or a regression
 % %spline from start or turn
