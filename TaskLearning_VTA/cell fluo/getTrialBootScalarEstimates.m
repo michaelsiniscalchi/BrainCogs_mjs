@@ -1,7 +1,7 @@
 function stats = getTrialBootScalarEstimates(bootRep, t, params)
 
 %--------------------------------------------------------------------------
-% PURPOSE: To take scalar statistical estimates of bootstrapped sample of event-locked timeseries data 
+% PURPOSE: To take scalar statistical estimates of bootstrapped sample of event-locked timeseries data
 %
 % INPUT ARGS
 %   bootRep: Matrix of size nReps x nSamplePoints
@@ -9,9 +9,20 @@ function stats = getTrialBootScalarEstimates(bootRep, t, params)
 %   params: struct containing parameters for bootstrap analysis
 %
 % OUTPUTS
-%   stats: 
+%   stats:
 %
 %--------------------------------------------------------------------------
+
+%Initialize struct
+stats = struct(...
+    "timeAvg",NaN,"timeAvg_CI",NaN(2,1),...
+    "max",NaN,"max_t",NaN,"max_CI",NaN(2,1),... peak
+    "maxAvg",NaN,"maxAvg_CI",NaN(2,1),...
+    "min",NaN,"min_t",NaN,"min_CI",NaN(2,1),... trough
+    "minAvg",NaN,"minAvg_CI",NaN(2,1),...
+    "peak",NaN,"peak_t",NaN,"peak_CI",NaN(2,1),... absolute peak
+    "peakAvg",NaN,"peakAvg_CI",NaN(2,1)...
+    );
 
 %Mean within window following trigger
 idx = t>0 & t<params.avgWin; %sample idx for averaging around max
@@ -20,36 +31,31 @@ stats.timeAvg = mean(timeAvgReps);
 stats.timeAvg_CI(1,:) = prctile(timeAvgReps, 50+params.CI/2, 1);
 stats.timeAvg_CI(2,:) = prctile(timeAvgReps, 50-params.CI/2, 1);
 
-%Max value or peak
+%Smooth bootstrap replicates and take mean trace
 signal = movmean(bootRep, params.smoothWin, 2); %Smooth over time with simple moving mean
-meanSignal = mean(signal); %Mean trace
-idx = meanSignal==max(meanSignal); %Time of maximum in the mean trace
-stats.peak = meanSignal(idx); %max dF/F
-stats.peak_t = t(idx);
-peakReps = signal(:,idx); %dF/F from each bootstrap replicate at time of peak in smoothed mean trace
-stats.peak_CI(1,:) = prctile(peakReps, 50+params.CI/2, 1);
-stats.peak_CI(2,:) = prctile(peakReps, 50-params.CI/2, 1);
+% meanSignal = mean(signal); %Mean trace
 
-%Avg surrounding max
-idx = t>stats.peak_t - params.avgWin/2 &...
-    t<stats.peak_t + params.avgWin/2; %Sample idx for averaging around max
-peakReps = mean(signal(:,idx),2); %dF/F from each bootstrap replicate surrounding time of peak in smoothed mean trace
-stats.peakAvg = mean(peakReps,"all");
-stats.peakAvg_CI(1,:) = prctile(peakReps, 50+params.CI/2, 1);
-stats.peakAvg_CI(2,:) = prctile(peakReps, 50-params.CI/2, 1);
+func = struct('max',@max,'min',@min,'peak', @(x) max(abs(x)));
+for statName = string(fieldnames(func))'
+    stats = getScalarEstimate(stats, signal, t,...
+ params.avgWin, char(statName), func.(statName), params.CI);
+end
 
-%Min value or trough
-idx = meanSignal==min(meanSignal); %Time of min/trough in the mean trace
-stats.min = meanSignal(idx); %max dF/F
-stats.min_t = t(idx);
-minReps = signal(:,idx); %dF/F from each bootstrap replicate at time of min/trough in smoothed mean trace
-stats.min_CI(1,:) = prctile(minReps, 50+params.CI/2, 1);
-stats.min_CI(2,:) = prctile(minReps, 50-params.CI/2, 1);
+function stats = getScalarEstimate(stats, signal, t, avgWin, statName, func, CI)
+%Find min, max, abs peak
+meanSignal = mean(signal);
+idx = meanSignal==func(meanSignal); %Time of peak, etc in the mean trace @func = @max, @min, etc
+if sum(idx)==1 %If distinct peak time
+    stats.(statName) = meanSignal(idx); %max dF/F
+    stats.([statName,'_t']) = t(idx);
+    statReps = signal(:,idx); %dF/F from each bootstrap replicate at time of peak in smoothed mean trace
+    stats.([statName,'_CI'])(1,:) = prctile(statReps, 50+CI/2, 1);
+    stats.([statName,'_CI'])(2,:) = prctile(statReps, 50-CI/2, 1);
 
-%Avg surrounding min
-idx = t>stats.min_t - params.avgWin/2 &...
-    t<stats.min_t + params.avgWin/2; %Sample idx for averaging around min/trough
-minReps = mean(signal(:,idx),2); %dF/F from each bootstrap replicate surrounding time of min/trough in smoothed mean trace
-stats.minAvg = mean(minReps,"all");
-stats.minAvg_CI(1,:) = prctile(minReps, 50+params.CI/2, 1);
-stats.minAvg_CI(2,:) = prctile(minReps, 50-params.CI/2, 1);
+    %Avg surrounding peak
+    idx = t>t(idx) - avgWin/2 & t<t(idx) + avgWin/2; %Sample idx for averaging around max
+    statReps = mean(signal(:,idx),2); %dF/F from each bootstrap replicate surrounding time of peak in smoothed mean trace
+    stats.([statName,'Avg']) = mean(statReps,"all");
+    stats.([statName,'Avg_CI'])(1,:) = prctile(statReps, 50+CI/2, 1);
+    stats.([statName,'Avg_CI'])(2,:) = prctile(statReps, 50-CI/2, 1);
+end
