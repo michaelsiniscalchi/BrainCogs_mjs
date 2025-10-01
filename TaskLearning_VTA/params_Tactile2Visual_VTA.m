@@ -96,6 +96,8 @@ mat_file.results.cellFluo   = @(idx) fullfile(dirs.results,expData(idx).sub_dir,
 mat_file.results.encoding   = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'encoding.mat');
 %Aggregated by subject
 mat_file.summary.trialAvgFluo    = @(subjID) fullfile(dirs.summary, subjID, 'trialAvgFluo.mat');
+mat_file.summary.psyTrack        = @(subjID) fullfile(dirs.summary, subjID, 'psyTrack.mat');
+mat_file.summary.encoding        = @(subjID) fullfile(dirs.summary, subjID, 'encoding.mat');
 
 %Aggregated across subjects
 mat_file.summary.behavior       = fullfile(dirs.summary,'behavior.mat');

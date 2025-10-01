@@ -13,13 +13,13 @@ addpath(genpath(fullfile(dirs.code, 'mym', 'distribution', 'mexa64')));
 
 % Session-specific metadata
 [dirs, expData] = expData_Tactile2Visual_VTA(dirs);
-expData = expData([expData.subjectID]==subjectID); %Filter by subject
+expData = expData(contains({expData.sub_dir}, subjectID)); %Filter by subject
 
 % Set parameters for analysis
 [~, summarize, figures, mat_file, params] = params_Tactile2Visual_VTA(dirs, expData, options);
 
 % Generate directory structure
-create_dirs(dirs.summary,dirs.figures);
+create_dirs(dirs.summary, dirs.figures, fullfile(dirs.summary,subjectID)); %subject-specific summary dir
 
 % Begin logging processes
 diary(fullfile(dirs.results,['procLog' datestr(datetime,'yymmdd')]));
@@ -41,11 +41,46 @@ if summarize.trialAvgFluo
         Beh(i) = load(mat_file.img_beh(i),'sessions','trialData','trials'); 
         Img(i) = load(mat_file.results.cellFluo(i));
     end
-    S = aggregateTrialBoot(Img, Beh);
-    save(mat_file.summary.trialAvgFluo(subjectID),"-struct","S");
+    S = aggregateTrialBoot(Img, Beh); %Structure containing bootAvg stats as terminal fields, with cellIDs and behavioral session stats
+    create_dirs()
+    save(mat_file.summary.trialAvgFluo(subjectID),"-struct","S","-v7.3");
     clearvars S;
 end
 
-% pklfile_psytrack = 'X:\michael\tactile2visual-vta\summary\913_psytrack_all_sessions.pkl';
-% predictor_names = ["leftTowers","rightTowers","leftPuffs","rightPuffs"];
-% struct_out = psytrack_pickle2Mat(pklfile_psytrack, predictor_names);
+%Save Psytrack results in MAT file
+if summarize.pickle2mat
+    pklfile_psytrack =...
+        fullfile(dirs.summary,subjectID,[subjectID{1}(2:end),'_psytrack_all_sessions.pkl']);
+    predictor_names = ["leftTowers","rightTowers","leftPuffs","rightPuffs"];
+    sessions = psytrack_pickle2Mat(pklfile_psytrack, predictor_names);
+    sessionDates = datetime([sessions.sessionID],'InputFormat','yyyyMMdd');
+    for i=1:numel(expData)
+        S = load(mat_file.img_beh(i),'sessions');
+        img_date(i) = S.sessions.session_date;
+    end
+    
+    %Verify that all imaging sessions are tracked
+    missing = img_date(~ismember(img_date,sessionDates));
+    if ~isempty(missing)
+        warning("No psytrack data for these sessions:")
+        disp(missing);
+    end
+   %Convert struct array to struct with vector-valued fields
+   sessions = sessions(ismember(sessionDates, img_date)); %Restrict to
+   predictors = string(fieldnames(sessions(1).meanCoef));
+   for i=1:numel(sessions)
+        S.sessionID(i) = sessions(i).sessionID;
+        for f = predictors'
+            S.meanCoef.(f)(i) = sessions(i).meanCoef.(f);
+            S.se.(f)(i) = sessions(i).se.(f);
+        end
+   end
+    save(mat_file.summary.psyTrack(subjectID),'-struct','S','-v7.3');
+end
+
+if summarize.encoding
+    for i=1:numel(expData)
+        S = load(mat_file.results.encoding(i),"session","kernel","coef");
+        
+    end
+end

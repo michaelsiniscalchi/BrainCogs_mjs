@@ -1,6 +1,5 @@
 function bootAvg = aggregateTrialBoot( Img, Beh )
 
-
 bootAvg.cellIDs = string(unique(cat(1,Img(:).cellID)));
 for i = 1:numel(Img)
     trigger = string(fieldnames(Img(i).bootAvg));
@@ -28,3 +27,6 @@ end
 
 %End up with a struct like this:
 %(trigger).(trial_subset).cells(:).sessions(:).(bootFields)
+
+%Collect behavioral data
+bootAvg.sessions = Beh.sessions;

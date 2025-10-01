@@ -12,13 +12,13 @@ for P = pNames
     nTerms = size(predictors.(P), 2);
     tempNames = P; %Initialize as predictor name, no numeric suffix
     if nTerms>1
-        for i = 1:nTerms %Append term index for b-spline or higher order predictor (moments, etc.)  
+        for i = 1:nTerms %Append term index for b-spline or higher order predictor (moments, etc.)
             tempNames(i) = strjoin([P, num2str(i)],'');
         end
     end
-    varNames = [varNames, tempNames]; %#ok<AGROW> 
+    varNames = [varNames, tempNames]; %#ok<AGROW>
     idx.(P) = 1 + size(X,2) + (1:nTerms); %1st term reserved for intercept
-    X = [X, predictors.(P)]; %#ok<AGROW> 
+    X = [X, predictors.(P)]; %#ok<AGROW>
 end
 %Z-score the predictor matrix
 X = (X - mean(X,1,'omitnan')) ./ std(X,0,1,"omitnan"); %MATLAB zscore() does not allow 'omitnan'
@@ -28,8 +28,8 @@ for i = 1:numel(dFF)
     mdl = fitglm(X, dFF{i}, 'PredictorVars', varNames);
     glm.model{i} = mdl;
 
-    %Estimate response kernels for each event-related predictor (and other spline-bases) 
-    %***FOR SE, we need to linearly combine the MSE and take the square root! (you can't just take the weighted sum of the SEs) 
+    %Estimate response kernels for each event-related predictor (and other spline-bases)
+    %***FOR SE, we need to linearly combine the MSE and take the square root! (you can't just take the weighted sum of the SEs)
     %*** square the SE, do the matrix multiplication, and then take the SQRT...
     for varName = [string(encodingData.eventVars), "position"] %All event- & position-splines
         if varName=="position"
@@ -60,15 +60,20 @@ for i = 1:numel(dFF)
         glm.kernel(i).(varName).L2 = norm(estimate); %Approx vector magnitude
     end
 
-%Predict full time series from model
-glm.predictedDFF{i,:} = mdl.Fitted.Response;
+    for varName = string(encodingData.kinematicVars)
+        glm.coef(i).(varName).estimate = mdl.Coefficients.Estimate(idx.(varName));
+        glm.coef(i).(varName).se = mdl.Coefficients.SE(idx.(varName));
+    end
 
-%Calculate condition number for inversion of moment matrix
-Xi = X(~isnan(sum(X,2)),:); %Omit nan rows, which are also omitted in regression
-moment = Xi'*Xi; %Moment matrix of regressors; note that X is already z-scored
-glm.conditionNum{i,:} = cond(moment); %Condition number
-glm.rank{i,:} = rank(moment); %Rank
-glm.corrMatrix{i,:} = corrcoef(Xi);
+    %Predict full time series from model
+    glm.predictedDFF{i,:} = mdl.Fitted.Response;
+
+    %Calculate condition number for inversion of moment matrix
+    Xi = X(~isnan(sum(X,2)),:); %Omit nan rows, which are also omitted in regression
+    moment = Xi'*Xi; %Moment matrix of regressors; note that X is already z-scored
+    glm.conditionNum{i,:} = cond(moment); %Condition number
+    glm.rank{i,:} = rank(moment); %Rank
+    glm.corrMatrix{i,:} = corrcoef(Xi);
 end
 
 %Metadata
