@@ -11,7 +11,7 @@ data = struct(S.new_dat);
 h.close(); % Close the file handle
 
 %Get session dates
-sessionID = string(data.session.tolist);
+sessionID = datetime(string(data.session.tolist),'InputFormat','yyyyMMdd'); %One datetime for per trial...
 
 %Two-way dictionary to translate Vanessa's psytrack predictor names
 t2vNames = ["leftTowers","rightTowers","leftPuffs","rightPuffs"];
@@ -28,16 +28,16 @@ W = double(S.wMode); %Trial-by-trial weights on each predictor
 W_std = double(S.W_std); %Same for sd
 
 %Struct array: one for each session
-sessionList = unique(sessionID,'stable');
-struct_out(size(sessionList)) =...
-    struct("sessionID", "", "meanCoef", weightStruct, "se", weightStruct);
+sessionList = unique(sessionID(:),'stable'); %Get list of unique session dates
+struct_out =...
+    struct("session_date", NaT(size(sessionList)), "meanCoef", weightStruct, "se", weightStruct);
 for i = 1:numel(sessionList)
-    struct_out(i).sessionID = sessionList(i);
+    struct_out.session_date(i) = sessionList(i); 
     idx = sessionID==sessionList(i);
     for j = 1:numel(pNames)
-        struct_out(i).meanCoef.(D(pNames(j))) = mean(W(j,idx)); %Mean weight across trials for each session
+        struct_out.meanCoef.(D(pNames(j)))(i) = mean(W(j,idx)); %Mean weight across trials for each session
         mse = (W_std(j, idx)).^2; %MSE for each session  
-        struct_out(i).se.(D(pNames(j))) = sqrt(mean(mse)); %Take square root to yield aggregate SE for each session
+        struct_out.se.(D(pNames(j)))(i) = sqrt(mean(mse)); %Take square root to yield aggregate SE for each session
     end
 end
 

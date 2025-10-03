@@ -52,35 +52,42 @@ if summarize.pickle2mat
     pklfile_psytrack =...
         fullfile(dirs.summary,subjectID,[subjectID{1}(2:end),'_psytrack_all_sessions.pkl']);
     predictor_names = ["leftTowers","rightTowers","leftPuffs","rightPuffs"];
-    sessions = psytrack_pickle2Mat(pklfile_psytrack, predictor_names);
-    sessionDates = datetime([sessions.sessionID],'InputFormat','yyyyMMdd');
+    psyStruct = psytrack_pickle2Mat(pklfile_psytrack, predictor_names);
     for i=1:numel(expData)
         S = load(mat_file.img_beh(i),'sessions');
         img_date(i) = S.sessions.session_date;
     end
     
     %Verify that all imaging sessions are tracked
-    missing = img_date(~ismember(img_date,sessionDates));
+    missing = img_date(~ismember(img_date,psyStruct.session_date));
     if ~isempty(missing)
         warning("No psytrack data for these sessions:")
         disp(missing);
     end
-   %Convert struct array to struct with vector-valued fields
-   sessions = sessions(ismember(sessionDates, img_date)); %Restrict to
-   predictors = string(fieldnames(sessions(1).meanCoef));
-   for i=1:numel(sessions)
-        S.sessionID(i) = sessions(i).sessionID;
-        for f = predictors'
-            S.meanCoef.(f)(i) = sessions(i).meanCoef.(f);
-            S.se.(f)(i) = sessions(i).se.(f);
-        end
-   end
-    save(mat_file.summary.psyTrack(subjectID),'-struct','S','-v7.3');
+    save(mat_file.summary.psyTrack(subjectID),'-struct','psyStruct','-v7.3');
 end
+clearvars sessions predictors S f
 
 if summarize.encoding
+    fields = ["AUC","AUC_se","peak","peak_se","L2"];
     for i=1:numel(expData)
-        S = load(mat_file.results.encoding(i),"session","kernel","coef");
-        
+        sessions(i) = load(mat_file.results.encoding(i),...
+            "session","cellID","kernel","coef");
     end
+    cells = summarize_sessions2cells(sessions);
+    save(mat_file.summary.encoding(subjectID),'cells','-v7.3');
+end
+
+if summarize.neuroBehCorr
+    %Load summary data (add one more for trial avg fluo)
+    encoding = load(mat_file.summary.encoding(subjectID),'cells');
+    psyTrack = load(mat_file.summary.psyTrack(subjectID),...
+        'meanCoef','se','session_date');
+    
+    nbCorr = calcNeuroBehCorr(encoding, psyTrack);
+end
+% clearvars -except img beh expData mat_file params summarize
+
+if figures.summary_neuroBehCorr
+
 end

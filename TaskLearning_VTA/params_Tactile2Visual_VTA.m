@@ -41,6 +41,7 @@ figures.encoding_coefficients           = false;   %Stimulus kernel estimates, o
 figures.heatmap_modulation_idx          = false;  %Heatmap of selectivity idxs for COR for each session
 
 % Summary
+figures.summary_neuroBehCorr            = false; %Neurobehavioral correlates
 figures.summary_behavior                = false;    %Summary of descriptive stats, eg, nTrials and {trials2crit, pErr, oErr} for each rule
 figures.summary_selectivity_heatmap     = false;     %Heatmap of time- or position-locked selectivity
 figures.summary_selectivity_histogram   = false;     %Histogram of time-locked selectivity

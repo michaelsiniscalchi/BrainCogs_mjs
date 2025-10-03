@@ -126,6 +126,8 @@ F = F(~ismember(F, params.predictorNames)); %Get fields not specified in input a
 impulse = rmfield(impulse, F);
 
 %Metadata & hyperparams
+encodingData.session_date = img_beh.sessions.session_date;
+encodingData.cellID = img_beh.cellID;
 encodingData.dt = mean(diff(t),'omitnan'); %Use mean dt
 for f = string(fieldnames(params))' %Store all input hyperparams
     encodingData.(f) = params.(f);

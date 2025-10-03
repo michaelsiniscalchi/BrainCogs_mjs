@@ -46,7 +46,7 @@ for i = 1:numel(dFF)
         se = sqrt(bSpline * mse); %Square root of weighted MSE
         glm.kernel(i).(varName).estimate = estimate'; %transpose for plotting
         glm.kernel(i).(varName).se = (estimate + [1,-1].*se)'; %Express as estimate +/- se; transpose for plotting
-        glm.kernel(i).(varName).x = x_min:binWidth:binWidth*(size(bSpline,1)-1);
+        glm.kernel(i).(varName).x = (0:binWidth*(size(bSpline,1)-1)) + x_min;
         %AUC
         winDuration = range(glm.kernel(i).(varName).x);
         glm.kernel(i).(varName).AUC = mean(estimate)*winDuration;

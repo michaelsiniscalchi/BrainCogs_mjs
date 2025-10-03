@@ -165,7 +165,7 @@ if calculate.fluorescence
         % Encoding model
         if calculate.encoding_model
             %Load combined imaging & behavioral data
-            img_beh = load(mat_file.img_beh(i),'dFF','t','cellID','trialData','trials');
+            img_beh = load(mat_file.img_beh(i),'dFF','t','cellID','sessions','trialData','trials');
             %Format predictors
             [ predictors, encodingData ] = encoding_makePredictors( img_beh, params.encoding );
             %Run encoding model
@@ -196,11 +196,6 @@ if calculate.fluorescence
                     params.bootAvg(j), encodingMdl.bootAvg.(params.bootAvg(j).trigger)); %Include var bootAvg if multiple params.bootAvg use the same trigger (eg, w/o baseline subtraction)
             end
 
-            %Get metadata from cellular fluorescence file
-            metadata = load(mat_file.results.cellFluo(i), 'cellID', 'sessionID');
-            encodingMdl.cellID = metadata.cellID;
-            encodingMdl.session = metadata.sessionID;
-            
             %Save results for each cell
             for j = 1:numel(encodingMdl.model)
                 mdl = encodingMdl.model{j}; %One variable per cell (otherwise struct will exceed 2GB limit)
