@@ -9,14 +9,14 @@ coefValues = string(fieldnames(sessions(1).coef(1).velocity));
 kernelNames = string(fieldnames(sessions(1).kernel));
 kernelValues = string(fieldnames(sessions(1).kernel(1).start));
 
-sessionID = datetime(string({sessions.session}),"InputFormat","yyMMdd")';
+session_date = [sessions(:).session_date];
 
 %Aggregate all data into cell arrays
 for i = 1:numel(sessions)
     S.cellIDs{i,:} = sessions(i).cellID;
     for j = 1:numel(sessions(i).kernel) %For each cell
         %Response kernels for event-variables
-        S.session_date{i,:}{j,:} = sessionID(i); %SessionIdx for each entry
+        S.session_date{i,:}{j,:} = session_date(i); %SessionID for each entry
         for kName = kernelNames'
             for kVal = kernelValues'
                 S.kernel.(kName).(kVal){i,:}{j,:} =...

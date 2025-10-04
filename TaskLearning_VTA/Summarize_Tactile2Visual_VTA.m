@@ -72,7 +72,7 @@ if summarize.encoding
     fields = ["AUC","AUC_se","peak","peak_se","L2"];
     for i=1:numel(expData)
         sessions(i) = load(mat_file.results.encoding(i),...
-            "session","cellID","kernel","coef");
+            "session_date","cellID","kernel","coef");
     end
     cells = summarize_sessions2cells(sessions);
     save(mat_file.summary.encoding(subjectID),'cells','-v7.3');

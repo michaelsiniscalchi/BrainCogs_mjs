@@ -86,6 +86,7 @@ if calculate.combined_data
         stackInfo = syncImagingBehavior(stackInfo, behavior);
         
         %Save processed data
+        stackInfo.sessionID = expData(i).sub_dir; 
         create_dirs(fileparts(mat_file.img_beh(i))); %Create save directory
         if ~exist(mat_file.img_beh(i),'file')
             save(mat_file.img_beh(i),'-struct','behavior','-v7.3');
@@ -142,7 +143,7 @@ if calculate.fluorescence
 
         % Event-related cellular fluorescence
         if calculate.trial_average_dFF %Trial averaged dF/F with bootstrapped CI
-            load(mat_file.img_beh(i),'trialDFF','trials','cellID');
+            load(mat_file.img_beh(i),'trialDFF','sessions','trials','cellID');
             for j = 1:numel(params.bootAvg) %For each trigger event
                 % for j = 6 %***DEVO just outcome
                 P = params.bootAvg(j);
@@ -153,13 +154,14 @@ if calculate.fluorescence
             end
 
             %Save results
-            sessionID = expData(i).sub_dir; 
+            sessionID = expData(i).sub_dir; %Remove eventually; now in combined img-beh block above
             subject = expData(i).subjectID;
+            session_date = sessions.session_date;
             if ~exist(mat_file.results.cellFluo(i),'file')
-                save(mat_file.results.cellFluo(i),'subject','sessionID','cellID','bootAvg','-v7.3'); %Save
-            else, save(mat_file.results.cellFluo(i),'subject','sessionID','cellID','bootAvg','-append');
+                save(mat_file.results.cellFluo(i),'subject','sessionID','session_date','cellID','bootAvg','-v7.3'); %Save
+            else, save(mat_file.results.cellFluo(i),'subject','sessionID','session_date','cellID','bootAvg','-append');
             end
-            clearvars trialDFF trials cellID bootAvg
+            clearvars trialDFF trialData trials cellID bootAvg
         end
 
         % Encoding model
@@ -205,6 +207,7 @@ if calculate.fluorescence
             encodingMdl = rmfield(encodingMdl, "model"); %Remove field after unpacking
             
             %Save metadata
+            encodingMdl.sessionID = expData(i).sub_dir; 
             save(mat_file.results.encoding(i), '-struct', 'encodingMdl', '-v7.3');
         end
 

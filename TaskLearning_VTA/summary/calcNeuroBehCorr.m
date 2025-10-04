@@ -12,11 +12,11 @@ for i = 1:numel(cells)
         Corr(i).encodingVar = fields(i);
         Corr(i).psytrackVar = fields(i); %Possibly add bootAvg for further correlations
         Corr(i).paramName = ["L2", "meanCoef"];
-        sessionIdx = ismember(psytrack.session_date, cells(i).sessionID
-        data1 = [cells(i).kernel.(f).(Corr(i).paramName(1))],...
-            [psytrack.(Corr(i).paramName(2)).(f)]...
-            };
-dat
+        sessionIdx = ismember(psytrack.session_date, cells(i).session_date);
+        Corr(i).data = [...
+            cells(i).kernel.(f).(Corr(i).paramName(1)),...
+            psytrack.(Corr(i).paramName(2)).(f)(sessionIdx)...
+            ];
     end
 end
 out = [];
