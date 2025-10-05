@@ -111,7 +111,7 @@ if figures.encoding_model
     for i = 1:numel(expData)
         %Load data
         expID = expData(i).sub_dir;
-        glm = load(mat_file.results.encoding(i),'bootAvg','kernel','session','cellID','predictorIdx');
+        glm = load(mat_file.results.encoding(i),'bootAvg','kernel','sessionID','cellID','predictorIdx');
         img = load(mat_file.results.cellFluo(i),'bootAvg');
         
         %Trial-averaged dF/F: observed vs. predicted
