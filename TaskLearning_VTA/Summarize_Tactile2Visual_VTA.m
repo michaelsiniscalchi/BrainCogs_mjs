@@ -79,12 +79,21 @@ if summarize.encoding
 end
 
 if summarize.neuroBehCorr
+    %Hyperparams
+    params.paramNames = ["meanCoef","L2",]; %Scalar estimates from psytrack and encoding model
+    params.psyField = ["leftTowers","rightTowers","leftPuffs","rightPuffs"];
+    params.imgField = ...
+        ["firstLeftTower", "firstRightTower", "firstLeftPuff", "firstRightPuff",...
+        "leftTowers","rightTowers","leftPuffs","rightPuffs"];
+    params.minN = 5;
     %Load summary data (add one more for trial avg fluo)
     encoding = load(mat_file.summary.encoding(subjectID),'cells');
     psyTrack = load(mat_file.summary.psyTrack(subjectID),...
         'meanCoef','se','session_date');
-    
-    nbCorr = calcNeuroBehCorr(encoding, psyTrack);
+    [nbCorr, cells] = calcNeuroBehCorr(encoding, psyTrack, params);
+    %Save correlation structures
+    save(mat_file.summary.neuroBehCorr(subjectID),'-struct','nbCorr','-v7.3');
+    save(mat_file.summary.neuroBehCorr(subjectID),'cells','-append');
 end
 % clearvars -except img beh expData mat_file params summarize
 

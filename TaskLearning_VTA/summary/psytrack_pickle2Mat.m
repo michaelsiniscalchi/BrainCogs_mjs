@@ -35,9 +35,9 @@ for i = 1:numel(sessionList)
     struct_out.session_date(i) = sessionList(i); 
     idx = sessionID==sessionList(i);
     for j = 1:numel(pNames)
-        struct_out.meanCoef.(D(pNames(j)))(i) = mean(W(j,idx)); %Mean weight across trials for each session
+        struct_out.meanCoef.(D(pNames(j)))(i,:) = mean(W(j,idx)); %Mean weight across trials for each session
         mse = (W_std(j, idx)).^2; %MSE for each session  
-        struct_out.se.(D(pNames(j)))(i) = sqrt(mean(mse)); %Take square root to yield aggregate SE for each session
+        struct_out.se.(D(pNames(j)))(i,:) = sqrt(mean(mse)); %Take square root to yield aggregate SE for each session
     end
 end
 

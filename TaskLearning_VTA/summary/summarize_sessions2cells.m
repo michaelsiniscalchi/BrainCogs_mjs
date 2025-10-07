@@ -49,8 +49,8 @@ for f = string(fieldnames(S))'
                 for i = 1:numel(cellList)
                     dataIdx = strcmp(S.cellIDs, cellList{i}); %Index data by unique cell ID
                     %Assign session IDs
-                    if ~isfield(cells,'sessionID') || isempty(cells(i).sessionID)
-                        cells(i).sessionID = cat(1,S.session_date{dataIdx});
+                    if ~isfield(cells,'session_date') || isempty(cells(i).session_date)
+                        cells(i).session_date = cat(1,S.session_date{dataIdx});
                     end
                     %Assign values, eg cells(1).coef.velocity.estimate(nSessions,:)
                     C = allValues(dataIdx); %Get all values from this cellID

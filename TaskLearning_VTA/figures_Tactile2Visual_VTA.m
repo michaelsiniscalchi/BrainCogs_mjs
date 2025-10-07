@@ -136,7 +136,7 @@ if figures.encoding_model
             for j = 1:numel(comparisons)
                 panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
                 event = [params.figs.bootAvg.panels(panelIdx(1)).trigger];
-                figs = plot_trialAvgDFF(glm.bootAvg.(event), glm.cellID, glm.session,...
+                figs = plot_trialAvgDFF(glm.bootAvg.(event), glm.cellID, glm.sessionID,...
                     params.figs.bootAvg.panels(panelIdx));
                 save_multiplePlots(figs, save_dir); %save as FIG and PNG
             end

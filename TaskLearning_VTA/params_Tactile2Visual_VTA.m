@@ -99,6 +99,7 @@ mat_file.results.encoding   = @(idx) fullfile(dirs.results,expData(idx).sub_dir,
 mat_file.summary.trialAvgFluo    = @(subjID) fullfile(dirs.summary, subjID, 'trialAvgFluo.mat');
 mat_file.summary.psyTrack        = @(subjID) fullfile(dirs.summary, subjID, 'psyTrack.mat');
 mat_file.summary.encoding        = @(subjID) fullfile(dirs.summary, subjID, 'encoding.mat');
+mat_file.summary.neuroBehCorr    = @(subjID) fullfile(dirs.summary, subjID, 'neuroBehCorr.mat');
 
 %Aggregated across subjects
 mat_file.summary.behavior       = fullfile(dirs.summary,'behavior.mat');
