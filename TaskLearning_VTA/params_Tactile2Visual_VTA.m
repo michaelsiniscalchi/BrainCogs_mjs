@@ -37,6 +37,7 @@ figures.encoding_observedVsPredicted    = false;   %Stimulus kernel estimates, o
 figures.encoding_predictedTrialAvg      = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
 figures.encoding_eventKernels           = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
 figures.encoding_coefficients           = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
+figures.encoding_eventKernelsByCell     = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
 
 figures.heatmap_modulation_idx          = false;  %Heatmap of selectivity idxs for COR for each session
 
@@ -96,13 +97,14 @@ mat_file.img_beh            = @(idx) fullfile(dirs.results,expData(idx).sub_dir,
 mat_file.results.cellFluo   = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'results.mat');
 mat_file.results.encoding   = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'encoding.mat');
 %Aggregated by subject
+mat_file.summary.behavior       = @(subjID) fullfile(dirs.summary, subjID, 'behavior.mat');
 mat_file.summary.trialAvgFluo    = @(subjID) fullfile(dirs.summary, subjID, 'trialAvgFluo.mat');
 mat_file.summary.psyTrack        = @(subjID) fullfile(dirs.summary, subjID, 'psyTrack.mat');
 mat_file.summary.encoding        = @(subjID) fullfile(dirs.summary, subjID, 'encoding.mat');
 mat_file.summary.neuroBehCorr    = @(subjID) fullfile(dirs.summary, subjID, 'neuroBehCorr.mat');
 
 %Aggregated across subjects
-mat_file.summary.behavior       = fullfile(dirs.summary,'behavior.mat');
+% mat_file.summary.behavior       = fullfile(dirs.summary,'behavior.mat');
 mat_file.summary.imaging        = fullfile(dirs.summary,'imaging.mat');
 mat_file.summary.selectivity    = fullfile(dirs.summary,'selectivity.mat');
 mat_file.stats                  = fullfile(dirs.summary,'summary_stats.mat');
@@ -195,6 +197,9 @@ clearvars p
 
 params.figs.encoding.panels = specEncodingPanels( params.figs );
 params.figs.encoding.panels_contrast = specEncodingPanels_contrast( params.figs );
+
+%% FIGURE: Summary, behavior vs. imaging/encoding across sessions
+params.figs.summaryLongitudinalImgBeh.panels = spec_behEncodingPanels(params.figs.all.colors);
 
 %% FIGURE: MODULATION INDEX: CHOICE, OUTCOME, AND RULE
 

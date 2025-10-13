@@ -151,6 +151,7 @@ if figures.encoding_model
             panels = panels(cellfun(@(C) ~isempty(C), {panels.varName})); %Remove non-event variables
             for j = 1:numel(panels)
                 figs = plot_eventKernel(glm, panels(j));
+                %Save by session
                 save_multiplePlots(figs, save_dir); %save as FIG and PNG
             end
             clearvars figs

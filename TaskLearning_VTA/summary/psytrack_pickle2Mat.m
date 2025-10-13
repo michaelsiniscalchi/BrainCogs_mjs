@@ -37,7 +37,7 @@ for i = 1:numel(sessionList)
     for j = 1:numel(pNames)
         struct_out.meanCoef.(D(pNames(j)))(i,:) = mean(W(j,idx)); %Mean weight across trials for each session
         mse = (W_std(j, idx)).^2; %MSE for each session  
-        struct_out.se.(D(pNames(j)))(i,:) = sqrt(mean(mse)); %Take square root to yield aggregate SE for each session
+        struct_out.se.(D(pNames(j)))(i,:) = mean(W(j,idx)) + [-1;1]*sqrt(mean(mse)); %Take square root to yield aggregate SE for each session
     end
 end
 

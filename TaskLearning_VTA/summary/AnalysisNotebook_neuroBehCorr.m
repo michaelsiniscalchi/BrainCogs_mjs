@@ -1,14 +1,22 @@
 % AnalysisNotebook_neuroBehCorr
 
 subjectID = "m913";
-load(mat_file.summary.neuroBehCorr(subjectID),'cells');
+nbCorr = load(mat_file.summary.neuroBehCorr(subjectID),'cells');
+psy = load(mat_file.summary.psyTrack(subjectID));
+load(mat_file.summary.behavior(subjectID),'sessions');
+load(mat_file.summary.encoding(subjectID),'cells');
 
 params.psyField = ["leftTowers","rightTowers","leftPuffs","rightPuffs"];
-    params.imgField = ...
+params.imgField = ...
         ["firstLeftTower", "firstRightTower", "firstLeftPuff", "firstRightPuff",...
         "leftTowers","rightTowers","leftPuffs","rightPuffs"];
 
-%% Histogram of correlation coefficients between each pair of neurobehavioral predictors
+params.minNumSessions = 5;
+
+    
+    
+    
+    %% Histogram of correlation coefficients between each pair of neurobehavioral predictors
 
 figure('Name',strjoin([subjectID,'histogram','meanCoef_L2','R'],'-'));
 T = tiledlayout(numel(params.psyField), numel(params.imgField),...

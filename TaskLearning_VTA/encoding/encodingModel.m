@@ -67,14 +67,28 @@ for i = 1:numel(dFF)
 
     %Predict full time series from model
     glm.predictedDFF{i,:} = mdl.Fitted.Response;
-
-    %Calculate condition number for inversion of moment matrix
-    Xi = X(~isnan(sum(X,2)),:); %Omit nan rows, which are also omitted in regression
-    moment = Xi'*Xi; %Moment matrix of regressors; note that X is already z-scored
-    glm.conditionNum{i,:} = cond(moment); %Condition number
-    glm.rank{i,:} = rank(moment); %Rank
-    glm.corrMatrix{i,:} = corrcoef(Xi);
+  
 end
+
+%Calculate condition number for inversion of moment matrix
+Xi = X(~isnan(sum(X,2)),:); %Omit nan rows, which are also omitted in regression
+moment = Xi'*Xi; %Moment matrix of regressors; note that X is already z-scored
+glm.conditionNum = cond(moment); %Condition number for inversion
+glm.rank = rank(moment); %Rank
+glm.corrMatrix = corrcoef(Xi);
+
+%Variance Inflation Factor (VIF)
+parfor i = 1:numel(varNames) %start with ITI + position
+    idx = true(1, size(Xi,2)); %Idx of predictors to include
+    idx(i) = false; %Remove term (i)
+    newMdl = fitglm(Xi(:,idx), Xi(:,i)); %Predict var(i) based on remaining predictors
+    R2 = newMdl.Rsquared.Ordinary;
+    VIF(i) = 1/(1-R2);
+end
+glm.VIF = VIF';
+
+%Alternative method: diagonal of the inverse correlation matrix
+glm.VIF2 = diag(inv(corrcoef(X)));
 
 %Metadata
 glm.predictorIdx = idx;

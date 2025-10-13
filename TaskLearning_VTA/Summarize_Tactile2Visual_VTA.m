@@ -35,14 +35,26 @@ if isempty(gcp('nocreate'))
     end
 end
 
+%Summarize Behavior by Subject
+if summarize.behavior
+    for i = 1:numel(expData)
+        load(mat_file.img_beh(i),'sessions');
+        S(i) = sessions;
+        clearvars sessions
+    end
+    [sessions, sessions_vect]  = filterImgSessions(S); %Structure containing bootAvg stats as terminal fields, with cellIDs and behavioral session stats
+    save(mat_file.summary.behavior(subjectID),"-struct","sessions_vect","-v7.3");
+    save(mat_file.summary.behavior(subjectID),"sessions","-v7.3");
+    clearvars S sessions sessions_vect;
+end
+
 %Summarize Longitudinal Trial-Averaged Data by Subject
 if summarize.trialAvgFluo
     for i = 1:numel(expData)
-        Beh(i) = load(mat_file.img_beh(i),'sessions','trialData','trials'); 
+        Beh(i) = load(mat_file.img_beh(i),'sessions','trialData','trials');
         Img(i) = load(mat_file.results.cellFluo(i));
     end
     S = aggregateTrialBoot(Img, Beh); %Structure containing bootAvg stats as terminal fields, with cellIDs and behavioral session stats
-    create_dirs()
     save(mat_file.summary.trialAvgFluo(subjectID),"-struct","S","-v7.3");
     clearvars S;
 end
@@ -57,7 +69,7 @@ if summarize.pickle2mat
         S = load(mat_file.img_beh(i),'sessions');
         img_date(i) = S.sessions.session_date;
     end
-    
+
     %Verify that all imaging sessions are tracked
     missing = img_date(~ismember(img_date,psyStruct.session_date));
     if ~isempty(missing)
@@ -65,6 +77,11 @@ if summarize.pickle2mat
         disp(missing);
     end
     save(mat_file.summary.psyTrack(subjectID),'-struct','psyStruct','-v7.3');
+
+    %Append to session data
+    load(mat_file.summary.behavior(subjectID),'sessions');
+    sessions = appendPsyTrackWeights(sessions, psyStruct);
+    save(mat_file.summary.behavior(subjectID),'sessions','-append');
 end
 clearvars sessions predictors S f
 
@@ -98,5 +115,27 @@ end
 % clearvars -except img beh expData mat_file params summarize
 
 if figures.summary_neuroBehCorr
+    %
+    load(mat_file.summary.behavior(subjectID),'sessions');
+    load(mat_file.summary.encoding(subjectID),'cells');
+    save_dir = fullfile(dirs.figures,'Summary',subjectID);
+    P = params.figs.summaryLongitudinalImgBeh;
+    for i = 1:numel(P.panels)
+        panelSpec = P.panels(i);
+        P.minNumSessions = 5;
+        figs = fig_summaryPsyTrackEncodingBySession(sessions, cells, panelSpec, P);
+        
+        save_multiplePlots(figs, save_dir); %save as FIG and PNG
+    end
+  
+end
 
+if figures.encoding_eventKernelsByCell
+    load(mat_file.summary.encoding(subjectID),"cells");
+    for i = 1:numel(cells)
+        save_dir = fullfile(dirs.figures,'Encoding model', 'Response kernels',...
+            subjectID, ['cell',cells(i).cellID]);
+        figs = plot_eventKernel_byCell(cells(i), params.figs.encoding.panels_contrast);
+        save_multiplePlots(figs(k), save_dir);
+    end
 end
