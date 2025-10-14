@@ -10,9 +10,6 @@ i=1;
 
 %Start of trial
 ax(i).title         = "Start Trial";
-ax(i).comparison    = "start";
-ax(i).trigger       = "start";
-ax(i).trialType     = "forward";
 ax(i).varName       = "start";
 ax(i).window        = [-1, 5];
 ax(i).color         = {colors.data, colors.data2}; % {pred1,pred2,obs1,obs2}
@@ -22,8 +19,6 @@ i=i+1;
 
 %First Tower
 ax(i).title         = "First Tower";
-ax(i).comparison    = "firstTower";
-ax(i).trigger       = "firstTower";
 ax(i).varName       = ["firstLeftTower", "firstRightTower"];
 ax(i).window        = [-1, 5];
 ax(i).color         = {colors.left, colors.right}; 
@@ -33,8 +28,6 @@ i=i+1;
 
 %First Puff
 ax(i).title         = "First Puff";
-ax(i).comparison    = "firstPuff";
-ax(i).trigger       = "firstPuff";
 ax(i).varName       = ["firstLeftPuff", "firstRightPuff"];
 ax(i).window        = [-1, 5];
 ax(i).color         = {colors.left, colors.right}; 
@@ -44,8 +37,6 @@ i=i+1;
 
 %All Towers
 ax(i).title         = "Towers";
-ax(i).comparison    = "towers";
-ax(i).trigger       = "towers";
 ax(i).varName       = ["leftTowers", "rightTowers"];
 ax(i).window        = [-1, 5];
 ax(i).color         = {colors.left, colors.right}; 
@@ -55,8 +46,6 @@ i=i+1;
 
 % %All Puffs
 ax(i).title         = "Puffs";
-ax(i).comparison    = "puffs";
-ax(i).trigger       = "puffs";
 ax(i).varName       = ["leftPuffs", "rightPuffs"];
 ax(i).window        = [-1, 5];
 ax(i).color         = {colors.left, colors.right}; 
@@ -66,9 +55,6 @@ i=i+1;
  
 %Outcome
 ax(i).title         = "Outcome";
-ax(i).comparison    = "outcome";
-ax(i).trigger       = "outcome";
-ax(i).trialType     = "forward";
 ax(i).varName       = ["reward", "noReward"];
 ax(i).window        = [-1, 5];
 ax(i).color         = {colors.correct, colors.err}; 
@@ -76,17 +62,46 @@ ax(i).lineStyle     = ["-","-"];
 ax(i).xLabel        = 'Time from outcome (s)';
 i=i+1;
 
-%Position
-ax(i).title         = "Position";
-ax(i).comparison    = "position";
-ax(i).trigger       = "cueRegion";
-ax(i).trialType     = "forward";
-ax(i).varName       = ["position"];
+%Position x trialType Interactions
+ax(i).title         = "Position x Puff Side";
+ax(i).varName       = ["leftPuffs_position", "rightPuffs_position"];
 ax(i).window        = [-30, 250];
-ax(i).color         = {colors.data}; 
+ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-"]; 
 ax(i).xLabel        = 'Position (cm)';
 i=i+1;
+ax(i).title         = "Position x Tower Side";
+ax(i).varName       = ["leftTowers_position", "rightTowers_position"];
+ax(i).window        = [-30, 250];
+ax(i).color         = {colors.left, colors.right}; 
+ax(i).lineStyle     = ["-"]; 
+ax(i).xLabel        = 'Position (cm)';
+i=i+1;
+ax(i).title         = "Position x Left CueType";
+ax(i).varName       = ["leftPuffs_position", "leftTowers_position"];
+ax(i).window        = [-30, 250];
+ax(i).color         = {colors.left, colors.left2}; 
+ax(i).lineStyle     = ["-"]; 
+ax(i).xLabel        = 'Position (cm)';
+i=i+1;
+ax(i).title         = "Position x Right CueType";
+ax(i).varName       = ["rightPuffs_position", "rightTowers_position"];
+ax(i).window        = [-30, 250];
+ax(i).color         = {colors.right, colors.right2}; 
+ax(i).lineStyle     = ["-"]; 
+ax(i).xLabel        = 'Position (cm)';
+i=i+1;
+
+% ax(i).title         = "Position";
+% ax(i).comparison    = "position";
+% ax(i).trigger       = "cueRegion";
+% ax(i).trialType     = "forward";
+% ax(i).varName       = ["position"];
+% ax(i).window        = [-30, 250];
+% ax(i).color         = {colors.data}; 
+% ax(i).lineStyle     = ["-"]; 
+% ax(i).xLabel        = 'Position (cm)';
+% i=i+1;
 
 % %Left vs. Right Choice
 % %Explore whether this should be a whole-trial variable, or a regression
