@@ -31,8 +31,8 @@ for i = 1:numel(dFF)
     %Estimate response kernels for each event-related predictor (and other spline-bases)
     %***FOR SE, we need to linearly combine the MSE and take the square root! (you can't just take the weighted sum of the SEs)
     %*** square the SE, do the matrix multiplication, and then take the SQRT...
-    for varName = [string(encodingData.eventVars), "position"] %All event- & position-splines
-        if varName=="position"
+    for varName = [string(encodingData.eventVars), string(encodingData.positionVars)] %All event- & position-splines
+        if ismember(varName, encodingData.positionVars)
             bSpline = encodingData.bSpline_pos; %series of basis functions for position
             binWidth = encodingData.bSpline_position_binWidth; %spatial bin width in cm
             x_min = encodingData.position(1); %Start location (cm)
