@@ -110,6 +110,14 @@ for j = 1:size(bSpline_pos, 2)
     predictors.position(:,j) = bSpline_pos(posIdx, j);
 end
 
+%Cue type-specific position splines (alternative to position)
+for f = ["leftTowers","rightTowers","leftPuffs","rightPuffs"] 
+    pName = strjoin([f,"position"],'_'); %Predictor name, eg "leftPuffs_position"
+    predictors.(pName) = zeros(size(predictors.position)); %Initialize as zeroes
+    idx = ismember(predictors.trialIdx, find(trials.(f)));
+    predictors.(pName)(idx,:) = predictors.position(idx,:); 
+end
+
 %Restrict all predictors to forward trials
 exclIdx = ismember(predictors.trialIdx, find(~trials.forward));
 for P = string(fieldnames(predictors))'

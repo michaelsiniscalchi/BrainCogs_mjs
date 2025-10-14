@@ -22,24 +22,34 @@ Analyze_Tactile2Visual_VTA(search_filter, options);
 
 %%
 % search_filter ='250702-m713-maze7';
+% search_filter ='250206-m913-maze7';
+clearvars;
 search_filter ='250212-m913-maze7';
-options.calculate = struct('align_signals', false, 'trial_average_dFF',  false,'encoding_model', true);
+options.calculate = struct('combined_data',false,'align_signals', false,...
+    'trial_average_dFF', false,'encoding_model', true);
 % options.summarize = struct('trialDFF', true);
-% options.figures.encoding_model = true;
+options.figures.encoding_model = true;
 Analyze_Tactile2Visual_VTA(search_filter, options);
 
 %%
 %Figures
+clearvars;
 search_filter ='250212-m913-maze7';
 options.figures=struct('encoding_eventKernels',true,'encoding_coefficients', false);
 figures_Tactile2Visual_VTA(search_filter, options); %In a separate script for brevity.
 
 %% Summary
-subjectID = "mjs20_913";
-options.summarize = struct();
+subjectID = "m913";
+options.summarize = struct(...
+    "behavior",false,"trialAvgFluo",false,"pickle2mat",false,...
+    "encoding",true,"neuroBehCorr",false);
+options.figures = struct(...
+    "summary_neuroBehCorr", false, "encoding_eventKernelsByCell", true);
+
 Summarize_Tactile2Visual_VTA( subjectID, options )
 
 %% Psytrack
 pklfile_psytrack = 'X:\michael\tactile2visual-vta\summary\913_psytrack_all_sessions.pkl';
+
 predictor_names = ["leftTowers","rightTowers","leftPuffs","rightPuffs"];
 struct_out = psytrack_pickle2Mat(pklfile_psytrack, predictor_names);

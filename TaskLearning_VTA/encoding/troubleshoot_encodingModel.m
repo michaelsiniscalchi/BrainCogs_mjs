@@ -8,9 +8,28 @@ subjectID = "m913";
 % options.calculate = struct('encoding',true)
 idx = find(ismember({expData.sub_dir},{'250212-m913-maze7'}));
 pathname = fullfile(dirs.results,expData(idx).sub_dir,"encodingMdl_cell004.mat");
-S = load(mat_file.results.encoding(idx));%,'cellID','conditionNum','corrMatrix','rank','predictorIdx');
+S = load(mat_file.results.encoding(idx),'cellID','conditionNum',...
+    'corrMatrix','VIF','VIF2','rank','predictorIdx');
 load(pathname, 'mdl'); %Model for individual cell
 
+
+%% Variance Inflation Factor
+%VIF(i) = 1/(1-R_2(i)); from a regression of P(i) as fcn of all other predictors
+%Equivalent to diagonal of the inverted correlation matrix
+%VIF = diag(inv(S.corrMatrix{4})); %Idx arbitrary if all cells use same model
+
+Tbl = mdl.Variables(:,1:end-1);
+varNames = Tbl.Properties.VariableNames;
+x = 1:numel(varNames);
+% VarDecompTbl = collintest(Tbl)
+
+figure; 
+title('Variance Inflation Factors')
+% plot(x,S.VIF,'LineWidth',2);
+bar(x,S.VIF);
+xlabel('Predictors'); ylabel('VIF'); 
+set(gca,'XTick',x,'XTickLabel',varNames);
+%Returned some large negative values!
 
 
 T = mdl.Formula.Terms; %terms matrix
@@ -30,40 +49,4 @@ for i = 1:numel(predictors)
 
 
     reduced.(predictors(i)) = reducedMdl;
-end
-
-%Tbl.Properties.VariableNames
-Tbl = mdl.Variables(:,1:end-1);
-% VarDecompTbl = collintest(Tbl)
-
-%% Variance Inflation Factor
-%VIF(i) = 1/(1-R_2(i)); from a regression of P(i) as fcn of all other predictors
-%Equivalent to diagonal of the inverted correlation matrix
-%VIF = diag(inv(S.corrMatrix{4})); %Idx arbitrary if all cells use same model
-
-X = table2array(Tbl);
-idx = ~any(isnan(X),2);
-X = X(idx,:);
-R0 = inv(corrcoef(X));
-VIF = diag(R0);
-
-x = 1:numel(VIF);
-predictorNames = string(mdl.VariableNames(1:end-1))';
-figure; 
-title('Variance Inflation Factors')
-plot(x,VIF,'LineWidth',2);
-xlabel('Predictors'); ylabel('VIF'); 
-set(gca,'XTick',X,'XTickLabel',predictorNames);
-%Returned some large negative values!
-
-Tbl = mdl.Variables(:,1:end-1); %Last col reserved for response var Y
-predictorNames = mdl.VariableNames(1:end-1); %Last col reserved for response var Y
-X = table2array(Tbl);
-
-parfor i = 1:numel(predictorNames) %start with ITI + position
-    idx = true(1, size(X,2));
-    idx(i) = false;
-    newMdl = fitglm(X(:,idx), X(:,i), 'PredictorVars', mdl.VariableNames(idx));
-    R2(i) = newMdl.Rsquared.Ordinary;
-    VIF(i) = 1/(1-R2(i));
 end
