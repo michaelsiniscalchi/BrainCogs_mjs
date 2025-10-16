@@ -64,14 +64,11 @@ for i = 1:numel(cellIdx)
         
             % panels(j).color = panels(j).color(end);
         end
-
+        
         %Labels
-        if varName=="position"
-            xLabel = 'Distance from start (cm)'; %Labels
-        else
-            xLabel = 'Time from event (s)'; %Labels
-        end
-        yLabel = 'Response (dF/F)';
+        xLabel = panels.xLabel;
+        yLabel = panels.yLabel;
+
     end
 
     ax_titles = {panels(:).title}'; %Specified in params.panels

@@ -78,17 +78,7 @@ glm.rank = rank(moment); %Rank
 glm.corrMatrix = corrcoef(Xi);
 
 %Variance Inflation Factor (VIF)
-parfor i = 1:numel(varNames) %start with ITI + position
-    idx = true(1, size(Xi,2)); %Idx of predictors to include
-    idx(i) = false; %Remove term (i)
-    newMdl = fitglm(Xi(:,idx), Xi(:,i)); %Predict var(i) based on remaining predictors
-    R2 = newMdl.Rsquared.Ordinary;
-    VIF(i) = 1/(1-R2);
-end
-glm.VIF = VIF';
-
-%Alternative method: diagonal of the inverse correlation matrix
-glm.VIF2 = diag(inv(corrcoef(X)));
+glm.VIF = diag(inv(corrcoef(Xi))); %Equivalent calculation: diagonal of the inverse correlation matrix
 
 %Metadata
 glm.predictorIdx = idx;
@@ -99,3 +89,13 @@ end
 %NEXT STEP: determine the relative influence of each class of predictors in
 %the model (ie, firstTower(1:n) or velocity) using mdl2 = removeTerms(mdl1, terms)
 % mdl1 = removeTerms(mdl,'x2')
+
+% %Variance Inflation Factor (VIF)
+% parfor i = 1:numel(varNames) %start with ITI + position
+%     idx = true(1, size(Xi,2)); %Idx of predictors to include
+%     idx(i) = false; %Remove term (i)
+%     newMdl = fitglm(Xi(:,idx), Xi(:,i)); %Predict var(i) based on remaining predictors
+%     R2 = newMdl.Rsquared.Ordinary;
+%     VIF(i) = 1/(1-R2);
+% end
+% glm.VIF = VIF';
