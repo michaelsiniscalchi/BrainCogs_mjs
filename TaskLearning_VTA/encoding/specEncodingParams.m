@@ -14,6 +14,23 @@ switch params.modelName
             "viewAngle","velocity","acceleration","ITI"];
         params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
 
+
+    case 'cuesPosITI'
+        params.predictorNames = [
+            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
+            "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position",...
+            "ITI",...
+            ];
+        params.initFcn_position = @ones; %ITI positi
+
+    case 'firstCuesPosRew'
+        params.predictorNames = [
+            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
+            "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position",...
+            "reward","noReward",...
+            ];
+        params.initFcn_position = @ones; %ITI positi
+
     case 'only_cues'
         params.predictorNames = [...
             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
@@ -22,16 +39,29 @@ switch params.modelName
         params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
     
     case 'only_allCues'
-        params.predictorNames = [
-            "leftPuffs","rightPuffs","leftTowers","rightTowers",...
+        params.predictorNames = [...
+            "leftPuffs","rightPuffs","leftTowers","rightTowers"...
             ];
         params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
 
     case 'only_firstCues'
         params.predictorNames = [
-            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
+            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower"...
             ];
         params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
+
+    case 'only_posXcueType'
+        params.predictorNames = [...
+            "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position"...
+            ];
+        params.initFcn_position = @ones; %ITI positi
+
+    case 'firstCues_posXcueType'
+        params.predictorNames = [
+            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
+            "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position",...
+            ];
+        params.initFcn_position = @ones; %ITI positi
 
     case 'FM_trialIdx'
         %FM plus trialIdx

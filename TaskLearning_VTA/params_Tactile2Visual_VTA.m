@@ -147,7 +147,12 @@ params.encoding.bSpline_position_binWidth   = 1; %bin width in cm
 params.encoding.bSpline_position_degree     = 3; %degree for position splines
 params.encoding.bSpline_position_df         = 5; %number of terms for position splines
 
-params.encoding.modelName           = 'only_cues';
+params.encoding.regularization  = "ridge";
+params.encoding.lambda = logspace(-3,6,20); %series of lambda values for cross-validation
+params.encoding.lambda_kfolds = 10;
+params.encoding.getRidgeTrace = true;
+
+params.encoding.modelName           = 'firstCuesPosRew';
 params.encoding                     = specEncodingParams(params.encoding);
 
 %% SUMMARY STATISTICS

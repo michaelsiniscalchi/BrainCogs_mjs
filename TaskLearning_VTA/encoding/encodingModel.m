@@ -20,13 +20,42 @@ for P = pNames
     idx.(P) = 1 + size(X,2) + (1:nTerms); %1st term reserved for intercept
     X = [X, predictors.(P)]; %#ok<AGROW>
 end
+
 %Z-score the predictor matrix
-X = (X - mean(X,1,'omitnan')) ./ std(X,0,1,"omitnan"); %MATLAB zscore() does not allow 'omitnan'
+X = normalize(X,1,"zscore");
 
 for i = 1:numel(dFF)
+    if encodingData.regularization=="ridge"
+        %10-fold CV with each lambda to find minimum MSE
+        [lambda, lambda_cv] = cvLambda(X, dFF{i}, encodingData.lambda,...
+            encodingData.lambda_kfolds); %Find lambda value that minimizes MSE
+        
+        if encodingData.getRidgeTrace
+            %Ridge regression on all timepoints w/ ridge trace for validation
+            [yHat, ridgeTrace, mse] = ridgePredict(X, dFF{i}, encodingData.lambda); %[y_hat, beta, mse] = ridgePredict(x,y,k)
+            kIdx = encodingData.lambda==lambda;
+            yHat = yHat(:,kIdx);
+            B = ridgeTrace(:,kIdx);
+            mse = mse(kIdx);
+        else
+            %Ridge regression on all timepoints using cross-validated lambda value
+            [yHat, B, mse] = ridgePredict(X, dFF{i}, lambda);
+        end     
+        
+        %Generate output similar to fitglm()
+        mdl.Coefficients = struct('Estimate', B, 'SE', nan(size(B)));
+        mdl.Fitted = struct('Response', yHat, 'MSE', mse);
+        mdl.Lambda = lambda;
+        mdl.CV = struct('ridgeTrace', ridgeTrace, 'cvLambda', lambda_cv);
+    else
+        mdl = fitglm(X, dFF{i}, 'PredictorVars', varNames);
+    end
 
-    mdl = fitglm(X, dFF{i}, 'PredictorVars', varNames);
+    %Store model in struct
     glm.model{i} = mdl;
+
+    %Model-predicted response
+    glm.predictedDFF{i,:} = mdl.Fitted.Response;
 
     %Estimate response kernels for each event-related predictor (and other spline-bases)
     %***FOR SE, we need to linearly combine the MSE and take the square root! (you can't just take the weighted sum of the SEs)
@@ -41,16 +70,25 @@ for i = 1:numel(dFF)
             binWidth = encodingData.dt; %Mean timestep per sample dF/F
             x_min = 0; %time from event
         end
+        
+        %Coefficient estimates and SE
         estimate = bSpline * mdl.Coefficients.Estimate(idx.(varName)); %(approx. resp func) = bSpline * Beta
-        mse = (mdl.Coefficients.SE(idx.(varName))).^2; %Calculate MSE, which is SE^2
-        se = sqrt(bSpline * mse); %Square root of weighted MSE
+        [mse, se] = deal(nan(size(estimate))); %initialize
+        if encodingData.regularization~="ridge" %Coef SE estimates not meaningful after regularization
+            mse = (mdl.Coefficients.SE(idx.(varName))).^2; %Calculate MSE, which is SE^2
+            se = sqrt(bSpline * mse); %Square root of weighted MSE
+        end
+
+        %Spatial/temporal kernels
         glm.kernel(i).(varName).estimate = estimate'; %transpose for plotting
         glm.kernel(i).(varName).se = (estimate + [1,-1].*se)'; %Express as estimate +/- se; transpose for plotting
         glm.kernel(i).(varName).x = (0:binWidth:binWidth*(size(bSpline,1)-1)) + x_min;
+        
         %AUC
         winDuration = range(glm.kernel(i).(varName).x);
         glm.kernel(i).(varName).AUC = mean(estimate)*winDuration;
         glm.kernel(i).(varName).AUC_se = sqrt(mean(mse).*winDuration);
+        
         %Peak
         peak = max(abs(estimate)); %Find extreme value
         peakIdx = estimate==peak | estimate==-peak; %Get idx of extreme value
@@ -60,14 +98,11 @@ for i = 1:numel(dFF)
         glm.kernel(i).(varName).L2 = norm(estimate); %Approx vector magnitude
     end
 
+    %Kinematics
     for varName = string(encodingData.kinematicVars)
         glm.coef(i).(varName).estimate = mdl.Coefficients.Estimate(idx.(varName));
         glm.coef(i).(varName).se = mdl.Coefficients.SE(idx.(varName));
     end
-
-    %Predict full time series from model
-    glm.predictedDFF{i,:} = mdl.Fitted.Response;
-  
 end
 
 %Calculate condition number for inversion of moment matrix
@@ -80,16 +115,46 @@ glm.corrMatrix = corrcoef(Xi);
 %Variance Inflation Factor (VIF)
 glm.VIF = diag(inv(corrcoef(Xi))); %Equivalent calculation: diagonal of the inverse correlation matrix
 
+%Adjusted for ridge param
+glm.conditionNum_adj = []; %Initialize
+if encodingData.regularization == "ridge"
+    moment2 = moment + lambda*eye(size(moment));
+    glm.conditionNum_adj = cond(moment2);
+end
+
 %Metadata
 glm.predictorIdx = idx;
 for F = string(fieldnames(encodingData))'
     glm.(F) = encodingData.(F);
 end
 
+function [lambda_fit, cv] = cvLambda(X,y,lambda,kFolds)
+CV = cvpartition(numel(y),"KFold",kFolds);
+mse = nan(kFolds,numel(lambda)); %Initialize
+for i = 1:CV.NumTestSets
+    trainIdx = CV.training(i);
+    testIdx = CV.test(i);
+    nTest = CV.TestSize(i); 
+    [~, beta] = ridgePredict(X(trainIdx,:), y(trainIdx), lambda);
+    %Predict test responses from test predictors and training coefs
+    y_hat = [ones(nTest,1), X(testIdx,:)]*beta; %Predicted response; size(y_hat) = [nObs, nLambda];
+    mse(i,:) = mean((y(testIdx) - y_hat).^2); %Calc MSE; size(mse) = [kFolds, nLambda] 
+end
+cv = mean(mse); %Cross-validation MSE
+lambda_fit = lambda(cv==min(cv)); %Lambda value with lowest CV MSE
+
+function [y_hat, beta, mse] = ridgePredict(x,y,k)
+
+beta = nan(size(x,2)+1, numel(k)); %Initialize ridge trace: size(beta)=[nPredictors, nLambda]
+parfor i = 1:numel(k)
+    beta(:, i) = ridge(y,x,k(i),0); %Last ARG=0, do not scale data, and include intercept
+end
+y_hat = [ones(size(x,1),1), x]*beta; %Append a column of ones for intercept
+mse = mean((y - y_hat).^2); %Training mse
+
 %NEXT STEP: determine the relative influence of each class of predictors in
 %the model (ie, firstTower(1:n) or velocity) using mdl2 = removeTerms(mdl1, terms)
 % mdl1 = removeTerms(mdl,'x2')
-
 % %Variance Inflation Factor (VIF)
 % parfor i = 1:numel(varNames) %start with ITI + position
 %     idx = true(1, size(Xi,2)); %Idx of predictors to include
@@ -99,3 +164,19 @@ end
 %     VIF(i) = 1/(1-R2);
 % end
 % glm.VIF = VIF';
+
+%% Alternatives
+% mdl = fitglm(X, dFF{i}, 'PredictorVars', varNames)
+%
+% [mdl, FitInfo ] = ...
+%     fitrlinear(X', dFF{i},... %Transpose X to reduce exe time
+%     'PredictorNames',varNames,...
+%     'Regularization','ridge','ObservationsIn','columns',...
+%     'OptimizeHyperparameters',{'Lambda'});
+%
+% [mdl, FitInfo] = ...
+% fitrlinear(X', dFF{i},'ObservationsIn','columns','Learner', 'leastsquares'); %Ridge is default
+% 
+% [mdl, FitInfo] = ...
+% fitrlinear(X', dFF{i},'ObservationsIn','columns','Lambda',lambda);
+%  glm.model{i} = mdl;

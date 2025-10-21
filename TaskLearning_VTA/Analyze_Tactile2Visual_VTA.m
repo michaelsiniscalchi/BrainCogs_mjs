@@ -202,13 +202,17 @@ if calculate.fluorescence
             for j = 1:numel(encodingMdl.model)
                 mdl = encodingMdl.model{j}; %One variable per cell (otherwise struct will exceed 2GB limit)
                 save(fullfile(fileparts(mat_file.results.encoding(i)),...
-                    ['encodingMdl_','cell', encodingMdl.cellID{j}]), "mdl");                    
+                    ['encodingMdl-',params.encoding.modelName,'-cell', encodingMdl.cellID{j}]), "mdl");                    
             end
             encodingMdl = rmfield(encodingMdl, "model"); %Remove field after unpacking
             
             %Save metadata
             encodingMdl.sessionID = expData(i).sub_dir; 
-            save(mat_file.results.encoding(i), '-struct', 'encodingMdl', '-v7.3');
+            % save(mat_file.results.encoding(i), '-struct', 'encodingMdl', '-v7.3');
+            save(fullfile(fileparts(mat_file.results.encoding(i)),...
+                    ['encodingMdl-',params.encoding.modelName]),...
+                    '-struct', 'encodingMdl', '-v7.3');                    
+           
         end
 
     end
