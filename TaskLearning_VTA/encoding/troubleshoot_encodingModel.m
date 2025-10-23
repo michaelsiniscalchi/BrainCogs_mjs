@@ -14,7 +14,7 @@ subjectID = "m913";
 % options.calculate = struct('encoding',true)
 idx = find(ismember({expData.sub_dir},{'250212-m913-maze7'}));
 % pathname = fullfile(dirs.results,expData(idx).sub_dir,"encodingMdl_cell004.mat");
-pathname = fullfile(dirs.results,[expData(idx).sub_dir,'-FM']);
+pathname = fullfile(dirs.results,[expData(idx).sub_dir]);
 % S = load(mat_file.results.encoding(idx),'cellID','conditionNum',...
 %     'corrMatrix','VIF','VIF2','rank','predictorIdx');
 S = load(fullfile(pathname,'encoding.mat'),'cellID','conditionNum',...

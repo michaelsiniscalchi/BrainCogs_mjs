@@ -33,12 +33,12 @@ figures.timeseries                      = false; %Plot all timeseries for each s
 % Combined
 figures.trial_average_dFF               = false;  %Overlay traces for distinct choices, outcomes, and rules (CO&R)
 
-figures.encoding_observedVsPredicted    = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
-figures.encoding_predictedTrialAvg      = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
-figures.encoding_eventKernels           = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
-figures.encoding_coefficients           = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
+figures.encoding_observedVsPredicted    = false;   %Observed vs. predicted dFF, etc.
+figures.encoding_predictedTrialAvg      = false;   %Predicted dFF, contrasting trial subsets
+figures.encoding_eventKernels           = false;   %Stimulus kernel estimates
+figures.encoding_coefficients           = false;   %Coefficient estimates for individual predictors (velocity, etc.)
 figures.encoding_eventKernelsByCell     = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
-
+figures.encoding_cv                     = false;   %Cross-validation of lambda, ridge traces, etc.
 figures.heatmap_modulation_idx          = false;  %Heatmap of selectivity idxs for COR for each session
 
 % Summary
@@ -148,7 +148,7 @@ params.encoding.bSpline_position_degree     = 3; %degree for position splines
 params.encoding.bSpline_position_df         = 5; %number of terms for position splines
 
 params.encoding.regularization  = "ridge";
-params.encoding.lambda = logspace(-3,6,20); %series of lambda values for cross-validation
+params.encoding.lambda = [0, logspace(-3,6,20)]; %series of lambda values for cross-validation
 params.encoding.lambda_kfolds = 10;
 params.encoding.getRidgeTrace = true;
 

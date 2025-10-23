@@ -179,6 +179,17 @@ if figures.encoding_model
                 clearvars figs
             end
         end
+
+        if figures.encoding_cv
+            figs = gobjects(numel(glm.cellID), 4); %Initialize graphics objects: one for each figure (All, Peak, AUC, Kinematics)
+            for j = 1:numel(glm.cellID)
+                S = load(fullfile(fileparts(mat_file.results.encoding(i)),...
+                    ['encodingMdl_','cell', glm.cellID{j}]));
+                figs(j,:) = fig_encodingMdlCoefs(glm, S.mdl, expID, glm.cellID, j, predictorNames, colors);
+                save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                clearvars figs
+            end
+        end
     end
 end
 

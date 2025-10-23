@@ -15,11 +15,11 @@ switch params.modelName
         params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
 
 
-    case 'cuesPosITI'
+    case 'firstCuesPosRewITIVelocity'
         params.predictorNames = [
             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
             "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position",...
-            "ITI",...
+            "reward","noReward","ITI","velocity"...
             ];
         params.initFcn_position = @ones; %ITI positi
 

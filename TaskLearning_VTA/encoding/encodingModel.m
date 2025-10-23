@@ -2,6 +2,11 @@ function glm = encodingModel( predictors, dFF, encodingData )
 
 %-------Multiple Linear Regression Model------------------------------------------------
 
+%Initialize output struct
+glm = struct('modelName',"",'sessionID',"",'session_date',[],'model',{[]},'cellID',"",...
+    'coef',[],'VIF',[],'VIF_trace',[],'conditionNum',[],'rank',[],'corrMatrix',[],...
+    'kernel',[],'predictedDFF',[],'predictorIdx',[],'predictorNames',"");
+
 %Create Matrix of Regressors
 pNames = string(fieldnames(predictors))';
 X = [];
@@ -25,30 +30,43 @@ end
 X = normalize(X,1,"zscore");
 
 for i = 1:numel(dFF)
+
+    y = dFF{i};
+
     if encodingData.regularization=="ridge"
         %10-fold CV with each lambda to find minimum MSE
-        [lambda, lambda_cv] = cvLambda(X, dFF{i}, encodingData.lambda,...
+        [lambda, lambda_cv] = cvLambda(X, y, encodingData.lambda,...
             encodingData.lambda_kfolds); %Find lambda value that minimizes MSE
         
         if encodingData.getRidgeTrace
             %Ridge regression on all timepoints w/ ridge trace for validation
-            [yHat, ridgeTrace, mse] = ridgePredict(X, dFF{i}, encodingData.lambda); %[y_hat, beta, mse] = ridgePredict(x,y,k)
+            [yHat, ridgeTrace, mse] = ridgePredict(X, y, encodingData.lambda); %[y_hat, beta, mse] = ridgePredict(x,y,k)
             kIdx = encodingData.lambda==lambda;
-            yHat = yHat(:,kIdx);
-            B = ridgeTrace(:,kIdx);
-            mse = mse(kIdx);
+            yHat = yHat(:,kIdx); %Predicted response for each lambda
+            B = ridgeTrace(:,kIdx); %Ridge coefficients for each lambda
+            mse = mse(kIdx); %MSE for each lambda
+
         else
             %Ridge regression on all timepoints using cross-validated lambda value
-            [yHat, B, mse] = ridgePredict(X, dFF{i}, lambda);
-        end     
-        
+            [yHat, B, mse] = ridgePredict(X, y, lambda);
+        end   
+
+        %VIFs adjusted for each lambda
+        if isempty(glm.VIF_trace)
+            [glm.VIF_trace, glm.condNum_trace] = getVIF(X, encodingData.lambda);
+        end
+
         %Generate output similar to fitglm()
         mdl.Coefficients = struct('Estimate', B, 'SE', nan(size(B)));
+        rss = sum((y - yHat).^2); 
+        tss = sum((y - mean(y)).^2);
+        r_squared = 1-(rss/tss); 
         mdl.Fitted = struct('Response', yHat, 'MSE', mse);
+        mdl.Rsquared = r_squared;
         mdl.Lambda = lambda;
         mdl.CV = struct('ridgeTrace', ridgeTrace, 'cvLambda', lambda_cv);
     else
-        mdl = fitglm(X, dFF{i}, 'PredictorVars', varNames);
+        mdl = fitglm(X, y, 'PredictorVars', varNames);
     end
 
     %Store model in struct
@@ -106,26 +124,40 @@ for i = 1:numel(dFF)
 end
 
 %Calculate condition number for inversion of moment matrix
-Xi = X(~isnan(sum(X,2)),:); %Omit nan rows, which are also omitted in regression
-moment = Xi'*Xi; %Moment matrix of regressors; note that X is already z-scored
-glm.conditionNum = cond(moment); %Condition number for inversion
-glm.rank = rank(moment); %Rank
-glm.corrMatrix = corrcoef(Xi);
+glm.conditionNum = cond(momentMat(X)); %Condition number for inversion
+glm.rank = rank(momentMat(X)); %Rank
+glm.corrMatrix = corrcoef(X,'Rows','complete'); %Correlation matrix, omitting rows containing NaN
 
 %Variance Inflation Factor (VIF)
-glm.VIF = diag(inv(corrcoef(Xi))); %Equivalent calculation: diagonal of the inverse correlation matrix
-
-%Adjusted for ridge param
-glm.conditionNum_adj = []; %Initialize
-if encodingData.regularization == "ridge"
-    moment2 = moment + lambda*eye(size(moment));
-    glm.conditionNum_adj = cond(moment2);
-end
+glm.VIF = diag(inv(glm.corrMatrix)); %Equivalent calculation: diagonal of the inverse correlation matrix
 
 %Metadata
 glm.predictorIdx = idx;
 for F = string(fieldnames(encodingData))'
     glm.(F) = encodingData.(F);
+end
+
+%-------INTERNAL FUNCTIONS-------------------------------------------------
+
+function [M, nObs] = momentMat(X)
+idx = ~isnan(sum(X,2));
+nObs = sum(idx);
+X = X(idx,:); %Omit nan rows, which are also omitted in regression
+M = X'*X; %Moment matrix of regressors; note that X should be standardized
+
+function [VIF, condNumber] = getVIF(X, k)
+if nargin==1
+    k = 0; %Ridge parameter, lambda
+end
+
+VIF = NaN(size(X,2), numel(k)); %Initialize array
+condNumber = NaN(numel(k),1);
+[XtX, nObs]  = momentMat(X);
+for j = 1:numel(k)
+    M = XtX + k(j)*eye(size(XtX)); %Penalized moment matrix for inversion
+    R = M/(nObs-1); %R = XtX/nObservations; to work, columns of X must be standardized!
+    VIF(:,j) = diag(inv(R));
+    condNumber(j,:) = cond(M); %Condition number of penalized moment matrix
 end
 
 function [lambda_fit, cv] = cvLambda(X,y,lambda,kFolds)
@@ -180,3 +212,4 @@ mse = mean((y - y_hat).^2); %Training mse
 % [mdl, FitInfo] = ...
 % fitrlinear(X', dFF{i},'ObservationsIn','columns','Lambda',lambda);
 %  glm.model{i} = mdl;
+
