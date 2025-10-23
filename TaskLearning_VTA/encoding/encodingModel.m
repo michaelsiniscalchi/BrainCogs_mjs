@@ -2,11 +2,6 @@ function glm = encodingModel( predictors, dFF, encodingData )
 
 %-------Multiple Linear Regression Model------------------------------------------------
 
-%Initialize output struct
-glm = struct('modelName',"",'sessionID',"",'session_date',[],'model',{[]},'cellID',"",...
-    'coef',[],'VIF',[],'VIF_trace',[],'conditionNum',[],'rank',[],'corrMatrix',[],...
-    'kernel',[],'predictedDFF',[],'predictorIdx',[],'predictorNames',"");
-
 %Create Matrix of Regressors
 pNames = string(fieldnames(predictors))';
 X = [];
@@ -29,6 +24,15 @@ end
 %Z-score the predictor matrix
 X = normalize(X,1,"zscore");
 
+%Initialize output struct
+nCells = size(dFF,1);
+nPredictors = size(X,2);
+glm = struct('modelName',"",'sessionID',"",'session_date',[],...
+    'model',[], 'cellID',"", 'coef',struct(), 'kernel', struct(),...
+    'conditionNum',[],'VIF',[],'VIF_trace',[],'conditionNum_trace',[],...
+    'rank',[],'corrMatrix',[],...
+    'predictedDFF',{cell(size(dFF))},'predictorIdx',[],'predictorNames',"");
+
 for i = 1:numel(dFF)
 
     y = dFF{i};
@@ -46,15 +50,15 @@ for i = 1:numel(dFF)
             B = ridgeTrace(:,kIdx); %Ridge coefficients for each lambda
             mse = mse(kIdx); %MSE for each lambda
 
+            %VIFs adjusted for each lambda
+            if isempty(glm.VIF_trace)
+                [glm.VIF_trace, glm.condNum_trace] = getVIF(X, encodingData.lambda);
+            end
+
         else
             %Ridge regression on all timepoints using cross-validated lambda value
             [yHat, B, mse] = ridgePredict(X, y, lambda);
         end   
-
-        %VIFs adjusted for each lambda
-        if isempty(glm.VIF_trace)
-            [glm.VIF_trace, glm.condNum_trace] = getVIF(X, encodingData.lambda);
-        end
 
         %Generate output similar to fitglm()
         mdl.Coefficients = struct('Estimate', B, 'SE', nan(size(B)));
@@ -74,6 +78,10 @@ for i = 1:numel(dFF)
 
     %Model-predicted response
     glm.predictedDFF{i,:} = mdl.Fitted.Response;
+    
+    %Coefficients for all predictors
+    glm.coef.estimate(i,:) = mdl.Coefficients.Estimate;
+    glm.coef.se(i,:) = mdl.Coefficients.SE;
 
     %Estimate response kernels for each event-related predictor (and other spline-bases)
     %***FOR SE, we need to linearly combine the MSE and take the square root! (you can't just take the weighted sum of the SEs)
@@ -115,21 +123,12 @@ for i = 1:numel(dFF)
         %L2 Norm of kernel estimate
         glm.kernel(i).(varName).L2 = norm(estimate); %Approx vector magnitude
     end
-
-    %Kinematics
-    for varName = string(encodingData.kinematicVars)
-        glm.coef(i).(varName).estimate = mdl.Coefficients.Estimate(idx.(varName));
-        glm.coef(i).(varName).se = mdl.Coefficients.SE(idx.(varName));
-    end
 end
 
-%Calculate condition number for inversion of moment matrix
-glm.conditionNum = cond(momentMat(X)); %Condition number for inversion
+%Calculate VIF and condition number for inversion of moment matrix
+[glm.VIF, glm.condNumber] = getVIF(X); %Variance Inflation Factor (VIF)
 glm.rank = rank(momentMat(X)); %Rank
 glm.corrMatrix = corrcoef(X,'Rows','complete'); %Correlation matrix, omitting rows containing NaN
-
-%Variance Inflation Factor (VIF)
-glm.VIF = diag(inv(glm.corrMatrix)); %Equivalent calculation: diagonal of the inverse correlation matrix
 
 %Metadata
 glm.predictorIdx = idx;
