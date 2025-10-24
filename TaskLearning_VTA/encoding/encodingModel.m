@@ -52,7 +52,7 @@ for i = 1:numel(dFF)
 
             %VIFs adjusted for each lambda
             if isempty(glm.VIF_trace)
-                [glm.VIF_trace, glm.condNum_trace] = getVIF(X, encodingData.lambda);
+                [glm.VIF_trace, glm.conditionNum_trace] = getVIF(X, encodingData.lambda);
             end
 
         else
