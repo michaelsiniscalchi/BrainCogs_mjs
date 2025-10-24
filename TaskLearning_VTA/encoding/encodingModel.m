@@ -68,7 +68,7 @@ for i = 1:numel(dFF)
         mdl.Fitted = struct('Response', yHat, 'MSE', mse);
         mdl.Rsquared = r_squared;
         mdl.Lambda = lambda;
-        mdl.CV = struct('ridgeTrace', ridgeTrace, 'cvLambda', lambda_cv);
+        mdl.CV = struct('ridgeTrace', ridgeTrace(2:end,:), 'cvLambda', lambda_cv); %Exclude B0 from ridege trace
     else
         mdl = fitglm(X, y, 'PredictorVars', varNames);
     end
@@ -126,7 +126,7 @@ for i = 1:numel(dFF)
 end
 
 %Calculate VIF and condition number for inversion of moment matrix
-[glm.VIF, glm.condNumber] = getVIF(X); %Variance Inflation Factor (VIF)
+[glm.VIF, glm.conditionNum] = getVIF(X); %Variance Inflation Factor (VIF)
 glm.rank = rank(momentMat(X)); %Rank
 glm.corrMatrix = corrcoef(X,'Rows','complete'); %Correlation matrix, omitting rows containing NaN
 
