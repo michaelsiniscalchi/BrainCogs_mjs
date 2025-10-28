@@ -1,6 +1,6 @@
 %Plot regression coefficients for all predictor variables in model
 
-function figs = fig_encodingMdlCoefs( glm, mdl, expID, cellIDs, cellIdx, predictorNames,colors )
+function figs = fig_encodingMdlCoefs( glm, mdl, cellIdx, predictorNames,colors )
 
 % Set up figure properties
 setup_figprops('timeseries')  %placeholder
@@ -9,9 +9,11 @@ markerSize = 3;
 
 % predNames = fieldnames(glm.predictorIdx);
 kernelNames = string(fieldnames(glm.kernel));
+cellIDs = glm.cellID;
+sessionID = glm.sessionID;
 
 %Raw bSpline coefficients
-figs(1) = figure('Name',[expID,'-all coeffs-','-cell', cellIDs{cellIdx}], 'Position', [300,300,1000,500]);
+figs(1) = figure('Name',[sessionID,'-all coeffs-','-cell', cellIDs{cellIdx}], 'Position', [300,300,1000,500]);
 offset=0; %offset from raw index
 iOffset = 10; %increment to adjust offset
 
@@ -41,9 +43,9 @@ ax(1).YLabel.String = 'Regression coefficient';
 axis tight; box off
 
 %AUC of each kernel
-figs(2) = figure('Name',[expID,'-kernel AUC-','-cell', cellIDs{cellIdx}], 'Position', [300,300,1000,500]);
+figs(2) = figure('Name',[glm.sessionID,'-kernel AUC-','-cell', cellIDs{cellIdx}], 'Position', [300,300,1000,500]);
 pNames = predictorNames(ismember(predictorNames, kernelNames));
-pNames  = pNames(pNames~="start");
+% pNames  = pNames(pNames~="start");
 kernel = glm.kernel(cellIdx);
 
 plotBaseline(0:numel(pNames)+1); %Plot baseline at AUC=0 
@@ -64,7 +66,7 @@ ax(2).YLabel.String = 'Area under curve (std. dF/F * s)';
 axis square tight; box off
 
 %Peak of each kernel
-figs(3) = figure('Name',[expID,'-kernel peak-','-cell', cellIDs{cellIdx}], 'Position', [300,300,1000,500]);
+figs(3) = figure('Name',[sessionID,'-kernel peak-','-cell', cellIDs{cellIdx}], 'Position', [300,300,1000,500]);
 plotBaseline(0:numel(pNames)+1); %Plot baseline at AUC=0 
 for i = 1:numel(pNames)
     peak = kernel.(pNames(i)).peak; %Peak of response kernel
@@ -83,8 +85,11 @@ ax(3).YLabel.String = 'Peak value (std. dF/F)';
 axis square tight; box off
 
 %Kinematic coefficients separately
-figs(4) = figure('Name',[expID,'-kinematic coeffs-','-cell', cellIDs{cellIdx}], 'Position', [300,300,1000,500]);
+figs(4) = figure('Name',[sessionID,'-kinematic coeffs-','-cell', cellIDs{cellIdx}], 'Position', [300,300,1000,500]);
 pNames = predictorNames(~ismember(predictorNames, kernelNames));
+if isempty(pNames)
+    return
+end
 plotBaseline(0:numel(pNames)+1); %Plot baseline at B=0 
 for i = 1:numel(pNames)
     

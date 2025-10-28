@@ -26,16 +26,17 @@ Analyze_Tactile2Visual_VTA(search_filter, options);
 clearvars;
 search_filter ='250212-m913-maze7';
 options.calculate = struct('combined_data',false,'align_signals', false,...
-    'trial_average_dFF', false,'encoding_model', true);
+    'trial_average_dFF', false,'encoding_model', false);
 % options.summarize = struct('trialDFF', true);
-options.figures.encoding_model = true;
+options.figures = struct('encoding_coefficients',true, 'encoding_cv', true);
 Analyze_Tactile2Visual_VTA(search_filter, options);
 
 %%
 %Figures
 clearvars;
 search_filter ='250212-m913-maze7';
-options.figures=struct('encoding_eventKernels',true,'encoding_coefficients', false);
+options.figures=struct('encoding_eventKernels',true,...
+    'encoding_coefficients', false, 'encoding_cv', true);
 figures_Tactile2Visual_VTA(search_filter, options); %In a separate script for brevity.
 
 %% Summary
