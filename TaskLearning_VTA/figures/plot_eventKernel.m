@@ -37,9 +37,6 @@ for i = 1:numel(cellIdx)
     for j = 1:numel(panels)
                
         varName = panels(j).varName;
-        if ~isfield(glm.kernel,varName)
-            continue
-        end
 
         for k = 1:numel(varName)
             
