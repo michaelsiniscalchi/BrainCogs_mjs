@@ -120,7 +120,8 @@ if figures.encoding_model
         
         %Trial-averaged dF/F: observed vs. predicted
         if figures.encoding_observedVsPredicted
-            save_dir = fullfile(dirs.figures,'Encoding model', 'Observed vs Predicted dFF', expID);
+            save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
+                'Observed vs Predicted dFF', expID);
             comparisons = unique([params.figs.encoding.panels.comparison],'stable');
             for j = 1:numel(comparisons)
                 panelIdx = find([params.figs.encoding.panels.comparison]==comparisons(j));
@@ -135,7 +136,8 @@ if figures.encoding_model
 
         %Trial-averaged dF/F: predicted contrasts, etc
         if figures.encoding_predictedTrialAvg
-            save_dir = fullfile(dirs.figures,'Encoding model', 'Predicted dFF', expData(i).sub_dir);
+            save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
+                'Predicted dFF', expData(i).sub_dir);
             comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
             for j = 1:numel(comparisons)
                 panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
@@ -149,7 +151,8 @@ if figures.encoding_model
 
         %Response Kernels
         if figures.encoding_eventKernels
-            save_dir = fullfile(dirs.figures,'Encoding model', 'Response kernels', expID);   %Figures directory: single units
+            save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
+                'Response kernels', expID);   %Figures directory: single units
             create_dirs(save_dir); %Create dir for these figures
             panels = params.figs.encoding.panels_contrast;
             panels = panels(cellfun(@(C) ~isempty(C), {panels.varName})); %Remove non-event variables
@@ -163,8 +166,8 @@ if figures.encoding_model
 
         %All Regression Coefficients for each Session
         if figures.encoding_coefficients
-            save_dir = fullfile(dirs.figures,'Encoding model', 'Session Coefficients',...
-                [expID, '-', params.encoding.modelName]);   %Figures directory: single units
+            save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
+                'Session Coefficients', [expID, '-', params.encoding.modelName]);   %Figures directory: single units
             create_dirs(save_dir); %Create dir for these figures
             
             %Get predictors in model (possibly make function for this)
@@ -194,8 +197,8 @@ if figures.encoding_model
 
                 figs(j) = fig_encodingMdlCV(glm, mdl, glm.cellID{j}, colors);
                 
-                save_dir = fullfile(dirs.figures,'Encoding model','Cross Validation',...
-                [expID, '-', params.encoding.modelName]);   %Figures directory: single units
+                save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
+                    'Cross Validation', [expID, '-', params.encoding.modelName]);   %Figures directory: single units
                 create_dirs(save_dir); %Create dir for these figures
                 save_multiplePlots(figs, save_dir); %save as FIG and PNG
                 clearvars figs
