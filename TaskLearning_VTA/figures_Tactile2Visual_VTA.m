@@ -157,9 +157,11 @@ if figures.encoding_model
             panels = params.figs.encoding.panels_contrast;
             panels = panels(cellfun(@(C) ~isempty(C), {panels.varName})); %Remove non-event variables
             for j = 1:numel(panels)
-                figs = plot_eventKernel(glm, panels(j));
-                %Save by session
-                save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                if isfield(glm.kernel,panels(j).varName)
+                    figs = plot_eventKernel(glm, panels(j));
+                    %Save by session
+                    save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                end
             end
             clearvars figs
         end
