@@ -109,9 +109,13 @@ end
 %Encoding Model
 if figures.encoding_model 
     for i = 1:numel(expData)
-        %Load data
+        %Load data 
         expID = expData(i).sub_dir;
-        glm = load(mat_file.results.encoding(i),'bootAvg','kernel','sessionID','cellID','predictorIdx');
+        glm = load(fullfile(dirs.results,expData(i).sub_dir,...
+            ['encodingMdl-', params.encoding.modelName]),...
+            'modelName','bootAvg','kernel','sessionID','cellID','predictorIdx',...
+            'lambda','conditionNum_trace','VIF_trace','corrMatrix');
+        % glm = load(mat_file.results.encoding(i),'bootAvg','kernel','sessionID','cellID','predictorIdx');
         img = load(mat_file.results.cellFluo(i),'bootAvg');
         
         %Trial-averaged dF/F: observed vs. predicted
@@ -181,11 +185,18 @@ if figures.encoding_model
         end
 
         if figures.encoding_cv
-            figs = gobjects(numel(glm.cellID), 4); %Initialize graphics objects: one for each figure (All, Peak, AUC, Kinematics)
+            
+            figs = gobjects(numel(glm.cellID)); %Initialize graphics objects: one for each figure (All, Peak, AUC, Kinematics)
             for j = 1:numel(glm.cellID)
-                S = load(fullfile(fileparts(mat_file.results.encoding(i)),...
-                    ['encodingMdl_','cell', glm.cellID{j}]));
-                figs(j,:) = fig_encodingMdlCoefs(glm, S.mdl, expID, glm.cellID, j, predictorNames, colors);
+                load(fullfile(dirs.results,expData(i).sub_dir,...
+                    ['encodingMdl-', params.encoding.modelName, '-cell', glm.cellID{j}]),...
+                    'mdl');
+
+                figs(j) = fig_encodingMdlCV(glm, mdl, glm.cellID{j}, colors);
+                
+                save_dir = fullfile(dirs.figures,'Encoding model','Cross Validation',...
+                [expID, '-', params.encoding.modelName]);   %Figures directory: single units
+                create_dirs(save_dir); %Create dir for these figures
                 save_multiplePlots(figs, save_dir); %save as FIG and PNG
                 clearvars figs
             end

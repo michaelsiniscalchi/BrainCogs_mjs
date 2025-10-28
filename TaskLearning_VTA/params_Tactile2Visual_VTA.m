@@ -86,7 +86,8 @@ figures.encoding_model = false;
 if any([figures.encoding_observedVsPredicted,... 
         figures.encoding_predictedTrialAvg,...
         figures.encoding_eventKernels,...
-		figures.encoding_coefficients])
+		figures.encoding_coefficients,...
+        figures.encoding_cv])
 	figures.encoding_model = true;
 end
 
@@ -148,7 +149,7 @@ params.encoding.bSpline_position_degree     = 3; %degree for position splines
 params.encoding.bSpline_position_df         = 5; %number of terms for position splines
 
 params.encoding.regularization  = "ridge";
-params.encoding.lambda = [0, logspace(-3,6,20)]; %series of lambda values for cross-validation
+params.encoding.lambda = [logspace(-3,6,20)]; %series of lambda values for cross-validation
 params.encoding.lambda_kfolds = 10;
 params.encoding.getRidgeTrace = true;
 
