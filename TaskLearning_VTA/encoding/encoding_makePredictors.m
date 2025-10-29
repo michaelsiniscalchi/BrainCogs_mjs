@@ -96,26 +96,29 @@ for event = string(fieldnames(impulse))'
     predictors.(event) = predictors.(event)(1:numel(t),:);
 end
 
-%Position splines
-binEdges = trialData.positionRange(1):params.bSpline_position_binWidth:trialData.positionRange(2);
-predictors.position(predictors.position<trialData.positionRange(1)) =...
-    trialData.positionRange(1); %Trials where mouse moves backward from start position will likely be excluded, but need idx for implementation of position splines
-posIdx = discretize(predictors.position, binEdges); %Index each cm across position range; with wider bins, use discretize()
-
-bSpline_pos = makeBSpline(params.bSpline_position_degree,...
-    params.bSpline_position_df, numel(binEdges)-1);
-
-predictors.position = NaN(size(predictors.position,1),size(bSpline_pos, 2)); %Re-initialize, one column per basis function
-for j = 1:size(bSpline_pos, 2)
-    predictors.position(:,j) = bSpline_pos(posIdx, j);
-end
-
 %Cue type-specific position splines (alternative to position)
-for f = ["leftTowers","rightTowers","leftPuffs","rightPuffs"] 
-    pName = strjoin([f,"position"],'_'); %Predictor name, eg "leftPuffs_position"
-    predictors.(pName) = zeros(size(predictors.position)); %Initialize as zeroes
-    idx = ismember(predictors.trialIdx, find(trials.(f)));
-    predictors.(pName)(idx,:) = predictors.position(idx,:); 
+if any(ismember(params.predictorNames,...
+        ["leftPuffs_position","rightPuffs_position",...
+        "leftTowers_position","rightTowers_position"]))
+    binEdges = trialData.positionRange(1):params.bSpline_position_binWidth:trialData.positionRange(2);
+    predictors.position(predictors.position<trialData.positionRange(1)) =...
+        trialData.positionRange(1); %Trials where mouse moves backward from start position will likely be excluded, but need idx for implementation of position splines
+    posIdx = discretize(predictors.position, binEdges); %Index each cm across position range; with wider bins, use discretize()
+
+    bSpline_pos = makeBSpline(params.bSpline_position_degree,...
+        params.bSpline_position_df, numel(binEdges)-1);
+
+    predictors.position = NaN(size(predictors.position,1),size(bSpline_pos, 2)); %Re-initialize, one column per basis function
+    for j = 1:size(bSpline_pos, 2)
+        predictors.position(:,j) = bSpline_pos(posIdx, j);
+    end
+
+    for f = ["leftTowers","rightTowers","leftPuffs","rightPuffs"]
+        pName = strjoin([f,"position"],'_'); %Predictor name, eg "leftPuffs_position"
+        predictors.(pName) = zeros(size(predictors.position)); %Initialize as zeroes
+        idx = ismember(predictors.trialIdx, find(trials.(f)));
+        predictors.(pName)(idx,:) = predictors.position(idx,:);
+    end
 end
 
 %Restrict all predictors to forward trials
