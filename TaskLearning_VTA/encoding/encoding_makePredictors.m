@@ -97,6 +97,8 @@ for event = string(fieldnames(impulse))'
 end
 
 %Cue type-specific position splines (alternative to position)
+bSpline_pos = NaN; %Basis funcs for position
+binEdges = NaN; %Positions for domain of basis funcs
 if any(ismember(params.predictorNames,...
         ["leftPuffs_position","rightPuffs_position",...
         "leftTowers_position","rightTowers_position"]))
