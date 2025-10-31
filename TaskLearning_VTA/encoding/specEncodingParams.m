@@ -22,12 +22,18 @@ switch params.modelName
             "reward","noReward","ITI"];
         params.initFcn_position = @ones; %ITI positi
 
-    case 'firstCuesPosRew'
+    case 'firstCuesPositionRew'
         params.predictorNames = [
             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
-            "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position",...
-            "reward","noReward",...
-            ];
+            "position", "velocity",...
+            "reward","noReward"];
+        params.initFcn_position = @ones; %ITI positi
+
+    case 'firstCuesRewVelPos'
+        params.predictorNames = [
+            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
+            "position", "velocity",...
+            "reward","noReward"];
         params.initFcn_position = @ones; %ITI positi
 
     case 'only_cues'

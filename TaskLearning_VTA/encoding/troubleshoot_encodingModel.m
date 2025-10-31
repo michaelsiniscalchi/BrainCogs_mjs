@@ -7,70 +7,35 @@
 clearvars;
 
 subjectID = "m913";
+mdlName = 'firstCuesPositionRewITI';
 
 [ dirs, expData, calculate, summarize, figures, mat_file, params ] =...
     getAnalysisParams_T2V( subjectID );
 
 % options.calculate = struct('encoding',true)
-idx = find(ismember({expData.sub_dir},{'250212-m913-maze7'}));
+idx = ismember({expData.sub_dir},{'250212-m913-maze7'});
 % pathname = fullfile(dirs.results,expData(idx).sub_dir,"encodingMdl_cell004.mat");
 pathname = fullfile(dirs.results,[expData(idx).sub_dir]);
-% S = load(mat_file.results.encoding(idx),'cellID','conditionNum',...
-%     'corrMatrix','VIF','VIF2','rank','predictorIdx');
-S = load(fullfile(pathname,'encoding.mat'),'cellID','conditionNum',...
-    'corrMatrix','VIF','VIF2','rank','predictorIdx');
-load(fullfile(pathname,'encodingMdl_cell004.mat'), 'mdl'); %Model for individual cell
-
-
-%% Variance Inflation Factor
-%VIF(i) = 1/(1-R_2(i)); from a regression of P(i) as fcn of all other predictors
-%Equivalent to diagonal of the inverted correlation matrix
-%VIF = diag(inv(S.corrMatrix{4})); %Idx arbitrary if all cells use same model
-
-Tbl = mdl.Variables(:,1:end-1);
-varNames = Tbl.Properties.VariableNames;
-x = 1:numel(varNames);
-% VarDecompTbl = collintest(Tbl)
-
-
-
-T = mdl.Formula.Terms; %terms matrix
-include = [leftTowers,rightTowers,leftPuffs,rightPuffs];
-    idx = [S.predictorIdx.leftTowers,S.predictorIdx.rightTowers,...
-        S.predictorIdx.leftPuffs,S.predictorIdx.rightPuffs];
-    omittedTerms = T(idx,:); %T after omission of indexed terms
-    reducedMdl = removeTerms(mdl,omittedTerms); %Reduced model
-    %Calculate condition number for inversion of moment matrix
-    varIdx =  reducedMdl.VariableInfo.InModel;
-    X  = table2array(reducedMdl.Variables(:,varIdx)); %Last column reserved for Y 
-    Xi = X(~isnan(sum(X,2)),:); %Omit nan rows, which are also omitted in regression
-    moment = Xi'*Xi; %Moment matrix of regressors; note that X is already z-scored
-    reduced.conditionNum = cond(moment); %Condition number
-    reduced.rank = rank(moment); %Rank
-    reduced.corrMatrix = corrcoef(Xi); 
-% end
-
-%Metrics for reduced model
-reduced.VIF = diag(inv(corrcoef(Xi)));
-varNames = reducedMdl.VariableNames(varIdx);
-x=1:numel(varNames);
-
-figure; 
-title('Variance Inflation Factors, Reduced Model')
-bar(x,reduced.VIF2);
-xlabel('Predictors'); ylabel('VIF'); 
-set(gca,'XTick',x,'XTickLabel',varNames);
-%Returned some large negative values!
-
+S = load(fullfile(pathname,['encodingMdl-',mdlName,'.mat']),'cellID','conditionNum',...
+    'corrMatrix','VIF','rank','predictorIdx');
+load(fullfile(pathname,['encodingMdl-',mdlName,'-cell004.mat']), 'mdl'); %Model for individual cell
+dbstop
 
 %% Figures
 
+x = 1:numel(S.VIF);
+varNames = string(fieldnames(S.predictorIdx));
+for i=1:numel(varNames)
+    firstBasisIdx(i) = S.predictorIdx.(varNames(i))(1);
+end
+
 %Variance Inflation Factors
 figure; 
-bar(x,S.VIF);
+bar(x, S.VIF); hold on;
+plot(x, ones(size(x))*5, ':k'); %Threshold VIF: ~R2 = 0.80
 title('Variance Inflation Factors')
 xlabel('Predictors'); ylabel('VIF'); 
-set(gca,'XTick',x,'XTickLabel',varNames);
+set(gca,'XTick',firstBasisIdx-1,'XTickLabel',varNames); %idx offset by 1 for bias term
 
 %Correlation Matrices
 R = S.corrMatrix;
@@ -186,5 +151,47 @@ subplot(1,numel(df)+1,numel(df)+1)
 axis off
 colorbar(ax,'east');
 ylabel('Correlation coef. (R)')
+
+
+%% Variance Inflation Factor
+%VIF(i) = 1/(1-R_2(i)); from a regression of P(i) as fcn of all other predictors
+%Equivalent to diagonal of the inverted correlation matrix
+%VIF = diag(inv(S.corrMatrix{4})); %Idx arbitrary if all cells use same model
+
+Tbl = mdl.Variables(:,1:end-1);
+varNames = Tbl.Properties.VariableNames;
+x = 1:numel(varNames);
+% VarDecompTbl = collintest(Tbl)
+
+T = mdl.Formula.Terms; %terms matrix
+include = [leftTowers,rightTowers,leftPuffs,rightPuffs];
+    idx = [S.predictorIdx.leftTowers,S.predictorIdx.rightTowers,...
+        S.predictorIdx.leftPuffs,S.predictorIdx.rightPuffs];
+    omittedTerms = T(idx,:); %T after omission of indexed terms
+    reducedMdl = removeTerms(mdl,omittedTerms); %Reduced model
+    %Calculate condition number for inversion of moment matrix
+    varIdx =  reducedMdl.VariableInfo.InModel;
+    X  = table2array(reducedMdl.Variables(:,varIdx)); %Last column reserved for Y 
+    Xi = X(~isnan(sum(X,2)),:); %Omit nan rows, which are also omitted in regression
+    moment = Xi'*Xi; %Moment matrix of regressors; note that X is already z-scored
+    reduced.conditionNum = cond(moment); %Condition number
+    reduced.rank = rank(moment); %Rank
+    reduced.corrMatrix = corrcoef(Xi); 
+% end
+
+%Metrics for reduced model
+reduced.VIF = diag(inv(corrcoef(Xi)));
+varNames = reducedMdl.VariableNames(varIdx);
+x=1:numel(varNames);
+
+figure; 
+title('Variance Inflation Factors, Reduced Model')
+bar(x,reduced.VIF2);
+plot(x, 5, 'k:');
+xlabel('Predictors'); ylabel('VIF'); 
+set(gca,'XTick',x,'XTickLabel',varNames);
+%Returned some large negative values!
+
+
 
 %figure; plot(encodingMdl.bSpline_pos)
