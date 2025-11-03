@@ -14,27 +14,17 @@ switch params.modelName
             "viewAngle","velocity","acceleration","ITI"];
         params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
 
-
-    case 'firstCuesPositionRewITI'
-        params.predictorNames = [
-            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
-            "position",...
-            "reward","noReward","ITI"];
-        params.initFcn_position = @ones; %ITI positi
-
-    case 'firstCuesPositionRew'
-        params.predictorNames = [
-            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
-            "position",...
-            "reward","noReward"];
-        params.initFcn_position = @ones; %ITI positi
-
     case 'firstCuesRewVelPos'
         params.predictorNames = [
             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
             "position", "velocity",...
             "reward","noReward"];
         params.initFcn_position = @ones; %ITI positi
+    
+    case 'only_position'
+        params.predictorNames = "position";
+        params.positionSpline = true;
+        params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
 
     case 'only_cues'
         params.predictorNames = [...
@@ -85,14 +75,6 @@ switch params.modelName
             "time","viewAngle","velocity","acceleration"];
         params.initFcn_position = @ones;
 
-    case 'FM_firstCueOnly'
-        %FM with NaN position during ITI
-        params.predictorNames = ["start",...
-            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
-            "reward","noReward",...
-            "position","viewAngle","velocity","acceleration"];
-        params.initFcn_position = @ones;
-
 end
 
 %List variables by type
@@ -102,10 +84,11 @@ varNames.eventVars = ["start",...
             "leftPuffs","rightPuffs","leftTowers","rightTowers",...
             "reward","noReward"];
 varNames.positionVars = [...
+    "position",...
     "leftPuffs_position","rightPuffs_position",...
     "leftTowers_position","rightTowers_position"];
 varNames.indicatorVars = ["ITI","trialIdx","accuracy","priorOutcome"];
-varNames.kinematicVars = ["position","viewAngle","velocity","acceleration"];
+varNames.kinematicVars = ["viewAngle","velocity","acceleration"];
 for f = string(fieldnames(varNames))'
     params.(f) = pNames(ismember(pNames,varNames.(f)));
 end

@@ -154,7 +154,7 @@ params.encoding.lambda = [logspace(-3,6,20)]; %series of lambda values for cross
 params.encoding.lambda_kfolds = 10;
 params.encoding.getRidgeTrace = true;
 
-params.encoding.modelName           = 'only_posXcueType';%'only_posXcueType', 'firstCuesRewVelPos'
+params.encoding.modelName           = 'only_position';%'only_posXcueType', 'firstCuesRewVelPos'
 params.encoding                     = specEncodingParams(params.encoding);
 
 %% SUMMARY STATISTICS
