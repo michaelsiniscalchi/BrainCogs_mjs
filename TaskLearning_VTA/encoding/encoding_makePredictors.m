@@ -41,16 +41,16 @@ predictors.priorChoice = init.choice;
 predictors.priorChoice(ismember(predictors.trialIdx, find(trials.priorRight))) = 1; %Frames from prior-right choice trials
 predictors.priorChoice(ismember(predictors.trialIdx, find(trials.priorLeft))) = -1; %Prior left
 
-% for
-% predictors.leftTowerTrial = init.categorical;
-% end
-
 %Event Times as binary index (~impulse function)
 eventNames = ["start",...
-    "leftTowers","rightTowers",...
-    "leftPuffs","rightPuffs",...
-    "leftChoice","rightChoice",...
+    "leftTowers","rightTowers","leftPuffs","rightPuffs",...
     "reward","noReward"]; 
+
+%Full trial variable for each event
+for f = ["leftTowers","rightTowers","leftPuffs","rightPuffs"]
+    predictors.([char(f),'Trial']) = init.categorical;
+    predictors.([char(f),'Trial'])(ismember(predictors.trialIdx, find(trials.(f)))) = 1; %Frames from prior-right choice trials
+end
 
 %For first puff or tower, event is not specified by side initially 
 if any(ismember(params.predictorNames, ["firstLeftTower","firstRightPuff"]))
@@ -114,10 +114,11 @@ if params.positionSpline && any(ismember(params.predictorNames,...
     bSpline_pos = makeBSpline(params.bSpline_position_degree,...
         params.bSpline_position_df, numel(binEdges)-1);
 
-    predictors.position = NaN(size(predictors.position,1),size(bSpline_pos, 2)); %Re-initialize, one column per basis function
+    predictors.position = zeros(size(predictors.position,1),size(bSpline_pos, 2)); %Re-initialize, one column per basis function
     for j = 1:size(bSpline_pos, 2)
         predictors.position(:,j) = bSpline_pos(posIdx, j);
     end
+    predictors.position(logical(predictors.ITI),:) = 0; %ITI set to 0:=baseline 
 
     for f = ["leftTowers","rightTowers","leftPuffs","rightPuffs"]
         pName = strjoin([f,"position"],'_'); %Predictor name, eg "leftPuffs_position"

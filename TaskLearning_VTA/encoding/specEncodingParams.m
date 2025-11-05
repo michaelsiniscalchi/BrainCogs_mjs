@@ -1,6 +1,9 @@
 function params = specEncodingParams(params)
 
 %Predictors for full/partial models
+%Initialize
+params.positionSpline = false;
+params.initFcn_position = @ones; %ITI position
 
 switch params.modelName
 
@@ -23,8 +26,7 @@ switch params.modelName
     
     case 'only_position'
         params.predictorNames = "position";
-        params.positionSpline = true;
-        params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
+        params.positionSpline = true; 
 
     case 'only_cues'
         params.predictorNames = [...

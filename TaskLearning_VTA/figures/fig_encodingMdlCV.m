@@ -95,5 +95,5 @@ for i = 1:numel(f)
     subset(i) = pIdx.(f(i))(1)-1; %first instance of each predictor type
     labels(i) = f(i);
 end
-leg = legend(lineSeries(subset), labels,...
+leg = legend(lineSeries(subset), {labels},...
     'Location', 'bestoutside','FontSize', 10, 'Interpreter','none');
