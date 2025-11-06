@@ -21,6 +21,18 @@ S = load(fullfile(pathname,['encodingMdl-',mdlName,'.mat']),'cellID','X','condit
     'corrMatrix','VIF','rank','predictorIdx','bSpline_pos');
 load(fullfile(pathname,['encodingMdl-',mdlName,'-cell004.mat']), 'mdl'); %Model for individual cell
 
+%Calculate VIF and condition number for inversion of moment matrix
+X=S.X;
+[VIF, conditionNum] = getVIF(X); %Variance Inflation Factor (VIF)
+
+Xi = [ones(length(X),1), X];
+[VIF2, conditionNum2] = getVIF(Xi); %Variance Inflation Factor (VIF)
+
+disp(['With constant ', '| Without constant']);
+VIF_comp = [VIF2(2:end), VIF];
+disp(VIF_comp); 
+disp('Model w/ constant - without constant:')
+disp(diff(VIF_comp,1,2));
 
 %% Figures
 

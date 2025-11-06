@@ -118,7 +118,7 @@ if params.positionSpline && any(ismember(params.predictorNames,...
     for j = 1:size(bSpline_pos, 2)
         predictors.position(:,j) = bSpline_pos(posIdx, j);
     end
-    % predictors.position(logical(predictors.ITI),:) = 0; %ITI set to 0:=baseline 
+    predictors.position(logical(predictors.ITI),:) = 0; %ITI set to 0:=baseline 
 
     for f = ["leftTowers","rightTowers","leftPuffs","rightPuffs"]
         pName = strjoin([f,"position"],'_'); %Predictor name, eg "leftPuffs_position"

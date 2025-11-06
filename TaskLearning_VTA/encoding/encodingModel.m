@@ -126,10 +126,11 @@ for i = 1:numel(dFF)
 end
 
 %Calculate VIF and condition number for inversion of moment matrix
-glm.X = X;
-[glm.VIF, glm.conditionNum] = getVIF(X); %Variance Inflation Factor (VIF)
-glm.rank = rank(momentMat(X)); %Rank
-glm.corrMatrix = corrcoef(X,'Rows','complete'); %Correlation matrix, omitting rows containing NaN
+glm.X = [ones(size(X,1),1), X]; %Append a column of ones for constant term
+[glm.VIF, glm.conditionNum] = getVIF(glm.X); %Variance Inflation Factor (VIF)
+
+glm.rank = rank(momentMat(glm.X)); %Rank of predictor matrix
+glm.corrMatrix = corrcoef(glm.X,'Rows','complete'); %Correlation matrix, omitting rows containing NaN
 
 %Metadata
 glm.predictorIdx = idx;
@@ -156,7 +157,7 @@ condNumber = NaN(numel(k),1);
 for j = 1:numel(k)
     M = XtX + k(j)*eye(size(XtX)); %Penalized moment matrix for inversion
     R = M/(nObs-1); %R = XtX/nObservations; to work, columns of X must be standardized!
-    VIF(:,j) = diag(inv(R)); %Equivalent matrix operation for VIF: Trace of Inverse of Correlation MAtrix 
+    VIF(:,j) = diag(inv(R)); %Equivalent matrix operation for VIF: Trace of Inverse Correlation MAtrix 
     condNumber(j,:) = cond(M); %Condition number of penalized moment matrix
 end
 
@@ -179,7 +180,7 @@ function [y_hat, beta, mse] = ridgePredict(x,y,k)
 
 beta = nan(size(x,2)+1, numel(k)); %Initialize ridge trace: size(beta)=[nPredictors, nLambda]
 parfor i = 1:numel(k)
-    beta(:, i) = ridge(y,x,k(i),0); %Last ARG=0, do not scale data, and include intercept
+    beta(:, i) = ridge(y,x,k(i),0); %Last ARG=0, restore scale of the data, and include intercept
 end
 y_hat = [ones(size(x,1),1), x]*beta; %Append a column of ones for intercept
 mse = mean((y - y_hat).^2); %Training mse
