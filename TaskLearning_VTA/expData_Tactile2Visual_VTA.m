@@ -613,3 +613,11 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
+%Sync test
+expData(i).sub_dir = '250905-m477-maze8'; 
+expData(i).subjectID = "mjs20_477";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = NaN;
+i = i+1;
+
+
