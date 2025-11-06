@@ -53,12 +53,12 @@ for i = 1:nROIs
     end
         
     % Neuropil Subtraction & Exclusion
-    if mean(baseline - baseline_NP) > 0 && corrFactor > 0
+    if mean(baseline - baseline_NP) > 0 && ~isnan(corrFactor) %set corrFactor=NaN to circumvent auto-exclusion
         %Subtract scaled neuropil signal
         F = F - corrFactor * neuropilf;
 %         %Set values < baseline to baseline
 %         F(F<baseline) = baseline(F<baseline);       %To mitigate overcorrection (ie sign-reversed neuropil artifacts)
-    elseif mean(baseline - baseline_NP) < 0         %F0 on average is <= neuropil_FO and therefore cannot be accurately estimated
+    elseif mean(baseline - baseline_NP) < 0 && ~isnan(corrFactor)        %F0 on average is <= neuropil_FO and therefore cannot be accurately estimated
         cells.exclude.cells = [cells.exclude.cells; cells.cellID{i}];   %Store cell ID
         cells.exclude.crit = [cells.exclude.crit; 'npF0>F0'];           %Note exclusion criterion
         continue

@@ -7,7 +7,8 @@
 clearvars;
 
 subjectID = "m913";
-mdlName = 'firstCuesPositionRewITI';
+% mdlName = 'firstCuesPositionRewITI'; 'only_posXcueType'
+mdlName = 'only_position'; 
 
 [ dirs, expData, calculate, summarize, figures, mat_file, params ] =...
     getAnalysisParams_T2V( subjectID );
@@ -16,10 +17,10 @@ mdlName = 'firstCuesPositionRewITI';
 idx = ismember({expData.sub_dir},{'250212-m913-maze7'});
 % pathname = fullfile(dirs.results,expData(idx).sub_dir,"encodingMdl_cell004.mat");
 pathname = fullfile(dirs.results,[expData(idx).sub_dir]);
-S = load(fullfile(pathname,['encodingMdl-',mdlName,'.mat']),'cellID','conditionNum',...
-    'corrMatrix','VIF','rank','predictorIdx');
+S = load(fullfile(pathname,['encodingMdl-',mdlName,'.mat']),'cellID','X','conditionNum',...
+    'corrMatrix','VIF','rank','predictorIdx','bSpline_pos');
 load(fullfile(pathname,['encodingMdl-',mdlName,'-cell004.mat']), 'mdl'); %Model for individual cell
-dbstop
+
 
 %% Figures
 
@@ -32,10 +33,11 @@ end
 %Variance Inflation Factors
 figure; 
 bar(x, S.VIF); hold on;
-plot(x, ones(size(x))*5, ':k'); %Threshold VIF: ~R2 = 0.80
+plot([0,x(end)+1], [5,5], ':k'); %Threshold VIF: ~R2 = 0.80
 title('Variance Inflation Factors')
 xlabel('Predictors'); ylabel('VIF'); 
-set(gca,'XTick',firstBasisIdx-1,'XTickLabel',varNames); %idx offset by 1 for bias term
+set(gca,'XTick',firstBasisIdx-1,...
+    'XTickLabel',varNames,'TickLabelInterpreter','none'); %idx offset by 1 for bias term
 
 %Correlation Matrices
 R = S.corrMatrix;
@@ -63,6 +65,7 @@ yticks([1,22,43,64]+10);
 xticklabels(["leftTowers","rightTowers","leftPuffs","rightPuffs"]);
 yticklabels(["leftTowers","rightTowers","leftPuffs","rightPuffs"]);
 colorbar(gca);
+
 %First Cue
 idx = [S.predictorIdx.firstLeftTower, S.predictorIdx.firstRightTower,...
     S.predictorIdx.firstLeftPuff, S.predictorIdx.firstRightPuff]-1; %constant term not in R
@@ -113,6 +116,32 @@ ylabel("Reward event-related predictor index");
 xlabel("Reward event-related predictor index");
 colorbar(gca);
 
+%Position spline
+R = S.corrMatrix;
+figure('Position',[350,100,600,500]); 
+img = R; img(logical(eye(size(img)))) = NaN;
+imagesc(img);
+title({"Predictor Correlation Matrix:"; "Position Spline"});
+ylabel('B-spline basis fcn. index');
+xlabel('B-spline basis fcn. index');
+colorbar(gca);
+clim([-0.7,0.6])
+
+%%Plot B-Spline
+Y = S.bSpline_pos;
+figure('Position',[350,100,600,500]); 
+plot(Y);
+title('B-Spline Basis Set: Position');
+xlabel('Position (cm)');
+ylabel('Weight (a.u)');
+
+%Example Trial (edit once field 'designMat' is included)
+Y = S.X;
+figure('Position',[350,100,600,500]); 
+plot(Y);
+title('Predictors, Position Spline');
+xlabel('Frame index');
+ylabel('Predictor weight (a.u)');
 
 %%
 clearvars("R","mean_R","max_R","min_R");

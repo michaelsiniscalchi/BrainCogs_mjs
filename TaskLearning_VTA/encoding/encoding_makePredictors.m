@@ -114,11 +114,11 @@ if params.positionSpline && any(ismember(params.predictorNames,...
     bSpline_pos = makeBSpline(params.bSpline_position_degree,...
         params.bSpline_position_df, numel(binEdges)-1);
 
-    predictors.position = zeros(size(predictors.position,1),size(bSpline_pos, 2)); %Re-initialize, one column per basis function
+    predictors.position = nan(size(predictors.position,1),size(bSpline_pos, 2)); %Re-initialize, one column per basis function
     for j = 1:size(bSpline_pos, 2)
         predictors.position(:,j) = bSpline_pos(posIdx, j);
     end
-    predictors.position(logical(predictors.ITI),:) = 0; %ITI set to 0:=baseline 
+    % predictors.position(logical(predictors.ITI),:) = 0; %ITI set to 0:=baseline 
 
     for f = ["leftTowers","rightTowers","leftPuffs","rightPuffs"]
         pName = strjoin([f,"position"],'_'); %Predictor name, eg "leftPuffs_position"
