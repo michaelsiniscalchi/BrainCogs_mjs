@@ -51,6 +51,7 @@ switch params.modelName
         params.predictorNames = [...
             "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position"...
             ];
+        params.positionSpline = true;
         params.initFcn_position = @ones; %ITI positi
 
     case 'firstCues_posXcueType'
@@ -58,6 +59,7 @@ switch params.modelName
             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
             "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position",...
             ];
+        params.positionSpline = true;
         params.initFcn_position = @ones; %ITI positi
 
     case 'FM_trialIdx'
