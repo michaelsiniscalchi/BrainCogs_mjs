@@ -17,6 +17,14 @@ switch params.modelName
             "viewAngle","velocity","acceleration","ITI"];
         params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
 
+    case 'syncTest'
+        %Basic "Full Model"
+        params.predictorNames = ["start",...
+            "leftPuffs","rightPuffs","leftTowers","rightTowers",...
+            "reward","noReward",...
+            "ITI"];
+        params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
+
     case 'firstCuesRewVelPos'
         params.predictorNames = [
             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
