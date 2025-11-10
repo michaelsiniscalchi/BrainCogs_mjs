@@ -121,6 +121,7 @@ params.behavior.nBins_psychometric = 4; %number of bins (+1 for 0-cues)
 
 % Cellular fluorescence calculations
 params.fluo.exclBorderWidth     = 10; %For calc_cellF: n-pixel border of FOV to be excluded from analysis
+params.fluo.F0_duration         = 60; %Window for calculating F0, in seconds
 
 % Interpolation and alignment
 params.align.timeWindow     = [-3 7]; %Also used for bootavg, etc.

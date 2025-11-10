@@ -167,7 +167,7 @@ if calculate.fluorescence
         % Encoding model
         if calculate.encoding_model
             %Load combined imaging & behavioral data
-            img_beh = load(mat_file.img_beh(i),'dFF','t','cellID','sessions','trialData','trials');
+            img_beh = load(mat_file.img_beh(i),'dFF','cellF','t','cellID','sessions','trialData','trials');
             %Format predictors
             [ predictors, encodingData ] = encoding_makePredictors( img_beh, params.encoding );
             %Run encoding model
