@@ -50,13 +50,18 @@ for i = 1:nROIs
     F = cells.cellF{i}(:);
 
     %Subtract offset from F to ensure positive values 
-    F = F-min(F); %Depending on format (w/o offset-subtracting in ScanImage, etc), cellF can be negative, leading to sign-flips after dividing by baseline
-    neuropilf = cells.npF{i}(:)-min(F); %Subtract same offset from neuropil signal
+    offset = 0; %Initialize
+    if any(F<0)
+        offset = min(F)-10; %Arbitrary -10 to avoid division by near-zero
+    end
+
+    F = F-offset; %Depending on format (w/o offset-subtracting in ScanImage, etc), cellF can be negative, leading to sign-flips after dividing by baseline
+    neuropilf = cells.npF{i}(:)-offset; %Subtract same offset from neuropil signal
     
     baseline = nan(size(F));
     baseline_NP = nan(size(F));
     for j = 1:length(F)
-        idx1 = max(1,round(j-win/2));
+        idx1 = max(1,round(j-win/2)); %Expanding window, centered around t(j)
         idx2 = min(length(F),round(j+win/2));
         baseline(j) = prctile(F(idx1:idx2),5);              %5th percentile of F(t)
         baseline_NP(j) = prctile(neuropilf(idx1:idx2),5);   %5th percentile of F(t); for neuropil subtraction F0 for ROI must exceed that of neuropil (below)
@@ -87,4 +92,6 @@ cells.dFF = cells.dFF(~cellfun(@isempty,cells.dFF));
 cells.dFF = cells.dFF(:);
 cells = rmfield(cells,{'cellF','npF'});
 
-cells.corrFactor = corrFactor; %Store correction factor with the data
+%Store hyperparameters with the data
+cells.corrFactor = corrFactor; 
+cells.F0_duration = F0_duration; 

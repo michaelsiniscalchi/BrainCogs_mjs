@@ -125,7 +125,7 @@ if calculate.fluorescence
         % Calculate dF/F trace for each cell
         if calculate.dFF
             cells = load(mat_file.img_beh(i),'cellID','cellF','npF','t','frameRate'); %calc_dFF() will transfer any other loaded variables to struct 'dFF'
-            cells = calc_dFF(cells, expData(i).npCorrFactor); %expData(i).npCorrFactor set to zero for prelim analysis
+            cells = calc_dFF(cells, params.fluo.F0_duration, expData(i).npCorrFactor); %cells = calc_dFF( cells, F0_duration, corrFactor )
             save(mat_file.img_beh(i),'-struct','cells','-append');
             clearvars cells
         end

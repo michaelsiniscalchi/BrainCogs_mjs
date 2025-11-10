@@ -47,8 +47,9 @@ syncIdx = getSyncIdxParallel(B.time, time);
 %Populate with rows corresponding to each frame-time
 for f = string(fieldnames(B))'
     %Initialize output field nTime x nDataColumns
-    syncedVars.(f) = NaN(numel(time), size(B.(f), 2)); %Initialize
-    syncedVars.(f) = B.(f)(syncIdx,:); %Populate
+    syncedVars.(f) = NaN(numel(time), size(B.(f), 2)); %Initialize as NaN
+    idx = syncIdx>0; %Exclude non-valid indices; NaNs will be excluded from regression
+    syncedVars.(f)(idx,:) = B.(f)(syncIdx(idx),:); %Populate
 end
 
 %------------------------------------------------------------------------------
