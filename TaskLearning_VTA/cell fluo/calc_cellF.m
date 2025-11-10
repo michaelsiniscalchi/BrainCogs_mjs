@@ -84,8 +84,6 @@ parfor i = 1:nStacks
 end
 
 %Concatenate data cells from individual stacks
-% cells.cellF = mat2cell(cell2mat(cellF), ones(1,numel(roi)), sum(nFrames));
-% cells.npF = mat2cell(cell2mat(npF), ones(1,numel(roi)), sum(nFrames));
 cellF = cell2mat(cellF); %nNeurons x nFrames
 npF  = cell2mat(npF);
 %Truncate to match image time vector, t 

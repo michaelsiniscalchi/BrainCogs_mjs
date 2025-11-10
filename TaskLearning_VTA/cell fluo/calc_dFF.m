@@ -42,7 +42,11 @@ for i = 1:nROIs
     disp(['Cell ' int2str(i) '/' int2str(nROIs)]);
     
     F = cells.cellF{i}(:);
-    neuropilf = cells.npF{i}(:);
+
+    %Subtract offset from F to ensure positive values 
+    F = F-min(F); %Depending on format (w/o offset-subtracting in ScanImage, etc), cellF can be negative, leading to sign-flips after dividing by baseline
+    neuropilf = cells.npF{i}(:)-min(F); %Subtract same offset from neuropil signal
+    
     baseline = nan(size(F));
     baseline_NP = nan(size(F));
     for j = 1:length(F)

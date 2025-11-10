@@ -132,7 +132,7 @@ if calculate.fluorescence
 
         % Align dF/F traces to specified behavioral event
         if calculate.align_signals
-            cells = load(mat_file.img_beh(i),'dFF','t');
+            cells = load(mat_file.img_beh(i),'dFF','t');            
             load(mat_file.img_beh(i),'trialData');
             trialDFF = alignCellFluo(cells, trialData.eventTimes, params.align);
             [trialDFF.cueRegion, trialDFF.position] = ...
