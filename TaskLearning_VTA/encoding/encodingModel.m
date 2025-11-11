@@ -36,7 +36,7 @@ glm = struct('modelName', "",'sessionID',"",'session_date',[],...
 for i = 1:numel(dFF)
 
     y = dFF{i};
-
+    
     if encodingData.regularization=="ridge"
         %10-fold CV with each lambda to find minimum MSE
         [lambda, lambda_cv] = cvLambda(X, y, encodingData.lambda,...
@@ -172,7 +172,7 @@ for i = 1:CV.NumTestSets
     [~, beta] = ridgePredict(X(trainIdx,:), y(trainIdx), lambda);
     %Predict test responses from test predictors and training coefs
     y_hat = [ones(nTest,1), X(testIdx,:)]*beta; %Predicted response; size(y_hat) = [nObs, nLambda];
-    mse(i,:) = mean((y(testIdx) - y_hat).^2); %Calc MSE; size(mse) = [kFolds, nLambda] 
+    mse(i,:) = mean((y(testIdx) - y_hat).^2,1,"omitnan"); %Calc MSE; size(mse) = [kFolds, nLambda] 
 end
 cv = mean(mse); %Cross-validation MSE
 lambda_fit = lambda(cv==min(cv)); %Lambda value with lowest CV MSE
