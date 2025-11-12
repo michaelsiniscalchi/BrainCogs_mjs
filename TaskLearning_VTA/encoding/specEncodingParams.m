@@ -17,19 +17,12 @@ switch params.modelName
             "viewAngle","velocity","acceleration","ITI"];
         params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
 
-    case 'syncTest'
-        %Basic "Full Model"
-        params.predictorNames = ["start",...
-            "leftPuffs","rightPuffs","leftTowers","rightTowers",...
-            "reward","noReward",...
-            "ITI"];
-        params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
-
-    case 'firstCuesRewVelPos'
+    case 'firstCuesCueXPosRewVel'
         params.predictorNames = [
             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
-            "position", "velocity",...
-            "reward","noReward"];
+            "towerSide_position","puffSide_position",...
+            "reward","noReward","velocity"];
+        params.positionSpline = true; 
         params.initFcn_position = @ones; %ITI positi
     
     case 'only_position'
@@ -70,14 +63,13 @@ switch params.modelName
         params.positionSpline = true;
         params.initFcn_position = @ones; %ITI positi
 
-    case 'FM_trialIdx'
-        %FM plus trialIdx
+    case 'syncTest'
+        %Basic "Full Model"
         params.predictorNames = ["start",...
-            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
             "leftPuffs","rightPuffs","leftTowers","rightTowers",...
             "reward","noReward",...
-            "trialIdx","position","viewAngle","velocity","acceleration"];
-        params.initFcn_position = @ones;
+            "ITI"];
+        params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
 
     case 'FM_time'
         params.predictorNames = ["start",...

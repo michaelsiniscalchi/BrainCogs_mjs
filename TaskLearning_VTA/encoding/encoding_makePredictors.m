@@ -31,6 +31,13 @@ predictors.acceleration = cat(1,NaN,diff(predictors.velocity)); %restrict to Y-v
 
 %Trialwise predictors
 %Accuracy, prior outcome, prior choice
+[predictors.towerSide, predictors.puffSide] = deal(init.categorical); 
+predictors.towerSide(ismember(predictors.trialIdx, find(trials.leftTowers)))  = -1;
+predictors.towerSide(ismember(predictors.trialIdx, find(trials.rightTowers))) = 1;
+
+predictors.puffSide(ismember(predictors.trialIdx, find(trials.leftPuffs)))    = -1;
+predictors.puffSide(ismember(predictors.trialIdx, find(trials.rightPuffs)))   = 1;
+
 predictors.accuracy = init.categorical;
 predictors.accuracy(ismember(predictors.trialIdx, find(trials.correct))) = 1; %Image frames from correct trials
 
@@ -45,12 +52,6 @@ predictors.priorChoice(ismember(predictors.trialIdx, find(trials.priorLeft))) = 
 eventNames = ["start",...
     "leftTowers","rightTowers","leftPuffs","rightPuffs",...
     "reward","noReward"]; 
-
-%Full trial variable for each event
-for f = ["leftTowers","rightTowers","leftPuffs","rightPuffs"]
-    predictors.([char(f),'Trial']) = init.categorical;
-    predictors.([char(f),'Trial'])(ismember(predictors.trialIdx, find(trials.(f)))) = 1; %Frames from prior-right choice trials
-end
 
 %For first puff or tower, event is not specified by side initially 
 if any(ismember(params.predictorNames, ["firstLeftTower","firstRightPuff"]))
@@ -100,12 +101,10 @@ for event = string(fieldnames(impulse))'
     predictors.(event) = predictors.(event)(1:numel(t),:);
 end
 
-%Cue type-specific position splines (alternative to position)
+%Position splines (alternative to linear position, for interactions)
 bSpline_pos = NaN; %Basis funcs for position
 binEdges = NaN; %Positions for domain of basis funcs
-if params.positionSpline && any(ismember(params.predictorNames,...
-        ["position","leftPuffs_position","rightPuffs_position",...
-        "leftTowers_position","rightTowers_position"]))
+if params.positionSpline
     binEdges = trialData.positionRange(1):params.bSpline_position_binWidth:trialData.positionRange(2);
     predictors.position(predictors.position<trialData.positionRange(1)) =...
         trialData.positionRange(1); %Trials where mouse moves backward from start position will likely be excluded, but need idx for implementation of position splines
@@ -116,9 +115,6 @@ if params.positionSpline && any(ismember(params.predictorNames,...
 
     idx = ~isnan(posIdx);
     predictors.position = nan(size(predictors.position,1),size(bSpline_pos, 2)); %Re-initialize, one column per basis function
-    % for j = 1:size(bSpline_pos, 2)
-    %     predictors.position(idx,j) = bSpline_pos(posIdx(idx), j);
-    % end
     predictors.position(idx,:) = bSpline_pos(posIdx(idx), :); %Populate basis f(x) columns with spline-transformed data
     predictors.position(predictors.ITI==1,:) = 0; %ITI set to 0:=baseline 
 
@@ -128,6 +124,10 @@ if params.positionSpline && any(ismember(params.predictorNames,...
         idx = ismember(predictors.trialIdx, find(trials.(f)));
         predictors.(pName)(idx,:) = predictors.position(idx,:);
     end
+
+    %Cue-side x position
+    predictors.towerSide_position = predictors.towerSide.*predictors.position; %Interaction: cue-side * position
+    predictors.puffSide_position  = predictors.puffSide.*predictors.position;
 end
 
 %Restrict all predictors to forward trials
@@ -156,3 +156,14 @@ encodingData.impulse = impulse; %event-times as delta functions in imaging time 
 encodingData.bSpline = bSpline; %Store series of basis functions
 encodingData.bSpline_pos = bSpline_pos; %Basis funcs for position
 encodingData.position = binEdges(1:end-1); %Positions for domain of basis funcs
+
+
+% for f = ["tower","puff"]
+%     predictors.(strjoin([f,'Side'],'')) = init.categorical;
+%     leftCues = strjoin(["left", upper(f{1}(1)),f{1}(2:end),"s"],'');
+%     rightCues = strjoin(["right", upper(f{1}(1)),f{1}(2:end),"s"],'');
+%     predictors.(strjoin([f,'Side'],''))...
+%         (ismember(predictors.trialIdx, find(trials.(leftCues)))) = -1;
+%     predictors.(strjoin([f,'Side'],''))...
+%         (ismember(predictors.trialIdx, find(trials.(rightCues)))) = 1;
+% end
