@@ -74,6 +74,23 @@ leg = makeLegend(p, glm.predictorIdx);
 leg.Layout.Tile = 4;
 leg.NumColumns = 2;
 
+%Variance Inflation Factors
+nexttile([1,2])
+varNames = string(fieldnames(glm.predictorIdx));
+for i=1:numel(varNames)
+    firstBasisIdx(i) = glm.predictorIdx.(varNames(i))(1);
+end
+x = 1:numel(glm.VIF);%+1 for whitespace at 
+bar(x, glm.VIF,'w'); hold on;
+plot([0,x(end)+1], [5,5], ':k'); %Threshold VIF: ~R2 = 0.80
+title('Variance Inflation Factors')
+xlabel('Predictors'); ylabel('VIF'); 
+set(gca,'XTick',firstBasisIdx-1,...
+    'XTickLabel',varNames,'TickLabelInterpreter','none'); %idx offset by 1 for bias term
+txtX = max(xlim)-0.05*max(xlim); txtY = max(ylim)-0.1*max(ylim);
+text(txtX,txtY,['Condition number: ', num2str(glm.conditionNum,3)],...
+    'HorizontalAlignment','right');
+
 %--------------------------------------------------------------------------
 function lineSeries = assignLineFormatting(lineSeries, pIdx, C)
 
@@ -95,5 +112,5 @@ for i = 1:numel(f)
     subset(i) = pIdx.(f(i))(1)-1; %first instance of each predictor type
     labels(i) = f(i);
 end
-leg = legend(lineSeries(subset), {labels},...
+leg = legend(lineSeries(subset), labels,...
     'Location', 'bestoutside','FontSize', 10, 'Interpreter','none');
