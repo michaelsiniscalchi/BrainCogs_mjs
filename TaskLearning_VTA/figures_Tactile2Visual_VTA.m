@@ -35,7 +35,7 @@ if figures.session_summary
         figs = fig_session_summary( subject, 'glm2', colors );
         save_multiplePlots(figs,saveDir);
 
-         %GLM1 towers_puffs_bias
+        %GLM1 towers_puffs_bias
         figs = fig_session_summary( subject, 'glm1', colors );
         save_multiplePlots(figs, saveDir);
     end
@@ -47,7 +47,7 @@ end
 if figures.FOV_mean_projection
     save_dir = fullfile(dirs.figures,'FOV projections');   %Figures directory: cellular fluorescence
     create_dirs(save_dir); %Create dir for these figures
-    
+
     % Calculate or re-calculate mean projection from substacks
     figData = getFigData(dirs, expData, mat_file,'FOV_projections',params);
     figData.roi_dir = fullfile(dirs.data, expData.sub_dir, expData.roi_dir);
@@ -107,104 +107,108 @@ if figures.trial_average_dFF
 end
 
 %Encoding Model
-if figures.encoding_model 
+if figures.encoding_model
     for i = 1:numel(expData)
-        %Load data 
+        %Load data
         expID = expData(i).sub_dir;
-        glm = load(fullfile(dirs.results,expData(i).sub_dir,...
-            ['encodingMdl-', params.encoding.modelName]),...
-            'modelName','bootAvg','kernel','sessionID','cellID','predictorIdx',...
-            'lambda','conditionNum','conditionNum_trace','VIF','VIF_trace','corrMatrix');
-        % glm = load(mat_file.results.encoding(i),'bootAvg','kernel','sessionID','cellID','predictorIdx');
-        img = load(mat_file.results.cellFluo(i),'bootAvg');
-        
-        %Trial-averaged dF/F: observed vs. predicted
-        if figures.encoding_observedVsPredicted
-            save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
-                'Observed vs Predicted dFF', expID);
-            comparisons = unique([params.figs.encoding.panels.comparison],'stable');
-            for j = 1:numel(comparisons)
-                panelIdx = find([params.figs.encoding.panels.comparison]==comparisons(j));
-                panels = params.figs.encoding.panels(panelIdx);
-                trigger = [params.figs.encoding.panels(panelIdx(1)).trigger];
-                figs = fig_observedVsPredictedDFF(...
-                    img.bootAvg.(trigger), glm.bootAvg.(trigger), glm.cellID, expID, panels);
-                save_multiplePlots(figs, save_dir); %save as FIG and PNG
-            end
-            clearvars figs
-        end
+        mdlNames = params.encoding.modelName;
+        for j = 1:numel(mdlNames)
+            glm = load(fullfile(dirs.results,expData(i).sub_dir,...
+                ['encodingMdl-', params.encoding.modelName]),...
+                'modelName','bootAvg','kernel','sessionID','cellID','predictorIdx',...
+                'lambda','conditionNum','conditionNum_trace','VIF','VIF_trace','corrMatrix');
+            % glm = load(mat_file.results.encoding(i),'bootAvg','kernel','sessionID','cellID','predictorIdx');
+            img = load(mat_file.results.cellFluo(i),'bootAvg');
 
-        %Trial-averaged dF/F: predicted contrasts, etc
-        if figures.encoding_predictedTrialAvg
-            save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
-                'Predicted dFF', expData(i).sub_dir);
-            comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
-            for j = 1:numel(comparisons)
-                panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
-                event = [params.figs.bootAvg.panels(panelIdx(1)).trigger];
-                figs = plot_trialAvgDFF(glm.bootAvg.(event), glm.cellID, glm.sessionID,...
-                    params.figs.bootAvg.panels(panelIdx));
-                save_multiplePlots(figs, save_dir); %save as FIG and PNG
-            end
-            clearvars figs
-        end
-
-        %Response Kernels
-        if figures.encoding_eventKernels
-            save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
-                'Response kernels', expID);   %Figures directory: single units
-            create_dirs(save_dir); %Create dir for these figures
-            panels = params.figs.encoding.panels_contrast;
-            panels = panels(cellfun(@(C) ~isempty(C), {panels.varName})); %Remove non-event variables
-            for j = 1:numel(panels)
-                if isfield(glm.kernel,panels(j).varName)
-                    figs = plot_eventKernel(glm, panels(j));
-                    %Save by session
+            %Trial-averaged dF/F: observed vs. predicted
+            if figures.encoding_observedVsPredicted
+                save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
+                    'Observed vs Predicted dFF', expID);
+                comparisons = unique([params.figs.encoding.panels.comparison],'stable');
+                for j = 1:numel(comparisons)
+                    panelIdx = find([params.figs.encoding.panels.comparison]==comparisons(j));
+                    panels = params.figs.encoding.panels(panelIdx);
+                    trigger = [params.figs.encoding.panels(panelIdx(1)).trigger];
+                    figs = fig_observedVsPredictedDFF(...
+                        img.bootAvg.(trigger), glm.bootAvg.(trigger), glm.cellID, expID, panels);
                     save_multiplePlots(figs, save_dir); %save as FIG and PNG
                 end
-            end
-            clearvars figs
-        end
-
-        %All Regression Coefficients for each Session
-        if figures.encoding_coefficients
-            save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
-                'Session Coefficients', [expID, '-', params.encoding.modelName]);   %Figures directory: single units
-            create_dirs(save_dir); %Create dir for these figures
-            
-            %Get predictors in model (possibly make function for this)
-            allPredictors = string(fieldnames(glm.predictorIdx))';
-            predictorNames = params.encoding.predictorNames; %To achieve desired order
-            predictorNames = predictorNames(ismember(predictorNames, allPredictors)); %Remove predictors not included in model
-            predictorNames = [predictorNames,...
-                allPredictors(~ismember(allPredictors, predictorNames))]; %Append remaining predictors included in model
-            
-            figs = gobjects(numel(glm.cellID), 4); %Initialize graphics objects: one for each figure (All, Peak, AUC, Kinematics)
-            for j = 1:numel(glm.cellID)
-                load(fullfile(dirs.results,expData(i).sub_dir,...
-                    ['encodingMdl-', params.encoding.modelName, '-cell', glm.cellID{j}]),...
-                    'mdl');
-                figs(j,:) = fig_encodingMdlCoefs(glm, mdl, j, predictorNames, colors);
-                save_multiplePlots(figs, save_dir); %save as FIG and PNG
                 clearvars figs
             end
-        end
 
-        if figures.encoding_cv
-            
-            figs = gobjects(numel(glm.cellID)); %Initialize graphics objects: one for each figure (All, Peak, AUC, Kinematics)
-            for j = 1:numel(glm.cellID)
-                load(fullfile(dirs.results,expData(i).sub_dir,...
-                    ['encodingMdl-', params.encoding.modelName, '-cell', glm.cellID{j}]),...
-                    'mdl');
-                figs(j) = fig_encodingMdlCV(glm, mdl, glm.cellID{j}, colors);
+            %Trial-averaged dF/F: predicted contrasts, etc
+            if figures.encoding_predictedTrialAvg
                 save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
-                    'Cross Validation', [expID, '-', params.encoding.modelName]);   %Figures directory: single units
-                create_dirs(save_dir); %Create dir for these figures
-                save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                    'Predicted dFF', expData(i).sub_dir);
+                comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
+                for j = 1:numel(comparisons)
+                    panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
+                    event = [params.figs.bootAvg.panels(panelIdx(1)).trigger];
+                    figs = plot_trialAvgDFF(glm.bootAvg.(event), glm.cellID, glm.sessionID,...
+                        params.figs.bootAvg.panels(panelIdx));
+                    save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                end
                 clearvars figs
             end
+
+            %Response Kernels
+            if figures.encoding_eventKernels
+                save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
+                    'Response kernels', expID);   %Figures directory: single units
+                create_dirs(save_dir); %Create dir for these figures
+                panels = params.figs.encoding.panels_contrast;
+                panels = panels(cellfun(@(C) ~isempty(C), {panels.varName})); %Remove non-event variables
+                for j = 1:numel(panels)
+                    if isfield(glm.kernel,panels(j).varName)
+                        figs = plot_eventKernel(glm, panels(j));
+                        %Save by session
+                        save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                    end
+                end
+                clearvars figs
+            end
+
+            %All Regression Coefficients for each Session
+            if figures.encoding_coefficients
+                save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
+                    'Session Coefficients', [expID, '-', params.encoding.modelName]);   %Figures directory: single units
+                create_dirs(save_dir); %Create dir for these figures
+
+                %Get predictors in model (possibly make function for this)
+                allPredictors = string(fieldnames(glm.predictorIdx))';
+                predictorNames = params.encoding.predictorNames; %To achieve desired order
+                predictorNames = predictorNames(ismember(predictorNames, allPredictors)); %Remove predictors not included in model
+                predictorNames = [predictorNames,...
+                    allPredictors(~ismember(allPredictors, predictorNames))]; %Append remaining predictors included in model
+
+                figs = gobjects(numel(glm.cellID), 4); %Initialize graphics objects: one for each figure (All, Peak, AUC, Kinematics)
+                for j = 1:numel(glm.cellID)
+                    load(fullfile(dirs.results,expData(i).sub_dir,...
+                        ['encodingMdl-', params.encoding.modelName, '-cell', glm.cellID{j}]),...
+                        'mdl');
+                    figs(j,:) = fig_encodingMdlCoefs(glm, mdl, j, predictorNames, colors);
+                    save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                    clearvars figs
+                end
+            end
+
+            if figures.encoding_cv
+
+                figs = gobjects(numel(glm.cellID)); %Initialize graphics objects: one for each figure (All, Peak, AUC, Kinematics)
+                for j = 1:numel(glm.cellID)
+                    load(fullfile(dirs.results,expData(i).sub_dir,...
+                        ['encodingMdl-', params.encoding.modelName, '-cell', glm.cellID{j}]),...
+                        'mdl');
+                    figs(j) = fig_encodingMdlCV(glm, mdl, glm.cellID{j}, colors);
+                    save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
+                        'Cross Validation', [expID, '-', params.encoding.modelName]);   %Figures directory: single units
+                    create_dirs(save_dir); %Create dir for these figures
+                    save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                    clearvars figs
+                end
+            end
         end
+        params.encoding.modelName = mdlNames; %Restore for further sessions, etc 
     end
 end
 

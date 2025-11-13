@@ -58,7 +58,7 @@ end
 if calculate.combined_data
     for i = 1:numel(expData)
         %Synchronize imaging frames with behavioral time basis
-        
+
         %Load stackInfo from file
         if exist(mat_file.stack_info(i),'file')
             stackInfo = load(fullfile(dirs.data,expData(i).sub_dir,'stack_info.mat'));
@@ -66,7 +66,7 @@ if calculate.combined_data
             stackInfo = getRawStackInfo(fullfile(dirs.data, expData(i).sub_dir)); %get I2C data normally collected with iCorre()
             save(mat_file.stack_info(i),'-struct','stackInfo','-v7.3');
         end
-        
+
         %Run basic behavioral processing for each imaging session
         subject.ID = expData(i).subjectID;
         key.session_date = datestr(stackInfo.startTime,'yyyy-mm-dd');
@@ -75,18 +75,18 @@ if calculate.combined_data
         end
         %Extract basic behavioral data
         behavior = getRemoteVRData( experiment, subject, key );
-        
-        %Restrict stats to main maze and exclude specified blocks 
+
+        %Restrict stats to main maze and exclude specified blocks
         behavior = restrictImgTrials(behavior, expData(i).mainMaze, expData(i).excludeBlock);
         behavior = filterSessionStats(behavior);
         %Logistic regression
-        behavior = analyzeTaskStrategy2(behavior, params.behavior.nBins_psychometric);   
- 
+        behavior = analyzeTaskStrategy2(behavior, params.behavior.nBins_psychometric);
+
         %Append behavior data to stackInfo
         stackInfo = syncImagingBehavior(stackInfo, behavior);
-        
+
         %Save processed data
-        stackInfo.sessionID = expData(i).sub_dir; 
+        stackInfo.sessionID = expData(i).sub_dir;
         create_dirs(fileparts(mat_file.img_beh(i))); %Create save directory
         if ~exist(mat_file.img_beh(i),'file')
             save(mat_file.img_beh(i),'-struct','behavior','-v7.3');
@@ -132,7 +132,7 @@ if calculate.fluorescence
 
         % Align dF/F traces to specified behavioral event
         if calculate.align_signals
-            cells = load(mat_file.img_beh(i),'dFF','t');            
+            cells = load(mat_file.img_beh(i),'dFF','t');
             load(mat_file.img_beh(i),'trialData');
             trialDFF = alignCellFluo(cells, trialData.eventTimes, params.align);
             [trialDFF.cueRegion, trialDFF.position] = ...
@@ -168,55 +168,51 @@ if calculate.fluorescence
         if calculate.encoding_model
             %Load combined imaging & behavioral data
             img_beh = load(mat_file.img_beh(i),'dFF','cellF','t','cellID','sessions','trialData','trials');
-            %Format predictors
-            [ predictors, encodingData ] = encoding_makePredictors( img_beh, params.encoding );
-            %Run encoding model
-            encodingMdl = encodingModel(predictors, img_beh.dFF, encodingData);
+            mdlNames = params.encoding.modelName;
+            for j = 1:numel(mdlNames)
+                params.encoding.modelName = mdlNames(j);
+                params.encoding = specEncodingParams(params.encoding);
+                %Format predictors
+                [ predictors, encodingData ] = encoding_makePredictors( img_beh, params.encoding );
+                %Run encoding model
+                encodingMdl = encodingModel(predictors, img_beh.dFF, encodingData);
 
-            %Determine relative contributions of each predictor
-            %Generate pseudo-sessions of behavior for approximating null distribution
-            % pseudoData = generatePseudoSessions(); %Design matrices X from shuffled trial data
-            % for j = 1:numel(encodingMdl.model)
-            %     % encodingMdl.relativeContribution =...
-            %     %     calcRelContrib(encodingMdl.model{j}, encodingMdl.predictorIdx);
-            %     [ RC, F, p ] = calcRelContrib(encodingMdl.model{j}, idx);
-            % end
-            
-            %Align model-predicted dFF 
-            cells = struct('dFF', {encodingMdl.predictedDFF}, 't', img_beh.t);
-            encodingMdl.trialDFF = alignCellFluo(cells, img_beh.trialData.eventTimes, params.align);
-            [encodingMdl.trialDFF.cueRegion, encodingMdl.trialDFF.position] = ...
-                alignFluoByPosition(cells, img_beh.trialData, params.align);
+                %Align model-predicted dFF
+                cells = struct('dFF', {encodingMdl.predictedDFF}, 't', img_beh.t);
+                encodingMdl.trialDFF = alignCellFluo(cells, img_beh.trialData.eventTimes, params.align);
+                [encodingMdl.trialDFF.cueRegion, encodingMdl.trialDFF.position] = ...
+                    alignFluoByPosition(cells, img_beh.trialData, params.align);
 
-            %Trial-averaged model prediction
-            for j = 1:numel(params.bootAvg) %For each trigger event
-                if ~isfield(encodingMdl,'bootAvg') || ~isfield(encodingMdl.bootAvg, params.bootAvg(j).trigger)
-                    encodingMdl.bootAvg.(params.bootAvg(j).trigger) = struct();
+                %Trial-averaged model prediction
+                for j = 1:numel(params.bootAvg) %For each trigger event
+                    if ~isfield(encodingMdl,'bootAvg') || ~isfield(encodingMdl.bootAvg, params.bootAvg(j).trigger)
+                        encodingMdl.bootAvg.(params.bootAvg(j).trigger) = struct();
+                    end
+                    encodingMdl.bootAvg.(params.bootAvg(j).trigger) = ...
+                        calc_trialAvgFluo(encodingMdl.trialDFF, img_beh.trials,...
+                        params.bootAvg(j), encodingMdl.bootAvg.(params.bootAvg(j).trigger)); %Include var bootAvg if multiple params.bootAvg use the same trigger (eg, w/o baseline subtraction)
                 end
-                encodingMdl.bootAvg.(params.bootAvg(j).trigger) = ...
-                    calc_trialAvgFluo(encodingMdl.trialDFF, img_beh.trials,...
-                    params.bootAvg(j), encodingMdl.bootAvg.(params.bootAvg(j).trigger)); %Include var bootAvg if multiple params.bootAvg use the same trigger (eg, w/o baseline subtraction)
-            end
 
-            %Save results for each cell
-            for j = 1:numel(encodingMdl.model)
-                mdl = encodingMdl.model{j}; %One variable per cell (otherwise struct will exceed 2GB limit)
+                %Save results for each cell
+                for j = 1:numel(encodingMdl.model)
+                    mdl = encodingMdl.model{j}; %One variable per cell (otherwise struct will exceed 2GB limit)
+                    save(fullfile(fileparts(mat_file.results.encoding(i)),...
+                        ['encodingMdl-',params.encoding.modelName,'-cell', encodingMdl.cellID{j}]), "mdl");
+                end
+                encodingMdl = rmfield(encodingMdl, "model"); %Remove field after unpacking
+
+                %Save metadata
+                encodingMdl.sessionID = expData(i).sub_dir;
+                % save(mat_file.results.encoding(i), '-struct', 'encodingMdl', '-v7.3');
                 save(fullfile(fileparts(mat_file.results.encoding(i)),...
-                    ['encodingMdl-',params.encoding.modelName,'-cell', encodingMdl.cellID{j}]), "mdl");                    
-            end
-            encodingMdl = rmfield(encodingMdl, "model"); %Remove field after unpacking
-            
-            %Save metadata
-            encodingMdl.sessionID = expData(i).sub_dir; 
-            % save(mat_file.results.encoding(i), '-struct', 'encodingMdl', '-v7.3');
-            save(fullfile(fileparts(mat_file.results.encoding(i)),...
                     ['encodingMdl-',params.encoding.modelName]),...
-                    '-struct', 'encodingMdl', '-v7.3');                    
-           
-        end
+                    '-struct', 'encodingMdl', '-v7.3');
 
+            end %end for j = 1:numel(params.encoding.modelName)
+            params.encoding.modelName = mdlNames; %Restore for figures, further sessions, etc 
+        end
     end
-    % close(f);
+
     disp(['Total time needed for cellular fluorescence analyses: ' num2str(toc) 'sec.']);
 end
 
@@ -232,3 +228,14 @@ end
 %% FIGURES
 % summarize_Tactile2Visual_VTA(search_filter, options);
 figures_Tactile2Visual_VTA(search_filter, options); %In a separate function for brevity.
+
+%% Notes
+%
+%Determine relative contributions of each predictor
+%Generate pseudo-sessions of behavior for approximating null distribution
+% pseudoData = generatePseudoSessions(); %Design matrices X from shuffled trial data
+% for j = 1:numel(encodingMdl.model)
+%     % encodingMdl.relativeContribution =...
+%     %     calcRelContrib(encodingMdl.model{j}, encodingMdl.predictorIdx);
+%     [ RC, F, p ] = calcRelContrib(encodingMdl.model{j}, idx);
+% end

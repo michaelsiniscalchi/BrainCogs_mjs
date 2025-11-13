@@ -155,8 +155,10 @@ params.encoding.lambda = [logspace(-3,6,20)]; %series of lambda values for cross
 params.encoding.lambda_kfolds = 10;
 params.encoding.getRidgeTrace = true;
 
-params.encoding.modelName           = 'only_posXcueSide'; %'only_posXcueType', 'firstCuesRewVelPos' 'only_position'
-params.encoding                     = specEncodingParams(params.encoding);
+params.encoding.modelName           = ["only_posXcueSide","firstCuesCueXPosRewVelHeading"]; %'only_posXcueType', 'firstCuesRewVelPos' 'only_position'
+if isscalar(params.encoding.modelName)
+    params.encoding                     = specEncodingParams(params.encoding);
+end
 
 %% SUMMARY STATISTICS
 colors = getFigColors();
