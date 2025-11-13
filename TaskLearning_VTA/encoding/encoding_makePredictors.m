@@ -24,7 +24,6 @@ init.cell = repmat({NaN},size(eventTimes));
 
 %Time, TrialIdx, ITI, Position, Velocity, Acceleration, Heading
 predictors = getTrialDataByTime(trialData, t, params.initFcn_position);
-predictors.viewAngle = predictors.position(:,3); %rename
 predictors.position = predictors.position(:,2); %restrict to Y-position (later, b-spline transform)
 predictors.velocity = predictors.velocity(:,2); %restrict to Y-velocity **Get velocity from "sensor dots"
 predictors.acceleration = cat(1,NaN,diff(predictors.velocity)); %restrict to Y-velocity

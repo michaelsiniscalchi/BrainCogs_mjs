@@ -16,9 +16,10 @@ for i = 1:numel([trialData.eventTimes.start])
             case "position"
                 B.(fields(j)){i} = initKinematicVar(fields(j), i);
 
-            case "velocity"
+            case ["velocity", "heading"]
                 B.(fields(j)){i} = ...
                     zeros(size(trialData.time{i},1), size(trialData.(fields(j)){i},2)); %Initialize cell as matrix of zeros, length nTimepoints
+            
         end      
         B.(fields(j)){i}(1:size(trialData.(fields(j)){i},1),:) =...
             trialData.(fields(j)){i}; %Populate rows up to ITI
