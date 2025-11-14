@@ -169,8 +169,8 @@ if calculate.fluorescence
             %Load combined imaging & behavioral data
             img_beh = load(mat_file.img_beh(i),'dFF','cellF','t','cellID','sessions','trialData','trials');
             mdlNames = params.encoding.modelName;
-            for j = 1:numel(mdlNames)
-                params.encoding.modelName = mdlNames(j);
+            for k = 1:numel(mdlNames)
+                params.encoding.modelName = mdlNames(k);
                 params.encoding = specEncodingParams(params.encoding);
                 %Format predictors
                 [ predictors, encodingData ] = encoding_makePredictors( img_beh, params.encoding );
@@ -197,7 +197,7 @@ if calculate.fluorescence
                 for j = 1:numel(encodingMdl.model)
                     mdl = encodingMdl.model{j}; %One variable per cell (otherwise struct will exceed 2GB limit)
                     save(fullfile(fileparts(mat_file.results.encoding(i)),...
-                        ['encodingMdl-', mdlNames{j},'-cell', encodingMdl.cellID{j}]), "mdl");
+                        ['encodingMdl-', mdlNames{k},'-cell', encodingMdl.cellID{j}]), "mdl");
                 end
                 encodingMdl = rmfield(encodingMdl, "model"); %Remove field after unpacking
 
@@ -205,7 +205,7 @@ if calculate.fluorescence
                 encodingMdl.sessionID = expData(i).sub_dir;
                 % save(mat_file.results.encoding(i), '-struct', 'encodingMdl', '-v7.3');
                 save(fullfile(fileparts(mat_file.results.encoding(i)),...
-                    ['encodingMdl-', mdlNames{j}]),...
+                    ['encodingMdl-', mdlNames{k}]),...
                     '-struct', 'encodingMdl', '-v7.3');
 
             end %end for j = 1:numel(params.encoding.modelName)
