@@ -112,9 +112,9 @@ if figures.encoding_model
         %Load data
         expID = expData(i).sub_dir;
         mdlNames = params.encoding.modelName;
-        for j = 1:numel(mdlNames)
-            glm = load(fullfile(dirs.results,expData(i).sub_dir,...
-                ['encodingMdl-', params.encoding.modelName]),...
+        for k = 1:numel(mdlNames)
+            glm = load(fullfile(dirs.results, expData(i).sub_dir,...
+                ['encodingMdl-', mdlNames{k}]),...
                 'modelName','bootAvg','kernel','sessionID','cellID','predictorIdx',...
                 'lambda','conditionNum','conditionNum_trace','VIF','VIF_trace','corrMatrix');
             % glm = load(mat_file.results.encoding(i),'bootAvg','kernel','sessionID','cellID','predictorIdx');
@@ -138,7 +138,7 @@ if figures.encoding_model
 
             %Trial-averaged dF/F: predicted contrasts, etc
             if figures.encoding_predictedTrialAvg
-                save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
+                save_dir = fullfile(dirs.figures,['Encoding model-', mdlNames{k}],...
                     'Predicted dFF', expData(i).sub_dir);
                 comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
                 for j = 1:numel(comparisons)
@@ -153,7 +153,7 @@ if figures.encoding_model
 
             %Response Kernels
             if figures.encoding_eventKernels
-                save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
+                save_dir = fullfile(dirs.figures,['Encoding model-', mdlNames{k}],...
                     'Response kernels', expID);   %Figures directory: single units
                 create_dirs(save_dir); %Create dir for these figures
                 panels = params.figs.encoding.panels_contrast;
@@ -170,8 +170,8 @@ if figures.encoding_model
 
             %All Regression Coefficients for each Session
             if figures.encoding_coefficients
-                save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
-                    'Session Coefficients', [expID, '-', params.encoding.modelName]);   %Figures directory: single units
+                save_dir = fullfile(dirs.figures,['Encoding model-',mdlNames{k}],...
+                    'Session Coefficients', [expID, '-', mdlNames{k}]);   %Figures directory: single units
                 create_dirs(save_dir); %Create dir for these figures
 
                 %Get predictors in model (possibly make function for this)
@@ -184,7 +184,7 @@ if figures.encoding_model
                 figs = gobjects(numel(glm.cellID), 4); %Initialize graphics objects: one for each figure (All, Peak, AUC, Kinematics)
                 for j = 1:numel(glm.cellID)
                     load(fullfile(dirs.results,expData(i).sub_dir,...
-                        ['encodingMdl-', params.encoding.modelName, '-cell', glm.cellID{j}]),...
+                        ['encodingMdl-', mdlNames{k}, '-cell', glm.cellID{j}]),...
                         'mdl');
                     figs(j,:) = fig_encodingMdlCoefs(glm, mdl, j, predictorNames, colors);
                     save_multiplePlots(figs, save_dir); %save as FIG and PNG
@@ -197,11 +197,11 @@ if figures.encoding_model
                 figs = gobjects(numel(glm.cellID)); %Initialize graphics objects: one for each figure (All, Peak, AUC, Kinematics)
                 for j = 1:numel(glm.cellID)
                     load(fullfile(dirs.results,expData(i).sub_dir,...
-                        ['encodingMdl-', params.encoding.modelName, '-cell', glm.cellID{j}]),...
+                        ['encodingMdl-', mdlNames{k}, '-cell', glm.cellID{j}]),...
                         'mdl');
                     figs(j) = fig_encodingMdlCV(glm, mdl, glm.cellID{j}, colors);
-                    save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
-                        'Cross Validation', [expID, '-', params.encoding.modelName]);   %Figures directory: single units
+                    save_dir = fullfile(dirs.figures,['Encoding model-',mdlNames{k}],...
+                        'Cross Validation', [expID, '-', mdlNames{k}]);   %Figures directory: single units
                     create_dirs(save_dir); %Create dir for these figures
                     save_multiplePlots(figs, save_dir); %save as FIG and PNG
                     clearvars figs
