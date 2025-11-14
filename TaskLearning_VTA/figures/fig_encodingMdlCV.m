@@ -4,7 +4,7 @@ function figs = fig_encodingMdlCV(glm, mdl, cellID, colors)
 setup_figprops('timeseries')  %placeholder
 
 %Figure: Ridge Trace, VIF Trace, Condition Num co-plotted with CV_err
-figs = figure('Name',[glm.sessionID, '-', glm.modelName, '-cell', cellID],...
+figs = figure('Name',[glm.sessionID, '-', char(glm.modelName), '-cell', cellID],...
     'Position',[25,100,1200,600]);
 
 T = tiledlayout(2,3,"TileSpacing","tight","Padding","loose");

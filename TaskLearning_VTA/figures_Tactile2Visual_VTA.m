@@ -122,7 +122,7 @@ if figures.encoding_model
 
             %Trial-averaged dF/F: observed vs. predicted
             if figures.encoding_observedVsPredicted
-                save_dir = fullfile(dirs.figures,['Encoding model-',glm.modelName],...
+                save_dir = fullfile(dirs.figures,['Encoding model-', mdlNames{k}],...
                     'Observed vs Predicted dFF', expID);
                 comparisons = unique([params.figs.encoding.panels.comparison],'stable');
                 for j = 1:numel(comparisons)
