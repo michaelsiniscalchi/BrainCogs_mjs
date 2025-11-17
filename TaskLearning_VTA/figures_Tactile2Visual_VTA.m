@@ -113,6 +113,9 @@ if figures.encoding_model
         expID = expData(i).sub_dir;
         mdlNames = params.encoding.modelName;
         for k = 1:numel(mdlNames)
+            %Get model-specific params (predictor names, etc)
+            params.encoding = specEncodingParams(params.encoding);
+            %Load data from encoding model k
             glm = load(fullfile(dirs.results, expData(i).sub_dir,...
                 ['encodingMdl-', mdlNames{k}]),...
                 'modelName','bootAvg','kernel','sessionID','cellID','predictorIdx',...
