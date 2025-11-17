@@ -114,6 +114,7 @@ if figures.encoding_model
         mdlNames = params.encoding.modelName;
         for k = 1:numel(mdlNames)
             %Get model-specific params (predictor names, etc)
+            params.encoding.modelName = mdlNames(k); %Assign temporarily to loop through parameter sets
             params.encoding = specEncodingParams(params.encoding);
             %Load data from encoding model k
             glm = load(fullfile(dirs.results, expData(i).sub_dir,...
