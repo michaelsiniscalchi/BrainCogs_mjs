@@ -26,12 +26,15 @@ rel_idx = round(params.timeWindow(1)/dt) : round(params.timeWindow(end)/dt); %In
 
 events = fieldnames(eventTimes);
 for i = 1:numel(events)
-    event_times = [eventTimes.(events{i})];
-    idx = NaN(numel(event_times),numel(rel_idx));
+    event_times = [eventTimes.(events{i})]'; %Event times as column vector
+    idx = NaN(numel(event_times),numel(rel_idx)); %Indices for all frames in row corresponding to each event
+    frameDelay = NaN(size(event_times)); %Time delay between event and next frame time
     for j = 1:numel(event_times)
-        idx_t0 = find(t >= event_times(j)-dt/1.999 & t <= event_times(j)+dt/1.999,1,'first'); %Occasionally, exactly centered event_times(i) yield null set or two results with threshold set to dt/2
+        % idx_t0 = find(t >= event_times(j)-dt/1.999 & t <= event_times(j)+dt/1.999,1,'first'); %Occasionally, exactly centered event_times(i) yield null set or two results with threshold set to dt/2
+        idx_t0 = find(t >= event_times(j), 1, 'first'); %First frametime after event
         if ~isempty(idx_t0)
             idx(j,:) = idx_t0 + rel_idx;
+            frameDelay(j) = t(idx_t0) - event_times(j);
         end
     end
 
@@ -54,5 +57,6 @@ for i = 1:numel(events)
             aligned.(events{i}){j} = mat2cell(aligned.(events{i}){j},nEvents);   
         end
     end
+    aligned.frameDelay.(events{i}) = frameDelay;
 end
 aligned.t = rel_idx * dt; %Time relative to specified event
