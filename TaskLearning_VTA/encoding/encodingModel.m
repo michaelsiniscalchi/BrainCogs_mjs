@@ -127,8 +127,9 @@ end
 
 %Calculate VIF and condition number for inversion of moment matrix
 glm.X = [ones(size(X,1),1), X]; %Append a column of ones for constant term
-[VIF, glm.conditionNum] = getVIF(glm.X); %Variance Inflation Factor (VIF)
+VIF = getVIF(glm.X); %Variance Inflation Factor (VIF)
 glm.VIF = VIF(2:end,:); %Include constant term in VIF calculation, but don't store VIF for c
+glm.conditionNum = cond(glm.X);
 
 glm.rank = rank(momentMat(glm.X)); %Rank of predictor matrix
 glm.corrMatrix = corrcoef(X,'Rows','complete'); %Correlation matrix, only the predictors; omitting rows containing NaN
@@ -147,19 +148,17 @@ nObs = sum(idx);
 X = X(idx,:); %Omit nan rows, which are also omitted in regression
 M = X'*X; %Moment matrix of regressors; note that X should be standardized
 
-function [VIF, condNumber] = getVIF(X, k)
+function VIF = getVIF(X, k)
 if nargin==1
     k = 0; %Ridge parameter, lambda
 end
 
 VIF = NaN(size(X,2), numel(k)); %Initialize array
-condNumber = NaN(numel(k),1);
 [XtX, nObs]  = momentMat(X);
 for j = 1:numel(k)
     M = XtX + k(j)*eye(size(XtX)); %Penalized moment matrix for inversion
     R = M/(nObs-1); %R = XtX/nObservations; to work, columns of X must be standardized!
     VIF(:,j) = diag(inv(R)); %Equivalent matrix operation for VIF: Trace of Inverse Correlation MAtrix 
-    condNumber(j,:) = cond(M); %Condition number of penalized moment matrix
 end
 
 function [lambda_fit, cv] = cvLambda(X,y,lambda,kFolds)
