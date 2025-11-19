@@ -29,7 +29,7 @@ nCells = size(dFF,1);
 nPredictors = size(X,2);
 glm = struct('modelName', "",'sessionID',"",'session_date',[],...
     'model',[], 'cellID', "", 'X', [], 'coef', struct(), 'kernel', struct(),...
-    'conditionNum',[],'VIF',[],'VIF_trace',[],'conditionNum_trace',[],...
+    'conditionNum',[],'VIF',[],'VIF_trace',[],...
     'rank',[],'corrMatrix',[],...
     'predictedDFF',{cell(size(dFF))},'predictorIdx',[],'predictorNames',"");
 
@@ -52,7 +52,7 @@ for i = 1:numel(dFF)
 
             %VIFs adjusted for each lambda
             if isempty(glm.VIF_trace)
-                [glm.VIF_trace, glm.conditionNum_trace] = getVIF(X, encodingData.lambda);
+                glm.VIF_trace = getVIF(X, encodingData.lambda);
             end
 
         else
