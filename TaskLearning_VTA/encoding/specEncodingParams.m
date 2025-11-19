@@ -7,7 +7,7 @@ params.initFcn_position = @ones; %ITI position
 
 switch params.modelName
 
-    case 'firstCuesCueXPosRewVelHeading'
+    case 'firstCuesCueXPosRewVelHeading' %["only_posXcueSide", "firstCuesCueXPosRewVelHeading"]
         params.predictorNames = ["start",...
             "firstLeftPuff", "firstRightPuff", "firstLeftTower", "firstRightTower",...
             "towerSide_position", "puffSide_position",...
@@ -50,6 +50,20 @@ switch params.modelName
     case 'only_posXcueSide'
         params.predictorNames = [...
             "towerSide_position","puffSide_position"...
+            ];
+        params.positionSpline = true;
+        params.initFcn_position = @ones; %ITI positi
+   
+    case 'only_posXcueType'
+        params.predictorNames = [...
+            "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position",...
+            ];
+        params.positionSpline = true;
+        params.initFcn_position = @ones; %ITI positi
+
+    case 'posXcueSide_pos'
+        params.predictorNames = [...
+            "towerSide_position","puffSide_position","position",...
             ];
         params.positionSpline = true;
         params.initFcn_position = @ones; %ITI positi

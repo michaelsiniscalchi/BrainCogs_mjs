@@ -30,7 +30,7 @@ predictors.acceleration = cat(1,NaN,diff(predictors.velocity)); %restrict to Y-v
 
 %Trialwise predictors
 %Accuracy, prior outcome, prior choice
-[predictors.towerSide, predictors.puffSide] = deal(init.categorical); 
+[predictors.towerSide, predictors.puffSide] = deal(init.num); %Zero-cue trials coded as NaN to avoid assumption L>0>R || L<0<R
 predictors.towerSide(ismember(predictors.trialIdx, find(trials.leftTowers)))  = -1;
 predictors.towerSide(ismember(predictors.trialIdx, find(trials.rightTowers))) = 1;
 
@@ -129,8 +129,8 @@ if params.positionSpline
     predictors.puffSide_position  = predictors.puffSide.*predictors.position;
 end
 
-%Restrict all predictors to forward trials
-exclIdx = ismember(predictors.trialIdx, find(~trials.forward));
+%Restrict all predictors to forward trials with cues on both sides
+exclIdx = ismember(predictors.trialIdx, find(~trials.forward | trials.noPuffs | trials.noTowers));
 for P = string(fieldnames(predictors))'
     predictors.(P)(exclIdx,:) = NaN; %Exclude timepoints from regression
 end

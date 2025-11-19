@@ -48,14 +48,9 @@ axis square tight
 
 %Co-plot CV error and condition number
 nexttile()
-%Plot CV MSE and Cond. Number traces
+%Plot CV MSE trace
 colororder([colors.black;colors.red]);
-yyaxis right
-plot(X, glm.conditionNum_trace,'DisplayName','Condition Num. (adj.)');
-ylabel('Condition number (adj.)');
-yyaxis left
 plot(X, mdl.CV.cvLambda, 'DisplayName','CV-MSE'); hold on;
-ylabel('CV-MSE');
 %Plot fitted lambda for this cell
 y = mdl.CV.cvLambda;
 Yk = [min(y(:))-0.05*range(y(:)), max(y(:))+0.05*range(y(:))];
