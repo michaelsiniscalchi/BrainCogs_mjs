@@ -24,6 +24,7 @@ switch params.modelName
         params.positionSpline = true; 
         params.initFcn_position = @ones; %ITI positi
 
+        %Minimal Models
     case 'only_position'
         params.predictorNames = "position";
         params.positionSpline = true; 

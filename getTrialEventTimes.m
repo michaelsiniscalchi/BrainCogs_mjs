@@ -20,7 +20,8 @@
 %
 %OUTPUTS:
 %   Struct array 'eventTimes', of length equal to the number of trials and containing fields:
-%       'start', time when world becomes visible; logged start-time + 2 more iterations for setting visibility (i=2) and rendering (i=3)
+%       'logStart', time of first virmen iteration for trial(i)
+%       'start', time when world becomes visible; logged start-time + 1 more iteration for: setting visibility (i=1) and rendering (i=2)
 %       'towers', struct containing fields, 'left','right','all'
 %       'puffs', struct containing fields, 'left','right','all'
 %       'outcome','cueEntry','turnEntry'
@@ -40,7 +41,8 @@ eventTimes(numel(trials),1) = struct(...
 for i = 1:numel(trials)
     %Trial start times
     logStartTime = getTrialIterationTime(log, blockIdx, i, 1); %The first time entry in trial, measured from start of session; trial time vector is relative to this entry; needs correction in some cases because the reference time for trials(i).start changes after restarts, etc.
-    eventTimes(i).start = getTrialIterationTime(log, blockIdx, i, 3); %Time when world becomes visible: time(3)
+    eventTimes(i).logStart = logStartTime; %Time when world becomes visible: time(2)
+    eventTimes(i).start = getTrialIterationTime(log, blockIdx, i, 2); %Time when world becomes visible: time(2)
 
     %Visual and tactile cue onset times
     towerTimes = getCueOnsetTimes(trials(i).time, logStartTime, trials(i).cueOnset);

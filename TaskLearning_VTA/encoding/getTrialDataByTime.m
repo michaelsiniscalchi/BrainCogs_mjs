@@ -8,7 +8,7 @@ initKinematicVar = @(varName, trialIdx)...
 B = struct("time", initCell, "trialIdx", initCell, "ITI", initCell,...
     "position", initCell, "heading", initCell, "velocity", initCell);
 fields = ["position","heading","velocity"];
-for i = 1:numel([trialData.eventTimes.start])
+for i = 1:numel([trialData.eventTimes.logStart])
     for j = 1:numel(fields)
         %Initialize position/velocity to be indexed by session-time
         % B.(fields(j)){i} = initKinematicVar(fields(j), i); %Initialize cell as matrix of nan, length nTimepoints
@@ -26,7 +26,7 @@ for i = 1:numel([trialData.eventTimes.start])
     end
 
     %Convert trial-relative time to session-time
-    B.time{i} = trialData.time{i} + trialData.eventTimes(i).start;
+    B.time{i} = trialData.time{i} + trialData.eventTimes(i).logStart;
 
     %Assign trial-wide variables: trial idx for each frame
     B.trialIdx{i} = i * ones(size(trialData.time{i}));

@@ -130,7 +130,7 @@ if params.positionSpline
 end
 
 %Restrict all predictors to forward trials with cues on both sides
-exclIdx = ismember(predictors.trialIdx, find(~trials.forward | trials.noPuffs | trials.noTowers));
+exclIdx = ismember(predictors.trialIdx, find(~trials.forward)); % | trials.noPuffs | trials.noTowers));
 for P = string(fieldnames(predictors))'
     predictors.(P)(exclIdx,:) = NaN; %Exclude timepoints from regression
 end
