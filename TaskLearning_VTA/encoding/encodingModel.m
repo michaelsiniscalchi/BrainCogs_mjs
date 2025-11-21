@@ -125,14 +125,17 @@ for i = 1:numel(dFF)
     end
 end
 
-%Calculate VIF and condition number for inversion of moment matrix
+%Store design matrix, then remove NaN rows for further analysis
 glm.X = [ones(size(X,1),1), X]; %Append a column of ones for constant term
-VIF = getVIF(glm.X); %Variance Inflation Factor (VIF)
-glm.VIF = VIF(2:end,:); %Include constant term in VIF calculation, but don't store VIF for c
-glm.conditionNum = cond(glm.X);
+X = glm.X(~any(isnan(glm.X),2),:); %Remove NaN rows, which are omitted in regression
 
-glm.rank = rank(momentMat(glm.X)); %Rank of predictor matrix
-glm.corrMatrix = corrcoef(X,'Rows','complete'); %Correlation matrix, only the predictors; omitting rows containing NaN
+%Calculate VIF and condition number for inversion of moment matrix
+VIF = getVIF(X); %Variance Inflation Factor (VIF)
+glm.VIF = VIF(2:end,:); %Include constant term in VIF calculation, but don't store VIF for c
+glm.conditionNum = cond(X);
+
+glm.rank = rank(X); %Rank of design matrix, X
+glm.corrMatrix = corrcoef(X(:,2:end)); %Correlation matrix, only the predictors; omitting rows containing NaN
 
 %Metadata
 glm.predictorIdx = idx;
