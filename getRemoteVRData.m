@@ -360,7 +360,7 @@ for i = 1:numel(subjects)
 
         %Response delay (latency from turn-entry to choice)
         if any([trialData(j).eventTimes.turnEntry])
-            turnTime = [trialData(j).eventTimes.turnEntry]-[trialData(j).eventTimes.start];
+            turnTime = [trialData(j).eventTimes.turnEntry]-[trialData(j).eventTimes.logStart];
             trialData(j).response_delay = trialData(j).response_time - turnTime';
         end
 

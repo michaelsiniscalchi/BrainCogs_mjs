@@ -32,7 +32,7 @@ function eventTimes = getTrialEventTimes(log, blockIdx)
 
 trials = log.block(blockIdx).trial;
 eventTimes(numel(trials),1) = struct(...
-    'start',[],...
+    'logStart',[],'start',[],...
     'leftTowers',[],'rightTowers',[],'leftPuffs',[],'rightPuffs',[],...
     'firstTower',[],'lastTower',[],'firstPuff',[],'lastPuff',[],...
     'cueEntry',[],'turnEntry',[],'armEntry',[],...
@@ -42,17 +42,17 @@ for i = 1:numel(trials)
     %Trial start times
     logStartTime = getTrialIterationTime(log, blockIdx, i, 1); %The first time entry in trial, measured from start of session; trial time vector is relative to this entry; needs correction in some cases because the reference time for trials(i).start changes after restarts, etc.
     eventTimes(i).logStart = logStartTime; %Time when world becomes visible: time(2)
-    eventTimes(i).start = getTrialIterationTime(log, blockIdx, i, 2); %Time when world becomes visible: time(2)
+    eventTimes(i).start = getTrialIterationTime(log, blockIdx, i, 3); %Time when world becomes visible: recorded as time(3)-- time(1), t0, initialize trial; time(2), issue command to make world visible; i=3, world becomes visible
 
     %Visual and tactile cue onset times
-    towerTimes = getCueOnsetTimes(trials(i).time, logStartTime, trials(i).cueOnset);
+    towerTimes = getCueOnsetTimes(trials(i).time, logStartTime, trials(i).cueOnset, 'towers');
     eventTimes(i).towers = towerTimes.all;
     eventTimes(i).leftTowers = towerTimes.left;
     eventTimes(i).rightTowers = towerTimes.right;
     eventTimes(i).firstTower = towerTimes.all(1);
     eventTimes(i).lastTower = towerTimes.all(end);
     if isfield(trials,"puffOnset")
-        puffTimes = getCueOnsetTimes(trials(i).time, logStartTime, trials(i).puffOnset);
+        puffTimes = getCueOnsetTimes(trials(i).time, logStartTime, trials(i).puffOnset, 'puffs');
         eventTimes(i).puffs = puffTimes.all;
         eventTimes(i).leftPuffs = puffTimes.left; %Superfluous unless AoE is used
         eventTimes(i).rightPuffs = puffTimes.right;
@@ -60,33 +60,33 @@ for i = 1:numel(trials)
         eventTimes(i).lastPuff = puffTimes.all(end);
     end
 
-    %Outcome onset times
-    eventTimes(i).outcome =  logStartTime + trials(i).time(trials(i).iOutcome); %Timestamp is calculated at end of last iteration, just before reward delivery
-
     %Time of entry into cue region, turn region (easeway before arm entry), and arm region
     fields = ["iCueEntry","iTurnEntry","iArmEntry","iChoice","iOutcome"];
     for j = 1:numel(fields)
         eventTimes(i).([lower(fields{j}(2)) fields{j}(3:end)]) = NaN; %Initialize, eg 'eventTimes(i).turnEntry'
         if isfield(trials,fields(j)) && trials(i).(fields(j)) %If boundary crossed in current trial, else remains NaN
             eventTimes(i).([lower(fields{j}(2)) fields{j}(3:end)]) = ...
-                logStartTime + trials(i).time(trials(i).(fields(j))); %Use eventTimes.start (corrected) rather than raw 'start' times
+                logStartTime + trials(i).time(trials(i).(fields(j))+1); %Timestamp for i+1 is calculated before iteration(i), so add (+1) offset
         end
     end
 end
 
-%FUTURE: add'l ARG for puff vs. tower once we sort out the exact time reference (towers should appear with 1-iter delay)
-function cue_onset_times = getCueOnsetTimes( trial_times, trial_start_time, trial_cue_onsets )
+%FUTURE: could clean up to only include 2 input args: time and {'cueOnset' or 'puffOnset'}
+function cue_onset_times = getCueOnsetTimes( trial_times, trial_start_time, trial_cue_onsets, cue_type )
+
     cue_onsets = cellfun(@(C) C(C>0), trial_cue_onsets, 'UniformOutput', false); %Remove zeros
     cueOnsets  = struct(...
         'left', cue_onsets{Choice.L},...
         'right', cue_onsets{Choice.R},...
         'all', [cue_onsets{:}]);
+    cueDelay = struct('towers', 2, 'puffs', 1); %Normal offset for puffs: time(i) assigned before iteration(i-1); extra iteration for towers (virmin graphics rendering is between iterations)
+
     fields = fieldnames(cueOnsets);
     for j = 1:numel(fields)
         if any(cueOnsets.(fields{j})>1) %If cues appear during run (rather than at start or not at all)
             %Get iteration assoc with cue onset as time index
-            cue_onset_times.(fields{j}) = sort(trial_start_time... %Use eventTimes.start (corrected) rather than raw 'start' times
-                + trial_times(cueOnsets.(fields{j})+1))'; %Towers appear on next iteration after being triggered; puffs occur immediately (so timestamp may be slightly off for puffs)
+            idx = cueOnsets.(fields{j}) + cueDelay.(cue_type);
+            cue_onset_times.(fields{j}) = sort(trial_start_time + trial_times(idx))'; 
         else
             cue_onset_times.(fields{j}) = NaN;
         end

@@ -126,7 +126,7 @@ if params.positionSpline
 
     %Cue-side x position
     predictors.towerSide_position = predictors.towerSide.*predictors.position; %Interaction: cue-side * position
-    predictors.puffSide_position  = predictors.puffSide.*predictors.position;
+    predictors.puffSide_position  = predictors.puffSide.*predictors.position; %Zero-cues trials coded as NaN
 end
 
 %Restrict all predictors to forward trials with cues on both sides

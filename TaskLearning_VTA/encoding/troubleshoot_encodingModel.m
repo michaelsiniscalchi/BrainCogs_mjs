@@ -1,14 +1,10 @@
-%Clearly, we've got multicollinearity issues. One unexpected finding:
-%increasing df in the spline functions may help with multicollinearity.
-%For event-based predictors (5s duration/150 samples), try df=30; for
-%position splines (286 cm) try 
-
 
 clearvars;
 
 subjectID = "m913";
 % mdlName = 'firstCuesPositionRewITI'; 'only_posXcueType'
-mdlName = 'only_position'; 
+% encodingMdl-firstCuesCueXPosRewVelHeading 'firstCuesCueXPosRewVel'
+mdlName = 'only_posXcueType'; 
 
 [ dirs, expData, calculate, summarize, figures, mat_file, params ] =...
     getAnalysisParams_T2V( subjectID );
@@ -21,21 +17,9 @@ S = load(fullfile(pathname,['encodingMdl-',mdlName,'.mat']),'cellID','X','condit
     'corrMatrix','VIF','rank','predictorIdx','bSpline_pos');
 load(fullfile(pathname,['encodingMdl-',mdlName,'-cell004.mat']), 'mdl'); %Model for individual cell
 
-%Calculate VIF and condition number for inversion of moment matrix
-X=S.X;
-[VIF, conditionNum] = getVIF(X); %Variance Inflation Factor (VIF)
-
-Xi = [ones(length(X),1), X];
-[VIF2, conditionNum2] = getVIF(Xi); %Variance Inflation Factor (VIF)
-
-disp(['With constant ', '| Without constant']);
-VIF_comp = [VIF2(2:end), VIF];
-disp(VIF_comp); 
-disp('Model w/ constant - without constant:')
-disp(diff(VIF_comp,1,2));
+R = S.corrMatrix;
 
 %% Figures
-
 x = 1:numel(S.VIF);
 varNames = string(fieldnames(S.predictorIdx));
 for i=1:numel(varNames)
@@ -52,7 +36,6 @@ set(gca,'XTick',firstBasisIdx-1,...
     'XTickLabel',varNames,'TickLabelInterpreter','none'); %idx offset by 1 for bias term
 
 %Correlation Matrices
-R = S.corrMatrix;
 for cueType = ["leftTowers","rightTowers","leftPuffs","rightPuffs"]
     idx1 = S.predictorIdx.(cueType)-1; %constant term not in R
 idx2 = S.predictorIdx.(strjoin([cueType,"_position"],''))-1;
@@ -234,5 +217,12 @@ set(gca,'XTick',x,'XTickLabel',varNames);
 %Returned some large negative values!
 
 
-
 %figure; plot(encodingMdl.bSpline_pos)
+
+%% Data from Vanessa Roser
+X = table2array(readtable('X:\michael\tactile2visual-vta\test sets\Vanessa\pred_mat_VR.csv'));
+XtX = X'*X;
+conditionNum = cond(XtX);
+
+%Numpy says it uses norm(X)*norm(inv(X))
+conditionNum2 = norm(XtX)*norm(inv(XtX));

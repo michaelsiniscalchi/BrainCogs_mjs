@@ -7,18 +7,9 @@ options.figures = struct('FOV_mean_projection', false, 'session_summary', true, 
 figures_Tactile2Visual_VTA('240222', options);
 
 %%
-subjectID ='mjs20_25';
-% sessionDate = '2023-06-08';
-% AnalysisNotebook_Tactile2Visual_behavior( subjectID, sessionDate );
-AnalysisNotebook_Tactile2Visual_behavior( subjectID );
-
-%%
-
-search_filter ='m33'; %m42 m517 m477 m478 m650
-options.calculate = struct('align_signals', true, 'trial_average_dFF', true,'encoding_model', false);
-% options.summarize = struct('trialDFF', true);
-% options.figures.encoding_model = true;
-Analyze_Tactile2Visual_VTA(search_filter, options);
+subjectID ='mjs20_913'; %'250212-m913-maze7'
+sessionDate = '2025-02-12';
+AnalysisNotebook_Tactile2Visual_behavior(subjectID, sessionDate);
 
 %%
 % search_filter ='250702-m713-maze7';
@@ -27,9 +18,26 @@ clearvars;
 search_filter ='250212-m913-maze7';
 options.calculate = struct('combined_data',false,'align_signals', false,...
     'trial_average_dFF', false,'encoding_model', true);
-% options.summarize = struct('trialDFF', true);
 options.figures = struct('encoding_coefficients',true, 'encoding_cv', true);
 Analyze_Tactile2Visual_VTA(search_filter, options);
+
+%%
+clearvars;
+search_filter ='250905-m477-maze8';
+options.calculate = struct('combined_data',false,'dFF',false,'align_signals', true,...
+    'trial_average_dFF', false,'encoding_model', false);
+Analyze_Tactile2Visual_VTA(search_filter, options);
+
+options.figures=struct('encoding_eventKernels', false,...
+    'encoding_coefficients', false, 'encoding_cv', true);
+figures_Tactile2Visual_VTA(search_filter, options); %In a separate script for brevity.
+
+%%
+clearvars;
+search_filter ='250905-m477-maze8';
+options.figures=struct('encoding_eventKernels', false,...
+    'encoding_coefficients', false, 'encoding_cv', true);
+figures_Tactile2Visual_VTA(search_filter, options); %In a separate script for brevity.
 
 %%
 %Figures
