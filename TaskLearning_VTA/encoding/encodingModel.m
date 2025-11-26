@@ -62,8 +62,8 @@ for i = 1:numel(dFF)
 
         %Generate output similar to fitglm()
         mdl.Coefficients = struct('Estimate', B, 'SE', nan(size(B)));
-        rss = sum((y - yHat).^2); 
-        tss = sum((y - mean(y)).^2);
+        rss = sum((y - yHat).^2, 1, "omitmissing"); 
+        tss = sum((y - mean(y)).^2, 1, "omitmissing"); 
         r_squared = 1-(rss/tss); 
         mdl.Fitted = struct('Response', yHat, 'MSE', mse);
         mdl.Rsquared = r_squared;
@@ -186,7 +186,7 @@ parfor i = 1:numel(k)
     beta(:, i) = ridge(y,x,k(i),0); %Last ARG=0, restore scale of the data, and include intercept
 end
 y_hat = [ones(size(x,1),1), x]*beta; %Append a column of ones for intercept
-mse = mean((y - y_hat).^2); %Training mse
+mse = mean((y - y_hat).^2, 1, "omitmissing"); %Training mse
 
 %NEXT STEP: determine the relative influence of each class of predictors in
 %the model (ie, firstTower(1:n) or velocity) using mdl2 = removeTerms(mdl1, terms)
