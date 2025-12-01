@@ -20,10 +20,10 @@
 %
 %OUTPUTS:
 %   Struct array 'eventTimes', of length equal to the number of trials and containing fields:
-%       'logStart', time of first virmen iteration for trial(i)
-%       'start', time when world becomes visible; logged start-time + 1 more iteration for: setting visibility (i=1) and rendering (i=2)
-%       'towers', struct containing fields, 'left','right','all'
-%       'puffs', struct containing fields, 'left','right','all'
+%       'logStart', reference time for trial(i); note that all times(i) are calculated at beginning of iteration(i-1), so 1-iteration (negative) offset in time vector  
+%       'start', time when world becomes visible; logged start-time + 2 more iterations for: setting visibility (i=1) and rendering (i=2)
+%       'towers', struct containing fields, 'left','right','all'; note that towers appear an additional 1-iteration following visibility command. So, time(i+2)
+%       'puffs', struct containing fields, 'left','right','all'; note: presented at time(i+2)
 %       'outcome','cueEntry','turnEntry'
 %
 %---------------------------------------------------------------------------------------------------

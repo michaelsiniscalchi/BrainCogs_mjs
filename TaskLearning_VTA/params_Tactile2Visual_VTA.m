@@ -140,18 +140,10 @@ params.bootAvg.smoothWin        = 6; %Smoothing window in samples for peak findi
 params.bootAvg.avgWin           = 2; %Time interval (s) post-cue, or surrounding peak, for averaging
 params.bootAvg   = specBootAvgParams(params.bootAvg); %params.bootAvg.trigger(1:3) = "start","firstcue","outcome", etc...
 
-% Encoding model
+% Encoding model defaults (more spec for multiuple models in specEncodingParams)
 params.encoding.dsFactor            = 1; %Downsample from interpolated rate of 1/params.interdt
-params.encoding.bSpline_nSamples    = 150; %N time points for spline basis set
-params.encoding.bSpline_degree      = 3; %degree of each (Bernstein polynomial) term
-params.encoding.bSpline_df          = 21; %number of terms:= order + N internal knots
-
-params.encoding.bSpline_position_binWidth   = 1; %bin width in cm
-params.encoding.bSpline_position_degree     = 3; %degree for position splines
-params.encoding.bSpline_position_df         = 5; %number of terms for position splines
-
 params.encoding.regularization  = "ridge";
-params.encoding.lambda = [logspace(-3,6,20)]; %series of lambda values for cross-validation
+params.encoding.lambda = [0 logspace(-3, 6, 19)]; %series of lambda values for cross-validation
 params.encoding.lambda_kfolds = 10;
 params.encoding.getRidgeTrace = true;
 

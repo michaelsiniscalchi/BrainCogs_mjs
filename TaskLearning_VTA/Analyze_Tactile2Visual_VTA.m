@@ -79,6 +79,7 @@ if calculate.combined_data
         %Restrict stats to main maze and exclude specified blocks
         behavior = restrictImgTrials(behavior, expData(i).mainMaze, expData(i).excludeBlock);
         behavior = filterSessionStats(behavior);
+        
         %Logistic regression
         behavior = analyzeTaskStrategy2(behavior, params.behavior.nBins_psychometric);
 

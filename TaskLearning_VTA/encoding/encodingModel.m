@@ -87,14 +87,16 @@ for i = 1:numel(dFF)
     %***FOR SE, we need to linearly combine the MSE and take the square root! (you can't just take the weighted sum of the SEs)
     %*** square the SE, do the matrix multiplication, and then take the SQRT...
     for varName = [string(encodingData.eventVars), string(encodingData.positionVars)] %All event- & position-splines
-        if ismember(varName, encodingData.positionVars)
-            bSpline = encodingData.bSpline_pos; %series of basis functions for position
-            binWidth = encodingData.bSpline_position_binWidth; %spatial bin width in cm
+        binWidth = encodingData.dt; %Mean timestep per sample dF/F
+        x_min = 0; %time from event
+        if ismember(varName, encodingData.positionVarNames)
+            bSpline = encodingData.bSpline.position; %series of basis functions for position
+            binWidth = mean(diff(encodingData.position)); %spatial bin width in cm
             x_min = encodingData.position(1); %Start location (cm)
-        else
-            bSpline = encodingData.bSpline; %series of basis functions of time following event
-            binWidth = encodingData.dt; %Mean timestep per sample dF/F
-            x_min = 0; %time from event
+        elseif ismember(varName, encodingData.cueVarNames)
+            bSpline = encodingData.bSpline.cue; %series of basis functions of time following event
+        elseif ismember(varName, encodingData.outcomeVarNames)
+            bSpline = encodingData.bSpline.outcome; %series of basis functions of time following event
         end
         
         %Coefficient estimates and SE

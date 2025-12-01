@@ -11,7 +11,6 @@ eventTimes = trialData.eventTimes;
 init.categorical = zeros(size(img_beh.t));
 init.num = NaN(size(img_beh.t));
 init.choice = zeros(size(img_beh.t));
-init.event = NaN(size(img_beh.t,1), params.bSpline_df); %Matrix size nSamples x nSplineBases
 init.cell = repmat({NaN},size(eventTimes));
 
 %***Put this in getVRData()***--------------------------------------------
@@ -86,37 +85,55 @@ if isfield(impulse,'firstPuff')
 end
 
 %Events convolved with spline basis set
-bSpline = makeBSpline(params.bSpline_degree, params.bSpline_df, params.bSpline_nSamples);
 for event = string(fieldnames(impulse))'
-    %Initialize predictor, one column per spline basis function
-    predictors.(event) = ...
-        NaN(length(impulse.(event)) + length(bSpline)-1, params.bSpline_df); %Length of convolve =  nTimepoints + nTimepoints in basis function minus 1
-    %Convolve impulse function with each spline basis function
-    for j = 1:params.bSpline_df
-        predictors.(event)(:,j) =...
-            conv(impulse.(event), bSpline(:,j));
+    
+    %Specify spline params
+    if ismember(event, params.cueVarNames)
+        eventType = "cue";
+    elseif ismember(event, params.outcomeVarNames)
+        eventType = "outcome";
     end
+
+    %Initialize predictor, one column per spline basis function
+    bSp = makeBSpline(params.bSpline.(eventType).degree,...
+        params.bSpline.(eventType).df, params.bSpline.(eventType).nSamples);
+    predictors.(event) = ...
+        NaN(length(impulse.(event)) + size(bSp,1)-1, size(bSp,2)); %Length of convolve =  nTimepoints + nTimepoints in basis function minus 1
+    
+    %Convolve impulse function with each spline basis function
+    for j = 1:size(bSp,2) %For each basis f(x)
+        predictors.(event)(:,j) =...
+            conv(impulse.(event), bSp(:,j));
+    end
+
     %Truncate to numel(t)
     predictors.(event) = predictors.(event)(1:numel(t),:);
+    
+    %Store eventType-spec bSpline
+    bSpline.(eventType) = bSp;
+   
 end
 
 %Position splines (alternative to linear position, for interactions)
-bSpline_pos = NaN; %Basis funcs for position
+bSp = NaN; %Basis funcs for position
 binEdges = NaN; %Positions for domain of basis funcs
-if params.positionSpline
-    binEdges = trialData.positionRange(1):params.bSpline_position_binWidth:trialData.positionRange(2);
+if ~isempty(params.positionVars)
+    binEdges = trialData.positionRange(1):params.bSpline.position.binWidth:trialData.positionRange(2);
     predictors.position(predictors.position<trialData.positionRange(1)) =...
         trialData.positionRange(1); %Trials where mouse moves backward from start position will likely be excluded, but need idx for implementation of position splines
     posIdx = discretize(predictors.position, binEdges); %Index each cm across position range; with wider bins, use discretize()
 
-    bSpline_pos = makeBSpline(params.bSpline_position_degree,...
-        params.bSpline_position_df, numel(binEdges)-1);
+    bSp = makeBSpline(params.bSpline.position.degree,...
+        params.bSpline.position.df, numel(binEdges)-1);
 
     idx = ~isnan(posIdx);
-    predictors.position = nan(size(predictors.position,1),size(bSpline_pos, 2)); %Re-initialize, one column per basis function
-    predictors.position(idx,:) = bSpline_pos(posIdx(idx), :); %Populate basis f(x) columns with spline-transformed data
+    predictors.position = nan(size(predictors.position,1),size(bSp, 2)); %Re-initialize, one column per basis function
+    predictors.position(idx,:) = bSp(posIdx(idx), :); %Populate basis f(x) columns with spline-transformed data
     predictors.position(predictors.ITI==1,:) = 0; %ITI set to 0:=baseline 
 
+    %Store position spline
+    bSpline.position = bSp;
+    
     for f = ["leftTowers","rightTowers","leftPuffs","rightPuffs"]
         pName = strjoin([f,"position"],'_'); %Predictor name, eg "leftPuffs_position"
         predictors.(pName) = zeros(size(predictors.position)); %Initialize as zeroes
@@ -153,9 +170,7 @@ for f = string(fieldnames(params))' %Store all input hyperparams
 end
 encodingData.impulse = impulse; %event-times as delta functions in imaging time frame
 encodingData.bSpline = bSpline; %Store series of basis functions
-encodingData.bSpline_pos = bSpline_pos; %Basis funcs for position
 encodingData.position = binEdges(1:end-1); %Positions for domain of basis funcs
-
 
 % for f = ["tower","puff"]
 %     predictors.(strjoin([f,'Side'],'')) = init.categorical;

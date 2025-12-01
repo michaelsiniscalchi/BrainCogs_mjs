@@ -3,28 +3,28 @@ function params = specEncodingParams(params)
 %Predictors for full/partial models
 %Initialize
 params.positionSpline = false;
-params.initFcn_position = @ones; %ITI position
+params.initFcn_position = @nan; %ITI position
+
+%Default B-spline parameters
+%Position
+bSpline.position.degree      = 3; %degree for position splines
+bSpline.position.binWidth    = 1; %bin width in cm
+bSpline.position.df          = 5; %number of terms for position splines
+
+%Cues
+bSpline.cue.degree      = 3; %degree of each (Bernstein polynomial) term
+bSpline.cue.nSamples    = 60; %N time points for spline basis set;
+bSpline.cue.df          = 6; %number of terms:= order + N internal knots
+
+%Reward
+bSpline.outcome.degree      = 3; %degree of each (Bernstein polynomial) term
+bSpline.outcome.nSamples    = 150; %N time points for spline basis set; 
+bSpline.outcome.df          = 15; %number of terms:= order + N internal knots
+params.bSpline = bSpline;
 
 switch params.modelName
 
-    case 'firstCuesCueXPosRewVelHeading' %["only_posXcueSide", "firstCuesCueXPosRewVelHeading"]
-        params.predictorNames = ["start",...
-            "firstLeftPuff", "firstRightPuff", "firstLeftTower", "firstRightTower",...
-            "towerSide_position", "puffSide_position",...
-            "reward", "noReward", "velocity", "heading"];
-        params.positionSpline = true;
-        params.initFcn_position = @ones; %ITI positi
-    
-
-    case 'firstCuesCueXPosRewVel'
-        params.predictorNames = [
-            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
-            "towerSide_position","puffSide_position",...
-            "reward","noReward","velocity"];
-        params.positionSpline = true; 
-        params.initFcn_position = @ones; %ITI positi
-
-        %Minimal Models
+    %Minimal Models
     case 'only_position'
         params.predictorNames = "position";
         params.positionSpline = true; 
@@ -34,48 +34,34 @@ switch params.modelName
             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
             "leftPuffs","rightPuffs","leftTowers","rightTowers",...
             ];
-        params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
-    
+         
     case 'only_allCues'
         params.predictorNames = [...
             "leftPuffs","rightPuffs","leftTowers","rightTowers"...
             ];
-        params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
-
+    
     case 'only_firstCues'
         params.predictorNames = [
             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower"...
             ];
-        params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
-
+   
     case 'only_posXcueSide'
         params.predictorNames = [...
             "towerSide_position","puffSide_position"...
             ];
         params.positionSpline = true;
-        params.initFcn_position = @ones; %ITI positi
    
     case 'only_posXcueType'
         params.predictorNames = [...
             "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position",...
             ];
         params.positionSpline = true;
-        params.initFcn_position = @ones; %ITI positi
 
     case 'posXcueSide_pos'
         params.predictorNames = [...
             "towerSide_position","puffSide_position","position",...
             ];
         params.positionSpline = true;
-        params.initFcn_position = @ones; %ITI positi
-
-    case 'firstCues_posXcueType'
-        params.predictorNames = [
-            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
-            "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position",...
-            ];
-        params.positionSpline = true;
-        params.initFcn_position = @ones; %ITI positi
 
     case 'syncTest'
         %Basic "Full Model"
@@ -83,7 +69,6 @@ switch params.modelName
             "leftPuffs","rightPuffs","leftTowers","rightTowers",...
             "reward","noReward",...
             "ITI"];
-        params.initFcn_position = @ones; %ITI position: @ones for last final position, @nan to neglect ITI
 
     case 'FM_time'
         params.predictorNames = ["start",...
@@ -91,7 +76,6 @@ switch params.modelName
             "leftPuffs","rightPuffs","leftTowers","rightTowers",...
             "reward","noReward",...
             "time","viewAngle","velocity","acceleration"];
-        params.initFcn_position = @ones;
 
 end
 
@@ -110,6 +94,50 @@ varNames.indicatorVars = ["ITI","trialIdx","accuracy","priorOutcome"];
 varNames.kinematicVars = ["heading","velocity","acceleration"];
 
 for f = string(fieldnames(varNames))'
-    params.(f) = pNames(ismember(pNames,varNames.(f)));
+    params.(f) = []; %Initialize
+    if ismember(pNames, varNames.(f))
+        params.(f) = pNames(ismember(pNames,varNames.(f)));
+    end
 end
+
+%Assign bSpline params to associated predictor types
+% for f = ["position",...
+%         "towerSide_position","puffSide_position"...
+%         "leftPuffs_position","rightPuffs_position",...
+%         "leftTowers_position","rightTowers_position"]
+%     params.bSpline.(f) = bSpline.position;
+% end
+% for f = ["start",...
+%             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
+%             "leftPuffs","rightPuffs","leftTowers","rightTowers"]
+%         params.bSpline.(f) = bSpline.cues;
+% end
+% for f = ["reward", "noReward"]
+%         params.bSpline.(f) = bSpline.outcome;
+% end
+
+%Subtypes (for referencing bSpline params)
+params.cueVarNames = ["start",...
+            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
+            "leftPuffs","rightPuffs","leftTowers","rightTowers"];
+params.outcomeVarNames = ["reward","noReward"];
+params.positionVarNames = ["position",...
+        "towerSide_position","puffSide_position"...
+        "leftPuffs_position","rightPuffs_position",...
+        "leftTowers_position","rightTowers_position"];
+
+% %Assign bSpline params to active predictors
+% for f = pNames
+%     if ismember(f, ["towerSide_position","puffSide_position"...
+%             "leftPuffs_position","rightPuffs_position",...
+%             "leftTowers_position","rightTowers_position"])
+%         params.bSpline.(f) = bSpline.position;
+%     elseif ismember(f, ["start",...
+%             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
+%             "leftPuffs","rightPuffs","leftTowers","rightTowers"])
+%         params.bSpline.(f) = bSpline.cues;
+%     elseif ismember(f, ["reward", "noReward"])
+%         params.bSpline.(f) = bSpline.outcome;
+%     end
+% end
 

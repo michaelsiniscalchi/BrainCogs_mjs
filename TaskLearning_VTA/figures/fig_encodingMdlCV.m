@@ -5,9 +5,9 @@ setup_figprops('timeseries')  %placeholder
 
 %Figure: Ridge Trace, VIF Trace, Condition Num co-plotted with CV_err
 figs = figure('Name',[glm.sessionID, '-', char(glm.modelName), '-cell', cellID],...
-    'Position',[25,100,1200,600]);
+    'Position',[25,100,1000,750]);
 
-T = tiledlayout(2,3,"TileSpacing","tight","Padding","loose");
+T = tiledlayout(2,3,"TileSpacing","loose","Padding","loose");
 
 %Panel 1: Ridge trace
 ax = nexttile();
@@ -46,27 +46,11 @@ xlabel('Ridge parameter, log(k)');
 % xscale('log');
 axis square tight
 
-%Co-plot CV error and condition number
-nexttile()
-%Plot CV MSE trace
-colororder([colors.black;colors.red]);
-plot(X, mdl.CV.cvLambda, 'DisplayName','CV-MSE'); hold on;
-%Plot fitted lambda for this cell
-y = mdl.CV.cvLambda;
-Yk = [min(y(:))-0.05*range(y(:)), max(y(:))+0.05*range(y(:))];
-plot(Xk,Yk,'k:','LineWidth',1);
-%Labels & axis formatting
-title('CV(lambda)');
-ylabel('Cross validation MSE');
-xlabel('Ridge parameter, log(k)');
-% xscale('log');
-axis square tight
-
 %Legend
 ax = nexttile();
 ax.Visible = "off";
 leg = makeLegend(p, glm.predictorIdx);
-leg.Layout.Tile = 4;
+leg.Layout.Tile = 3;
 leg.NumColumns = 2;
 
 %Variance Inflation Factors
@@ -84,8 +68,10 @@ set(gca,'XTick',firstBasisIdx-1,...
     'XTickLabel',varNames,'TickLabelInterpreter','none'); %idx offset by 1 for bias term
 txtX = max(xlim)-0.05*max(xlim); txtY = max(ylim)-0.1*max(ylim);
 text(txtX,txtY,['Condition number: ', num2str(glm.conditionNum,3)],...
-    'HorizontalAlignment','right');
-
+    'HorizontalAlignment','right','Interpreter','latex');
+txtY = max(ylim)-0.2*max(ylim);
+text(txtX,txtY,['$R^{2}$: ', num2str(mdl.Rsquared,3)],...
+    'HorizontalAlignment','right','Interpreter','latex');
 %--------------------------------------------------------------------------
 function lineSeries = assignLineFormatting(lineSeries, pIdx, C)
 
@@ -109,3 +95,19 @@ for i = 1:numel(f)
 end
 leg = legend(lineSeries(subset), labels,...
     'Location', 'bestoutside','FontSize', 10, 'Interpreter','none');
+
+% %Co-plot CV error and condition number
+% nexttile()
+% %Plot CV MSE trace
+% colororder([colors.black;colors.red]);
+% plot(X, mdl.CV.cvLambda, 'DisplayName','CV-MSE'); hold on;
+% %Plot fitted lambda for this cell
+% y = mdl.CV.cvLambda;
+% Yk = [min(y(:))-0.05*range(y(:)), max(y(:))+0.05*range(y(:))];
+% plot(Xk,Yk,'k:','LineWidth',1);
+% %Labels & axis formatting
+% title('CV(lambda)');
+% ylabel('Cross validation MSE');
+% xlabel('Ridge parameter, log(k)');
+% % xscale('log');
+% axis square tight
