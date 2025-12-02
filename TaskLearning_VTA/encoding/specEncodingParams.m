@@ -102,11 +102,11 @@ varNames.positionVars = [...
     "leftPuffs_position","rightPuffs_position",...
     "leftTowers_position","rightTowers_position"];
 varNames.indicatorVars = ["ITI","trialIdx","accuracy","priorOutcome"];
-varNames.kinematicVars = ["heading","velocity","acceleration"];
+varNames.kinematicVars = ["heading","speed","velocity","acceleration"];
 
 for f = string(fieldnames(varNames))'
     params.(f) = []; %Initialize
-    if ismember(pNames, varNames.(f))
+    if any(ismember(pNames, varNames.(f)))
         params.(f) = pNames(ismember(pNames,varNames.(f)));
     end
 end
