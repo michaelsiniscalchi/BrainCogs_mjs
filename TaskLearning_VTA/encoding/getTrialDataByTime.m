@@ -6,8 +6,9 @@ initKinematicVar = @(varName, trialIdx)...
     .*trialData.(varName){trialIdx}(end,:); %equal to final value if init_fcn is @ones; NaN if @nan
 
 B = struct("time", initCell, "trialIdx", initCell, "ITI", initCell,...
-    "position", initCell, "heading", initCell, "velocity", initCell);
-fields = ["position","heading","velocity"];
+    "position", initCell, "heading", initCell, "speed", initCell, "velocity", initCell);
+
+fields = ["position", "heading", "speed", "velocity"];
 for i = 1:numel([trialData.eventTimes.logStart])
     for j = 1:numel(fields)
         %Initialize position/velocity to be indexed by session-time
@@ -16,7 +17,7 @@ for i = 1:numel([trialData.eventTimes.logStart])
             case "position"
                 B.(fields(j)){i} = initKinematicVar(fields(j), i);
 
-            case {"velocity", "heading"}
+            case {"velocity", "heading", "speed"}
                 B.(fields(j)){i} = ...
                     zeros(size(trialData.time{i},1), size(trialData.(fields(j)){i},2)); %Initialize cell as matrix of zeros, length nTimepoints
             
