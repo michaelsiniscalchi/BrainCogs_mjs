@@ -42,6 +42,10 @@ predictors.accuracy(ismember(predictors.trialIdx, find(trials.correct))) = 1; %I
 predictors.priorOutcome = init.categorical;
 predictors.priorOutcome(ismember(predictors.trialIdx, find(trials.priorCorrect))) = 1; %Image frames from trials following correct choice
 
+predictors.choice = init.choice;
+predictors.choice(ismember(predictors.trialIdx, find(trials.right))) = 1; %Frames from prior-right choice trials
+predictors.choice(ismember(predictors.trialIdx, find(trials.left))) = -1; %Prior left
+
 predictors.priorChoice = init.choice;
 predictors.priorChoice(ismember(predictors.trialIdx, find(trials.priorRight))) = 1; %Frames from prior-right choice trials
 predictors.priorChoice(ismember(predictors.trialIdx, find(trials.priorLeft))) = -1; %Prior left
@@ -145,6 +149,9 @@ if ~isempty(params.positionVars)
     predictors.towerSide_position = predictors.towerSide.*predictors.position; %Interaction: cue-side * position
     predictors.puffSide_position  = predictors.puffSide.*predictors.position; %Zero-cues trials coded as NaN
 end
+
+%Choice x Outcome Interaction terms
+
 
 %Restrict all predictors to forward trials with cues on both sides
 exclIdx = ismember(predictors.trialIdx, find(~trials.forward)); % | trials.noPuffs | trials.noTowers));

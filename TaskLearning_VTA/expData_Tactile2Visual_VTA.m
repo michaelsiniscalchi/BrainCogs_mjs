@@ -447,58 +447,6 @@ expData(i).mainMaze = 10;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%M913 DAT-cre::jGCaMP8s (2 blocks)
-expData(i).sub_dir = '250116-m913-maze7'; 
-expData(i).subjectID = "mjs20_913";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '250123-m913-maze7'; 
-expData(i).subjectID = "mjs20_913";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '250206-m913-maze7'; 
-expData(i).subjectID = "mjs20_913";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '250212-m913-maze7'; 
-expData(i).subjectID = "mjs20_913";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '250214-m913-maze8'; 
-expData(i).subjectID = "mjs20_913";
-expData(i).mainMaze = 8;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '250221-m913-maze8'; 
-expData(i).subjectID = "mjs20_913";
-expData(i).mainMaze = 8;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '250228-m913-maze8'; 
-expData(i).subjectID = "mjs20_913";
-expData(i).mainMaze = 8;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '250305-m913-maze8'; 
-expData(i).subjectID = "mjs20_913";
-expData(i).mainMaze = 8;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '250307-m913-maze8'; 
-expData(i).subjectID = "mjs20_913";
-expData(i).mainMaze = 8;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-expData(i).sub_dir = '250312-m913-maze8'; 
-expData(i).subjectID = "mjs20_913";
-expData(i).mainMaze = 8;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-
 %M477 DAT-cre::jGCaMP8s (2 blocks but probably few neurons)
 expData(i).sub_dir = '250603-m477-maze7'; 
 expData(i).subjectID = "mjs20_477";
@@ -520,6 +468,13 @@ expData(i).sub_dir = '250630-m477-maze8';
 expData(i).subjectID = "mjs20_477";
 expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
+i = i+1;
+
+%Sync test
+expData(i).sub_dir = '250905-m477-maze8'; 
+expData(i).subjectID = "mjs20_477";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = NaN;
 i = i+1;
 
 %M478 DAT-cre::jGCaMP8s (2 blocks but probably only one neuron)
@@ -549,7 +504,7 @@ expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%M480 DAT-cre::jGCaMP8s
+%M480 DAT-cre::jGCaMP8s (1 rule block-->68%)
 expData(i).sub_dir = '250623-m480-maze7'; 
 expData(i).subjectID = "mjs20_480";
 expData(i).mainMaze = 7;
@@ -561,7 +516,7 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%M650 DAT-cre::RiboL1-jGCaMP8s
+%M650 DAT-cre::RiboL1-jGCaMP8s (1 rule block-->~60%)
 expData(i).sub_dir = '250618-m650-maze7'; 
 expData(i).subjectID = "mjs20_m650";
 expData(i).mainMaze = 7;
@@ -613,11 +568,56 @@ expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
-%Sync test
-expData(i).sub_dir = '250905-m477-maze8'; 
-expData(i).subjectID = "mjs20_477";
+%M913 DAT-cre::jGCaMP8s (2 blocks)
+expData(i).sub_dir = '250116-m913-maze7'; 
+expData(i).subjectID = "mjs20_913";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250123-m913-maze7'; 
+expData(i).subjectID = "mjs20_913";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250206-m913-maze7'; 
+expData(i).subjectID = "mjs20_913";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250212-m913-maze7'; 
+expData(i).subjectID = "mjs20_913";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250214-m913-maze8'; 
+expData(i).subjectID = "mjs20_913";
 expData(i).mainMaze = 8;
-expData(i).npCorrFactor = NaN;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250221-m913-maze8'; 
+expData(i).subjectID = "mjs20_913";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250228-m913-maze8'; 
+expData(i).subjectID = "mjs20_913";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250305-m913-maze8'; 
+expData(i).subjectID = "mjs20_913";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250307-m913-maze8'; 
+expData(i).subjectID = "mjs20_913";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '250312-m913-maze8'; 
+expData(i).subjectID = "mjs20_913";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
 i = i+1;
 
 

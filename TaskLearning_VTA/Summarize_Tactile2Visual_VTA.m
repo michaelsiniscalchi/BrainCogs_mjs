@@ -87,17 +87,19 @@ clearvars sessions predictors S f
 
 if summarize.encoding
     fields = ["AUC","AUC_se","peak","peak_se","L2"];
-    for i=1:numel(expData)
-        sessions(i) = load(mat_file.results.encoding(i),...
-            "session_date","cellID","kernel","coef");
+    mdlNames = params.encoding.modelName;
+    for i = 1:numel(mdlNames)
+        for j = 1:numel(expData)
+            sessions(j) = load(mat_file.results.encoding(j, mdlNames(i)));
+        end
+        cells = summarize_sessions2cells(sessions);
+        save(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','-v7.3');
     end
-    cells = summarize_sessions2cells(sessions);
-    save(mat_file.summary.encoding(subjectID),'cells','-v7.3');
 end
 
 if summarize.neuroBehCorr
     %Hyperparams
-    params.paramNames = ["meanCoef","L2",]; %Scalar estimates from psytrack and encoding model
+    params.paramNames = ["meanCoef","L2"]; %Scalar estimates from psytrack and encoding model
     params.psyField = ["leftTowers","rightTowers","leftPuffs","rightPuffs"];
     params.imgField = ...
         ["firstLeftTower", "firstRightTower", "firstLeftPuff", "firstRightPuff",...
@@ -124,18 +126,28 @@ if figures.summary_neuroBehCorr
         panelSpec = P.panels(i);
         P.minNumSessions = 5;
         figs = fig_summaryPsyTrackEncodingBySession(sessions, cells, panelSpec, P);
-        
         save_multiplePlots(figs, save_dir); %save as FIG and PNG
     end
   
 end
 
 if figures.encoding_eventKernelsByCell
-    load(mat_file.summary.encoding(subjectID),"cells");
-    for i = 1:numel(cells)
-        save_dir = fullfile(dirs.figures,'Encoding model', 'Response kernels',...
-            subjectID, ['cell',cells(i).cellID]);
-        figs = plot_eventKernel_byCell(cells(i), params.figs.encoding.panels_contrast);
-        save_multiplePlots(figs(k), save_dir);
+    %For each model
+    mdlNames = params.encoding.modelName;
+    for i = 1:numel(mdlNames)
+        load(mat_file.summary.encoding(subjectID, mdlNames(i)), "cells");
+        load(mat_file.summary.behavior(subjectID), "sessions");
+        varNames = string(fieldnames(cells(1).kernel));
+        %Overlay session dates
+        for j = 1:numel(varNames)
+            disp(['Plotting response kernels for ' char(varNames(j))]);
+            save_dir = fullfile(dirs.figures,strjoin(['Encoding model-', mdlNames(i)],''),...
+                strjoin(['Response kernels--', varNames(j)],''));
+
+            figs = plot_eventKernel_byPerformance(cells, sessions, varNames(j));
+            save_multiplePlots(figs, save_dir);
+        end
+
+        %One panel per session date, on same scale with contrasts (left vs. right, etc)
     end
 end

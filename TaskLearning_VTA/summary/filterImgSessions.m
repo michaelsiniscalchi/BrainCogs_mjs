@@ -1,4 +1,4 @@
-function [ Beh, Beh_vect ] = filterImgSessions(sessions, psytrack)
+function [ Beh, Beh_vect ] = filterImgSessions(sessions)
 
 %Aggregate scalar session data in struct array
 for i = 1:numel(sessions)
@@ -31,8 +31,6 @@ end
 for f = string(fieldnames(Beh))'
     Beh_vect.(f) = [Beh.(f)];
 end
-
-
     
 % y = sessions(10).psychometric.towers.pRight_binned;
 % x = sessions(10).psychometric.towers.bins;

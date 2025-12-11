@@ -22,8 +22,8 @@ for i = 1:numel([trialData.eventTimes.logStart])
                     zeros(size(trialData.time{i},1), size(trialData.(fields(j)){i},2)); %Initialize cell as matrix of zeros, length nTimepoints
             
         end      
-        B.(fields(j)){i}(1:size(trialData.(fields(j)){i},1),:) =...
-            trialData.(fields(j)){i}; %Populate rows up to ITI
+        B.(fields(j)){i}(1:size(trialData.(fields(j)){i}, 1),:) =...
+            trialData.(fields(j)){i}; %Populate rows (only upto ITI for most variables)
     end
 
     %Convert trial-relative time to session-time

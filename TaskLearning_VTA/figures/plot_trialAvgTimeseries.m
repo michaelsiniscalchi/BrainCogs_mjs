@@ -18,13 +18,19 @@ nPanels=numel(panels);  %Number of panels
 
 fig = figure;
 ax = gobjects(nPanels,1);
-tiledlayout(1, nPanels);
+if legend_loc=="layout"
+    tiledlayout(2, nPanels);
+else
+    tiledlayout(1, nPanels);
+end
+
 shadeAlpha = 0.2; %Transparency value for error shading
+
+%Plot each data series in separate panel 
 for i = 1:nPanels
     nSignals = numel(panels(i).signal);
     x = panels(i).x;       %Timepoints, etc. for aligned signal (can also be used for spatial-position series)
-
-    %     ax(i) = subplot(1,nPanels,i); hold on;
+    
     ax(i) = nexttile(i); hold on;
 
     % Fill area representing confidence intervals
@@ -46,7 +52,14 @@ for i = 1:nPanels
     % Figure legend
     leg = legend(hObj,panels(i).legend_names);
     leg.FontSize = 14;
-    leg.Location = legend_loc;
+    
+    if legend_loc=="layout"
+        leg.Layout.Tile = nPanels + i;
+        leg.NumColumns = ceil(nSignals/5);
+    else
+        leg.Location = legend_loc;
+    end
+
     leg.Box = 'off';
     leg.AutoUpdate = 'off';
     

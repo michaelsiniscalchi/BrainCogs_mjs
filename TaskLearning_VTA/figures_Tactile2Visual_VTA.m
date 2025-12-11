@@ -158,7 +158,7 @@ if figures.encoding_model
             %Response Kernels
             if figures.encoding_eventKernels
                 save_dir = fullfile(dirs.figures,['Encoding model-', mdlNames{k}],...
-                    'Response kernels', expID);   %Figures directory: single units
+                    'Response kernels', expID);   %Figures directory: single units 
                 create_dirs(save_dir); %Create dir for these figures
                 panels = params.figs.encoding.panels_contrast;
                 panels = panels(cellfun(@(C) ~isempty(C), {panels.varName})); %Remove non-event variables
@@ -175,7 +175,7 @@ if figures.encoding_model
             %All Regression Coefficients for each Session
             if figures.encoding_coefficients
                 save_dir = fullfile(dirs.figures,['Encoding model-',mdlNames{k}],...
-                    'Session Coefficients', [expID, '-', mdlNames{k}]);   %Figures directory: single units
+                    'Session Coefficients', [expID, '-', mdlNames{k}]);   %Figures directory: single units 
                 create_dirs(save_dir); %Create dir for these figures
 
                 %Get predictors in model (possibly make function for this)
@@ -205,7 +205,7 @@ if figures.encoding_model
                         'mdl');
                     figs(j) = fig_encodingMdlCV(glm, mdl, glm.cellID{j}, colors);
                     save_dir = fullfile(dirs.figures,['Encoding model-',mdlNames{k}],...
-                        'Cross Validation', [expID, '-', mdlNames{k}]);   %Figures directory: single units
+                        'Cross Validation', [expID, '-', mdlNames{k}]);   %Figures directory: single units 
                     create_dirs(save_dir); %Create dir for these figures
                     save_multiplePlots(figs, save_dir); %save as FIG and PNG
                     clearvars figs
@@ -233,3 +233,4 @@ if figures.summary_selectivity_histogram
         end
     end
 end
+

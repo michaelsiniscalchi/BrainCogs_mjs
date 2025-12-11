@@ -8,6 +8,7 @@ X = [];
 varNames = string([]);
 
 %Name components of regression splines by number
+idx.B0 = 1;  %1st term reserved for intercept
 for P = pNames
     nTerms = size(predictors.(P), 2);
     tempNames = P; %Initialize as predictor name, no numeric suffix
@@ -110,7 +111,7 @@ for i = 1:numel(dFF)
         %Spatial/temporal kernels
         glm.kernel(i).(varName).estimate = estimate'; %transpose for plotting
         glm.kernel(i).(varName).se = (estimate + [1,-1].*se)'; %Express as estimate +/- se; transpose for plotting
-        glm.kernel(i).(varName).x = (0:binWidth:binWidth*(size(bSpline,1)-1)) + x_min;
+        glm.kernel(i).(varName).x = (0:binWidth:binWidth*(size(bSpline, 1)-1)) + x_min;
         
         %AUC
         winDuration = range(glm.kernel(i).(varName).x);

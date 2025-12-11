@@ -94,16 +94,21 @@ end
 
 %% PATHS TO SAVED DATA
 %By experiment
-mat_file.stack_info         = @(idx) fullfile(dirs.data,expData(idx).sub_dir,'stack_info.mat');
-mat_file.img_beh            = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'img_beh.mat');
-mat_file.results.cellFluo   = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'results.mat');
-mat_file.results.encoding   = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'encoding.mat');
+mat_file.stack_info             = @(idx) fullfile(dirs.data,expData(idx).sub_dir,'stack_info.mat');
+mat_file.img_beh                = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'img_beh.mat');
+mat_file.results.cellFluo       = @(idx) fullfile(dirs.results,expData(idx).sub_dir,'results.mat');
+mat_file.results.encoding       = @(idx, mdlName) fullfile(dirs.results, expData(idx).sub_dir,...
+                                    strjoin(['encodingMdl-', mdlName, '.mat'], ''));
+mat_file.results.encoding_cell  = @(idx, mdlName, cellID) fullfile(dirs.results, expData(idx).sub_dir,...
+                                    strjoin(['encodingMdl-', mdlName, '-cell', cellID, '.mat'], ''));
 %Aggregated by subject
 mat_file.summary.behavior       = @(subjID) fullfile(dirs.summary, subjID, 'behavior.mat');
 mat_file.summary.trialAvgFluo    = @(subjID) fullfile(dirs.summary, subjID, 'trialAvgFluo.mat');
 mat_file.summary.psyTrack        = @(subjID) fullfile(dirs.summary, subjID, 'psyTrack.mat');
-mat_file.summary.encoding        = @(subjID) fullfile(dirs.summary, subjID, 'encoding.mat');
-mat_file.summary.neuroBehCorr    = @(subjID) fullfile(dirs.summary, subjID, 'neuroBehCorr.mat');
+mat_file.summary.encoding        = @(subjID, mdlName) fullfile(dirs.summary, subjID,...
+                                    strjoin(['encodingMdl-', mdlName, '.mat'], ''));
+mat_file.summary.neuroBehCorr    = @(subjID, mdlName) fullfile(dirs.summary, subjID,... 
+                                    strjoin(['neuroBehCorr-', mdlName, '.mat'], ''));
 
 %Aggregated across subjects
 % mat_file.summary.behavior       = fullfile(dirs.summary,'behavior.mat');
