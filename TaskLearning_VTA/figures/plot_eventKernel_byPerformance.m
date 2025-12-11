@@ -34,11 +34,11 @@ for i = 1:numel(cellStruct) %Loop through cells
     [~, idx] = sort([S.(sortBy)]);
     S = S(idx);
     kernels = cellStruct(i).kernel.(varName).estimate(idx,:);
-
     X = cellStruct(i).kernel.(varName).x;
 
     %Initialize panel struct
     for j = 1:numel(ruleNames)
+        panel(j).x = X;
         panel(j).signal = {NaN(size(X))};
         panel(j).color = {[0,0,0]};
         panel(j).lineStyle = {'-'};
@@ -62,8 +62,7 @@ for i = 1:numel(cellStruct) %Loop through cells
 
         %Plot ordered data separated by rule
         signal = kernels(ruleIdx,:);
-        panel(j).x = X;
-
+      
         %Colors and legend entries
         if sum(ruleIdx)>2
             colors.(ruleNames(j)) = cbrewer('seq', cbrew.(ruleNames(j)), sum(ruleIdx));

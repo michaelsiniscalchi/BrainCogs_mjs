@@ -63,18 +63,26 @@ for i = 1:nPanels
     leg.Box = 'off';
     leg.AutoUpdate = 'off';
     
-    % Axis title
+    % Axis label & title
+    xlabel(xLabel);
     title(ax_titles{i});    
     axis square tight;
 end
 
 % Standardize scale of axes
-[low,high] = bounds([ax(:).YLim]);
+for i=1:numel(panels) %Exclude nan series
+    idx(i) = ~all(isnan([panels(i).signal{:}]));
+end
+[yLow,yHigh] = bounds([ax(idx).YLim]);
+[x_Low,x_High] = bounds([ax(idx).XLim]);
 for i=1:numel(panels)
-    ax(i).YLim = [nanmin(low) - 0.1*range([low;high]),...
-        nanmax(high)+ 0.1*range([low;high])]; %Disable
-    plot(ax(i),[0 0],ax(i).YLim,'k:','LineWidth',get(groot,'DefaultAxesLineWidth'));
-    xlabel(ax(i),xLabel);
+    ax(i).YLim = [yLow - 0.1*range([yLow;yHigh]),...
+        yHigh + 0.1*range([yLow;yHigh])]; 
+    ax(i).XLim = [x_Low, x_High];
+    %Dotted line at X=0
+    if x_Low<0
+        plot(ax(i),[0 0],ax(i).YLim,'k:','LineWidth',get(groot,'DefaultAxesLineWidth'));
+    end
 end
 
 % YLabel for panel 1
