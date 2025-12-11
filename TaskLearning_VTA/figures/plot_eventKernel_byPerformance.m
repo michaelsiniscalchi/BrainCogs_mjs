@@ -97,7 +97,7 @@ for i = 1:numel(cellStruct) %Loop through cells
 
     figs(i) = plot_trialAvgTimeseries(panel, {panel.title}, xLabel, yLabel, legend_loc);
 
-    figName = join([varName, ' kernel (', sortBy, ') cell', cellStruct(i).cellID],''); %Figure name
+    figName = join([varName, '-', sortBy, '-cell', cellStruct(i).cellID],''); %Figure name
     figs(i).Name = figName;
     figs(i).Position = fig_pos; %LBWH
     figs(i).Visible = 'off';
