@@ -63,7 +63,7 @@ end
 if summarize.pickle2mat
     pklfile_psytrack =...
         fullfile(dirs.summary,subjectID,[subjectID{1}(2:end),'_psytrack_all_sessions.pkl']);
-    predictor_names = ["leftTowers","rightTowers","leftPuffs","rightPuffs"];
+    predictor_names = ["leftTowers", "rightTowers", "leftPuffs", "rightPuffs", "bias"];
     psyStruct = psytrack_pickle2Mat(pklfile_psytrack, predictor_names);
     for i=1:numel(expData)
         S = load(mat_file.img_beh(i),'sessions');
@@ -92,27 +92,33 @@ if summarize.encoding
         for j = 1:numel(expData)
             sessions(j) = load(mat_file.results.encoding(j, mdlNames(i)));
         end
-        cells = summarize_sessions2cells(sessions);
-        save(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','-v7.3');
+        [cells, metaData] = summarize_sessions2cells(sessions);
+        save(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','metaData','-v7.3');
     end
 end
 
 if summarize.neuroBehCorr
-    %Hyperparams
-    params.paramNames = ["meanCoef","L2"]; %Scalar estimates from psytrack and encoding model
-    params.psyField = ["leftTowers","rightTowers","leftPuffs","rightPuffs"];
-    params.imgField = ...
-        ["firstLeftTower", "firstRightTower", "firstLeftPuff", "firstRightPuff",...
-        "leftTowers","rightTowers","leftPuffs","rightPuffs"];
-    params.minN = 5;
+    
     %Load summary data (add one more for trial avg fluo)
-    encoding = load(mat_file.summary.encoding(subjectID),'cells');
     psyTrack = load(mat_file.summary.psyTrack(subjectID),...
         'meanCoef','se','session_date');
-    [nbCorr, cells] = calcNeuroBehCorr(encoding, psyTrack, params);
-    %Save correlation structures
-    save(mat_file.summary.neuroBehCorr(subjectID),'-struct','nbCorr','-v7.3');
-    save(mat_file.summary.neuroBehCorr(subjectID),'cells','-append');
+
+    mdlNames = params.encoding.modelName;
+
+    %Hyperparams
+    params.paramNames = ["meanCoef","L2"]; %Scalar estimates from psytrack and encoding model
+    params.psyField = ["bias","leftTowers","rightTowers","leftPuffs","rightPuffs"];
+    params.minN = 5;
+
+    for i = 1:numel(mdlNames)
+        load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','metaData');    
+        params.imgField = metaData.cueVars';
+        [nbCorr, cells] = calcNeuroBehCorr(cells, psyTrack, params);
+        
+        %Save correlation structures
+        save(mat_file.summary.neuroBehCorr(subjectID, mdlNames(i)),'-struct','nbCorr','-v7.3');
+        save(mat_file.summary.neuroBehCorr(subjectID, mdlNames(i)),'cells','-append');
+    end
 end
 % clearvars -except img beh expData mat_file params summarize
 
@@ -131,23 +137,41 @@ if figures.summary_neuroBehCorr
   
 end
 
-if figures.encoding_eventKernelsByCell
+if figures.encoding_model
     %For each model
     mdlNames = params.encoding.modelName;
     for i = 1:numel(mdlNames)
-        load(mat_file.summary.encoding(subjectID, mdlNames(i)), "cells");
-        load(mat_file.summary.behavior(subjectID), "sessions");
-        varNames = string(fieldnames(cells(1).kernel));
-        %Overlay session dates
-        for j = 1:numel(varNames)
-            disp(['Plotting response kernels for ' char(varNames(j))]);
-            save_dir = fullfile(dirs.figures,strjoin(['Encoding model-', mdlNames(i)],''),...
-                strjoin(['Response kernels--', varNames(j)],''));
+        load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','metaData');
+        load(mat_file.summary.behavior(subjectID), 'sessions');
 
-            figs = plot_eventKernel_byPerformance(cells, sessions, varNames(j));
-            save_multiplePlots(figs, save_dir);
+        if figures.encoding_eventKernelsByPerformance
+            varNames = string(fieldnames(cells(1).kernel));
+            %Overlay session dates for all variables, sorted by pCorrect
+            for j = 1:numel(varNames)
+                disp(['Plotting response kernels for ' char(varNames(j))]);
+                save_dir = fullfile(dirs.figures,strjoin(['Encoding model-', mdlNames(i)],''),...
+                    strjoin(['Response kernels--', varNames(j)],''));
+
+                figs = plot_eventKernel_byPerformance(cells, sessions, varNames(j));
+                save_multiplePlots(figs, save_dir);
+            end
         end
+        
+        if figures.encoding_eventKernelsByPsyTrack
+            encodingVars = metaData.cueVars';         
+            psyVars = ["psyTrack_leftTowers_meanCoef","psyTrack_rightTowers_meanCoef",...
+                "psyTrack_leftPuffs_meanCoef","psyTrack_rightPuffs_meanCoef","bias"];
 
-        %One panel per session date, on same scale with contrasts (left vs. right, etc)
+            %Overlay session dates for all variables, sorted by pCorrect
+            for j = 1:numel(encodingVars)
+                disp(['Plotting response kernels for ' char(encodingVars(j))]);
+                save_dir = fullfile(dirs.figures,strjoin(['Encoding model-', mdlNames(i)],''),...
+                    strjoin(['Response kernels--', encodingVars(j)],''));
+                for sortBy = psyVars
+                    figs = plot_eventKernel_byBehVar( cells, sessions, encodingVars(j), sortBy );
+                    save_multiplePlots(figs, save_dir);
+                end
+            end
+        end
     end
 end

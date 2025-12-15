@@ -1,5 +1,6 @@
 function struct_out = psytrack_pickle2Mat(pklfile_psytrack, predictor_names)
 
+%Load Python modules
 pickle = py.importlib.import_module('pickle');
 py.importlib.import_module('numpy');
 
@@ -14,17 +15,17 @@ h.close(); % Close the file handle
 sessionID = datetime(string(data.session.tolist),'InputFormat','yyyyMMdd'); %One datetime for per trial...
 
 %Two-way dictionary to translate Vanessa's psytrack predictor names
-t2vNames = ["leftTowers","rightTowers","leftPuffs","rightPuffs"];
-psyNames = ["tower_left","tower_right","puff_left","puff_right"];
+t2vNames = ["bias","leftPuffs","rightPuffs","leftTowers","rightTowers"];
+psyNames = ["bias","puff_left","puff_right","tower_left","tower_right"]; %wMode indexed in alphabetical order: {bias, puff_left, puff_right, tower_left, tower_right}
 D = dictionary([t2vNames,psyNames],[psyNames,t2vNames]);
 
 %Get model predictor names from Python dictionary for weights
-pNames = string(fieldnames(struct(S.weights))); 
-pNames = pNames(ismember(pNames, D(predictor_names))); %Exclude any predictor names not specified in function call
-weightStruct = cell2struct(cell(size(pNames)), cellstr(D(pNames))); %Assign t2v conventional names to psytrack weights
+% pNames = string(fieldnames(struct(S.weights))); 
+pNames = psyNames(ismember(psyNames, D(predictor_names))); %Exclude any predictor names not specified in function call
+weightStruct = cell2struct(cell(size(pNames')), cellstr(D(pNames))); %Assign t2v conventional names to psytrack weights
 
 %Extract weights
-W = double(S.wMode); %Trial-by-trial weights on each predictor
+W = double(S.wMode); %Trial-by-trial weights on each predictor 
 W_std = double(S.W_std); %Same for sd
 
 %Struct array: one for each session

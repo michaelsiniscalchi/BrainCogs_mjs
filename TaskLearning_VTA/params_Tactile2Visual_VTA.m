@@ -33,20 +33,21 @@ figures.timeseries                      = false; %Plot all timeseries for each s
 % Combined
 figures.trial_average_dFF               = false;  %Overlay traces for distinct choices, outcomes, and rules (CO&R)
 
-figures.encoding_observedVsPredicted    = false;   %Observed vs. predicted dFF, etc.
-figures.encoding_predictedTrialAvg      = false;   %Predicted dFF, contrasting trial subsets
-figures.encoding_eventKernels           = false;   %Stimulus kernel estimates
-figures.encoding_coefficients           = false;   %Coefficient estimates for individual predictors (velocity, etc.)
-figures.encoding_eventKernelsByCell     = false;   %Stimulus kernel estimates, observed vs. predicted dFF, etc.
-figures.encoding_cv                     = false;   %Cross-validation of lambda, ridge traces, etc.
-figures.heatmap_modulation_idx          = false;  %Heatmap of selectivity idxs for COR for each session
+figures.encoding_observedVsPredicted        = false;   %Observed vs. predicted dFF, etc.
+figures.encoding_predictedTrialAvg          = false;   %Predicted dFF, contrasting trial subsets
+figures.encoding_eventKernels               = false;   %Stimulus kernel estimates
+figures.encoding_coefficients               = false;   %Coefficient estimates for individual predictors (velocity, etc.)
+figures.encoding_eventKernelsByPerformance  = false;   %Stimulus kernel estimates
+figures.encoding_eventKernelsByPsyTrack     = false;   %Stimulus kernel estimates
+figures.encoding_cv                         = false;   %Cross-validation of lambda, ridge traces, etc.
+figures.heatmap_modulation_idx              = false;  %Heatmap of selectivity idxs for COR for each session
 
 % Summary
 figures.summary_neuroBehCorr            = false; %Neurobehavioral correlates
-figures.summary_behavior                = false;    %Summary of descriptive stats, eg, nTrials and {trials2crit, pErr, oErr} for each rule
-figures.summary_selectivity_heatmap     = false;     %Heatmap of time- or position-locked selectivity
-figures.summary_selectivity_histogram   = false;     %Histogram of time-locked selectivity
-figures.summary_modulation				= false;    %Box/line plots of selectivity results grouped by rule/learning stage for comparison
+figures.summary_behavior                = false; %Summary of descriptive stats, eg, nTrials and {trials2crit, pErr, oErr} for each rule
+figures.summary_selectivity_heatmap     = false; %Heatmap of time- or position-locked selectivity
+figures.summary_selectivity_histogram   = false; %Histogram of time-locked selectivity
+figures.summary_modulation				= false; %Box/line plots of selectivity results grouped by rule/learning stage for comparison
 
 % Validation
 figures.validation_ROIs                 = false;
@@ -88,7 +89,8 @@ if any([figures.encoding_observedVsPredicted,...
         figures.encoding_eventKernels,...
 		figures.encoding_coefficients,...
         figures.encoding_cv,...
-        figures.encoding_eventKernelsByCell])
+        figures.encoding_eventKernelsByPerformance,...
+        figures.encoding_eventKernelsByPsyTrack])
 	figures.encoding_model = true;
 end
 

@@ -1,4 +1,4 @@
-function cells = summarize_sessions2cells(sessions)
+function [cells, metaData] = summarize_sessions2cells(sessions)
 
 %For each cell, create vector length nSessions of kernels, coefs, etc.; 
 % nan if absent
@@ -69,5 +69,13 @@ for f = string(fieldnames(S))'
     end
 end
 
-disp('done.');
+%Metadata: names of cue variables, etc.
+cueVars = regexp(kernelNames,'(puff|tower)', 'ignorecase'); %Find 'tower' or 'puff' in variable name
+rewVars = regexp(kernelNames,'(reward)', 'ignorecase');
+metaData = struct(...
+    'eventVars', sessions(1).eventVars,...
+    'kinematicVars', sessions(1).kinematicVars,...
+    'cueVars', kernelNames(~cellfun(@isempty,cueVars)),...
+    'outcomeVars', kernelNames(~cellfun(@isempty,rewVars)));
 
+disp('done.');

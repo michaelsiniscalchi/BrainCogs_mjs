@@ -5,7 +5,7 @@
 function [nbCorr, cells] = calcNeuroBehCorr(encoding, psytrack, params)
 
 %Correlate psytrack weights vs. encoding response kernels
-C = encoding.cells;
+C = encoding;
 initNum = NaN(numel(C),1); %Initialize numeric fields
 initCell = {cell(numel(C),1)}; %Init cell fields (to store vector data)
 corrName = strjoin(params.paramNames,'_'); %Name of saved MATLAB variable: 'param1_param2'
