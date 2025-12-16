@@ -149,12 +149,12 @@ params.bootAvg   = specBootAvgParams(params.bootAvg); %params.bootAvg.trigger(1:
 
 % Encoding model defaults (more spec for multiuple models in specEncodingParams)
 params.encoding.dsFactor            = 1; %Downsample from interpolated rate of 1/params.interdt
-params.encoding.regularization  = "ridge";
-params.encoding.lambda = [0 logspace(-3, 6, 19)]; %series of lambda values for cross-validation
-params.encoding.lambda_kfolds = 10;
-params.encoding.getRidgeTrace = true;
+params.encoding.regularization      = "ridge";
+params.encoding.lambda              = [0 logspace(-3, 6, 19)]; %series of lambda values for cross-validation
+params.encoding.lambda_kfolds       = 10;
+params.encoding.getRidgeTrace       = true;
 
-params.encoding.modelName           = ["FM", "FM_noAllCues", "FM_cueTypeXpos"]; %"only_posXcueSide",, 'only_posXcueType', 'firstCuesRewVelPos' 'only_position'
+params.encoding.modelName           = ["FM_noAllCues", "FM_cueTypeXpos"]; %"only_posXcueSide",, 'only_posXcueType', 'firstCuesRewVelPos' 'only_position' "FM" 
 if isscalar(params.encoding.modelName)
     params.encoding                     = specEncodingParams(params.encoding);
 end
