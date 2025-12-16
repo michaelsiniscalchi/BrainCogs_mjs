@@ -160,7 +160,7 @@ if figures.encoding_model
         if figures.encoding_eventKernelsByPsyTrack
             encodingVars = metaData.cueVars';         
             psyVars = ["psyTrack_leftTowers_meanCoef","psyTrack_rightTowers_meanCoef",...
-                "psyTrack_leftPuffs_meanCoef","psyTrack_rightPuffs_meanCoef","bias"];
+                "psyTrack_leftPuffs_meanCoef","psyTrack_rightPuffs_meanCoef","psyTrack_bias_meanCoef"];
 
             %Overlay session dates for all variables, sorted by pCorrect
             for j = 1:numel(encodingVars)
