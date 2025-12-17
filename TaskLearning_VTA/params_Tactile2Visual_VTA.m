@@ -145,7 +145,7 @@ params.bootAvg.CI               = 90; %Confidence interval as decimal
 params.bootAvg.subtractBaseline = false;
 params.bootAvg.smoothWin        = 6; %Smoothing window in samples for peak finding, averaging, etc.
 params.bootAvg.avgWin           = 2; %Time interval (s) post-cue, or surrounding peak, for averaging
-params.bootAvg   = specBootAvgParams(params.bootAvg); %params.bootAvg.trigger(1:3) = "start","firstcue","outcome", etc...
+params.bootAvg                  = specBootAvgParams(params.bootAvg); %params.bootAvg.trigger(1:3) = "start","firstcue","outcome", etc...
 
 % Encoding model defaults (more spec for multiuple models in specEncodingParams)
 params.encoding.dsFactor            = 1; %Downsample from interpolated rate of 1/params.interdt
@@ -156,7 +156,7 @@ params.encoding.getRidgeTrace       = true;
 
 params.encoding.modelName           = ["FM_noAllCues", "FM_cueTypeXpos"]; %"only_posXcueSide",, 'only_posXcueType', 'firstCuesRewVelPos' 'only_position' "FM" 
 if isscalar(params.encoding.modelName)
-    params.encoding                     = specEncodingParams(params.encoding);
+    params.encoding                 = specEncodingParams(params.encoding);
 end
 
 %% SUMMARY STATISTICS

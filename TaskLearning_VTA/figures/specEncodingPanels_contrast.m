@@ -11,7 +11,7 @@ i=1;
 %Start of trial
 ax(i).title         = "Start Trial";
 ax(i).varName       = "start";
-ax(i).window        = [-1, 5];
+ax(i).window        = [-1, 2];
 ax(i).color         = {colors.data, colors.data2}; % {pred1,pred2,obs1,obs2}
 ax(i).lineStyle     = ["-","-"]; % {pred1,pred2,obs1,obs2}
 ax(i).xLabel        = 'Time from start (s)';
@@ -20,7 +20,7 @@ i=i+1;
 %First Tower
 ax(i).title         = "First Tower";
 ax(i).varName       = ["firstLeftTower", "firstRightTower"];
-ax(i).window        = [-1, 5];
+ax(i).window        = [-1, 2];
 ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).xLabel        = 'Time from cue (s)';
@@ -29,7 +29,7 @@ i=i+1;
 %First Puff
 ax(i).title         = "First Puff";
 ax(i).varName       = ["firstLeftPuff", "firstRightPuff"];
-ax(i).window        = [-1, 5];
+ax(i).window        = [-1, 2];
 ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).xLabel        = 'Time from cue (s)';
@@ -38,7 +38,7 @@ i=i+1;
 %All Towers
 ax(i).title         = "Towers";
 ax(i).varName       = ["leftTowers", "rightTowers"];
-ax(i).window        = [-1, 5];
+ax(i).window        = [-1, 2];
 ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).xLabel        = 'Time from cue (s)';
@@ -47,7 +47,7 @@ i=i+1;
 % %All Puffs
 ax(i).title         = "Puffs";
 ax(i).varName       = ["leftPuffs", "rightPuffs"];
-ax(i).window        = [-1, 5];
+ax(i).window        = [-1, 2];
 ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).xLabel        = 'Time from cue (s)';
