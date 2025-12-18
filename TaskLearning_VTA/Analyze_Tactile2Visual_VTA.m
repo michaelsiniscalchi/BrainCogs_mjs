@@ -197,8 +197,7 @@ if calculate.fluorescence
                 %Save results for each cell
                 for j = 1:numel(encodingMdl.model)
                     mdl = encodingMdl.model{j}; %One variable per cell (otherwise struct will exceed 2GB limit)
-                    save(mat_file.results.encoding(i, mdlNames(k)),...
-                        ['encodingMdl-', mdlNames{k},'-cell', encodingMdl.cellID{j}], "mdl");
+                    save(mat_file.results.encoding_cell(i, mdlNames(k), encodingMdl.cellID{j}), "mdl");
                 end
                 encodingMdl = rmfield(encodingMdl, "model"); %Remove field after unpacking
 
