@@ -29,26 +29,27 @@ predictors.acceleration = cat(1,NaN,diff(predictors.velocity)); %restrict to Y-v
 
 %Trialwise predictors
 %Accuracy, prior outcome, prior choice
+trialIdx = predictors.trialIdx;
 [predictors.towerSide, predictors.puffSide] = deal(init.num); %Zero-cue trials coded as NaN to avoid assumption L>0>R || L<0<R
-predictors.towerSide(ismember(predictors.trialIdx, find(trials.leftTowers)))  = -1;
-predictors.towerSide(ismember(predictors.trialIdx, find(trials.rightTowers))) = 1;
+predictors.towerSide(ismember(trialIdx, find(trials.leftTowers)))  = -1;
+predictors.towerSide(ismember(trialIdx, find(trials.rightTowers))) = 1;
 
-predictors.puffSide(ismember(predictors.trialIdx, find(trials.leftPuffs)))    = -1;
-predictors.puffSide(ismember(predictors.trialIdx, find(trials.rightPuffs)))   = 1;
+predictors.puffSide(ismember(trialIdx, find(trials.leftPuffs)))    = -1;
+predictors.puffSide(ismember(trialIdx, find(trials.rightPuffs)))   = 1;
 
 predictors.accuracy = init.categorical;
-predictors.accuracy(ismember(predictors.trialIdx, find(trials.correct))) = 1; %Image frames from correct trials
+predictors.accuracy(ismember(trialIdx, find(trials.correct))) = 1; %Image frames from correct trials
 
 predictors.priorOutcome = init.categorical;
-predictors.priorOutcome(ismember(predictors.trialIdx, find(trials.priorCorrect))) = 1; %Image frames from trials following correct choice
+predictors.priorOutcome(ismember(trialIdx, find(trials.priorCorrect))) = 1; %Image frames from trials following correct choice
 
 predictors.choice = init.choice;
-predictors.choice(ismember(predictors.trialIdx, find(trials.right))) = 1; %Frames from prior-right choice trials
-predictors.choice(ismember(predictors.trialIdx, find(trials.left))) = -1; %Prior left
+predictors.choice(ismember(trialIdx, find(trials.right))) = 1; %Frames from prior-right choice trials
+predictors.choice(ismember(trialIdx, find(trials.left))) = -1; %Prior left
 
 predictors.priorChoice = init.choice;
-predictors.priorChoice(ismember(predictors.trialIdx, find(trials.priorRight))) = 1; %Frames from prior-right choice trials
-predictors.priorChoice(ismember(predictors.trialIdx, find(trials.priorLeft))) = -1; %Prior left
+predictors.priorChoice(ismember(trialIdx, find(trials.priorRight))) = 1; %Frames from prior-right choice trials
+predictors.priorChoice(ismember(trialIdx, find(trials.priorLeft))) = -1; %Prior left
 
 %Event Times as binary index (~impulse function)
 eventNames = ["start",...
@@ -178,6 +179,8 @@ end
 encodingData.impulse = impulse; %event-times as delta functions in imaging time frame
 encodingData.bSpline = bSpline; %Store series of basis functions
 encodingData.position = binEdges(1:end-1); %Positions for domain of basis funcs
+encodingData.trialIdx = trialIdx;
+
 
 % for f = ["tower","puff"]
 %     predictors.(strjoin([f,'Side'],'')) = init.categorical;

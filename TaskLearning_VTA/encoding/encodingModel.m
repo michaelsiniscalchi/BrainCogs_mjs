@@ -41,7 +41,7 @@ for i = 1:numel(dFF)
     if encodingData.regularization=="ridge"
         %10-fold CV with each lambda to find minimum MSE
         [lambda, lambda_cv] = cvLambda(X, y, encodingData.lambda,...
-            encodingData.lambda_kfolds); %Find lambda value that minimizes MSE
+            encodingData.lambda_kfolds, encodingData.trialIdx); %Find lambda value that minimizes MSE
         
         if encodingData.getRidgeTrace
             %Ridge regression on all timepoints w/ ridge trace for validation
@@ -167,13 +167,14 @@ for j = 1:numel(k)
     VIF(:,j) = diag(inv(R)); %Equivalent matrix operation for VIF: Trace of Inverse Correlation MAtrix 
 end
 
-function [lambda_fit, cv] = cvLambda(X,y,lambda,kFolds)
-CV = cvpartition(numel(y),"KFold",kFolds);
+function [lambda_fit, cv] = cvLambda( X, y, lambda, kFolds, trialIdx )
+trialIDs = unique(trialIdx);
+CV = cvpartition(numel(trialIDs), "KFold", kFolds);
 mse = nan(kFolds,numel(lambda)); %Initialize
 for i = 1:CV.NumTestSets
-    trainIdx = CV.training(i);
-    testIdx = CV.test(i);
-    nTest = CV.TestSize(i); 
+    trainIdx = ismember(trialIdx, trialIDs(CV.training(i)));
+    testIdx = ismember(trialIdx, trialIDs(CV.test(i)));
+    nTest = sum(testIdx); 
     [~, beta] = ridgePredict(X(trainIdx,:), y(trainIdx), lambda);
     %Predict test responses from test predictors and training coefs
     y_hat = [ones(nTest,1), X(testIdx,:)]*beta; %Predicted response; size(y_hat) = [nObs, nLambda];
@@ -186,7 +187,7 @@ function [y_hat, beta, mse] = ridgePredict(x,y,k)
 
 beta = nan(size(x,2)+1, numel(k)); %Initialize ridge trace: size(beta)=[nPredictors, nLambda]
 parfor i = 1:numel(k)
-    beta(:, i) = ridge(y,x,k(i),0); %Last ARG=0, restore scale of the data, and include intercept
+    beta(:, i) = ridge(y, x, k(i),0); %Last ARG=0, restore scale of the data, and include intercept
 end
 y_hat = [ones(size(x,1),1), x]*beta; %Append a column of ones for intercept
 mse = mean((y - y_hat).^2, 1, "omitmissing"); %Training mse
