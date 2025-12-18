@@ -204,8 +204,7 @@ if calculate.fluorescence
                 %Save metadata
                 encodingMdl.sessionID = expData(i).sub_dir;
                 % save(mat_file.results.encoding(i), '-struct', 'encodingMdl', '-v7.3');
-                save(fullfile(fileparts(mat_file.results.encoding(i)),...
-                    ['encodingMdl-', mdlNames{k}]),...
+                save(mat_file.results.encoding(i, mdlNames{k}),...
                     '-struct', 'encodingMdl', '-v7.3');
 
             end %end for j = 1:numel(params.encoding.modelName)
