@@ -100,20 +100,25 @@ end
 if summarize.neuroBehCorr
     
     %Load summary data (add one more for trial avg fluo)
-    psyTrack = load(mat_file.summary.psyTrack(subjectID),...
-        'meanCoef','se','session_date');
+    % psyTrack = load(mat_file.summary.psyTrack(subjectID),...
+        % 'meanCoef','se','session_date');
+    load(mat_file.summary.behavior(subjectID), 'sessions');
 
     mdlNames = params.encoding.modelName;
 
     %Hyperparams
     params.paramNames = ["meanCoef","L2"]; %Scalar estimates from psytrack and encoding model
-    params.psyField = ["bias","leftTowers","rightTowers","leftPuffs","rightPuffs"];
+    params.behField = ["psyTrack_leftTowers_meanCoef","psyTrack_rightTowers_meanCoef",...
+        "psyTrack_leftPuffs_meanCoef","psyTrack_rightPuffs_meanCoef","psyTrack_bias_meanCoef",...
+        "pCorrect", "pCorrect_congruent",...
+        "glm1_towers_beta","glm1_puffs_beta","glm1_bias_beta"...
+        "pLeftTowers","pLeftPuffs",];
     params.minN = 5;
 
     for i = 1:numel(mdlNames)
         load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','metaData');    
         params.imgField = metaData.cueVars';
-        [nbCorr, cells] = calcNeuroBehCorr(cells, psyTrack, params);
+        [nbCorr, cells] = calcNeuroBehCorr(cells, sessions, params);
         
         %Save correlation structures
         save(mat_file.summary.neuroBehCorr(subjectID, mdlNames(i)),'-struct','nbCorr','-v7.3');

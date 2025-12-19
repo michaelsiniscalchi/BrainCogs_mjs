@@ -2,7 +2,7 @@
 %Also with peak and AUC of trialAvg signals
 %Next, correlate accuracy & session_date with L2 of cue- and reward-related kernels
 %Then with the rest of the coefficients
-function [nbCorr, cells] = calcNeuroBehCorr(encoding, psytrack, params)
+function [nbCorr, cells] = calcNeuroBehCorr(encoding, beh, params)
 
 %Correlate psytrack weights vs. encoding response kernels
 C = encoding;
@@ -12,9 +12,9 @@ corrName = strjoin(params.paramNames,'_'); %Name of saved MATLAB variable: 'para
 
 %Get session dates
 for i = 1:numel(C)
-    sessionDates{i} = intersect(psytrack.session_date, C(i).session_date); %TEMP: should be ismember(psy,cells)...but some psytrack is missing
-    psyIdx{i} = ismember(psytrack.session_date, sessionDates{i});
-    imgIdx{i} = ismember(C(i).session_date, sessionDates{i});
+    sessionDates{i} = intersect([beh.session_date], C(i).session_date); %TEMP: should be ismember(psy,cells)...but some psytrack is missing
+    psyIdx{i} = intersect([beh.session_date], sessionDates{i});
+    imgIdx{i} = intersect([C(i).session_date], sessionDates{i});
 end
 
 %First struct (nbCorr) by variables, cell data in terminal fields
@@ -30,7 +30,7 @@ for f = params.psyField
 
             %Extract scalar estimates for psytrack and encoding model
             data = [...
-                psytrack.(params.paramNames(1)).(f)(psyIdx{i}),...
+                beh.(params.paramNames(1)).(f)(psyIdx{i}),...
                 C(i).kernel.(ff).(params.paramNames(2))(imgIdx{i})...
                 ];
 

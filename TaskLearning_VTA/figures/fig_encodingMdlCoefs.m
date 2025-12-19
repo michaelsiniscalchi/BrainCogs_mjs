@@ -1,6 +1,6 @@
 %Plot regression coefficients for all predictor variables in model
 
-function figs = fig_encodingMdlCoefs( glm, mdl, cellIdx, predictorNames,colors )
+function figs = fig_encodingMdlCoefs( glm, mdl, cellIdx, predictorNames, colors )
 
 % Set up figure properties
 setup_figprops('timeseries')  %placeholder
@@ -45,9 +45,7 @@ axis tight; box off
 %AUC of each kernel
 figs(2) = figure('Name',[glm.sessionID,'-kernel AUC-','-cell', cellIDs{cellIdx}], 'Position', [300,300,1000,500]);
 pNames = predictorNames(ismember(predictorNames, kernelNames));
-% pNames  = pNames(pNames~="start");
 kernel = glm.kernel(cellIdx);
-
 plotBaseline(0:numel(pNames)+1); %Plot baseline at AUC=0 
 for i = 1:numel(pNames)
     auc = kernel.(pNames(i)).AUC; %Peak of response kernel
