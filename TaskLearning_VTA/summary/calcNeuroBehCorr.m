@@ -13,12 +13,12 @@ corrName = strjoin(params.paramNames,'_'); %Name of saved MATLAB variable: 'para
 %Get session dates
 for i = 1:numel(C)
     sessionDates{i} = intersect([beh.session_date], C(i).session_date); %TEMP: should be ismember(psy,cells)...but some psytrack is missing
-    psyIdx{i} = intersect([beh.session_date], sessionDates{i});
-    imgIdx{i} = intersect([C(i).session_date], sessionDates{i});
+    behIdx{i} = ismember([beh.session_date], sessionDates{i});
+    imgIdx{i} = ismember([C(i).session_date], sessionDates{i});
 end
 
 %First struct (nbCorr) by variables, cell data in terminal fields
-for f = params.psyField
+for f = params.behField
     for ff = params.imgField
         S = struct(...
             'cellID', repmat("",numel(C),1),...
@@ -30,7 +30,7 @@ for f = params.psyField
 
             %Extract scalar estimates for psytrack and encoding model
             data = [...
-                beh.(params.paramNames(1)).(f)(psyIdx{i}),...
+                [beh((behIdx{i})).(f)]',... %Column vector of psyTrack weights, etc
                 C(i).kernel.(ff).(params.paramNames(2))(imgIdx{i})...
                 ];
 
@@ -62,7 +62,7 @@ dataFields = ["data","ranks","R","p_R","rho","p_rho"];
 for i = 1:numel(cells)
     cells(i).session_dates = sessionDates{i};
     cells(i).N = numel(sessionDates{i});
-    for f = params.psyField
+    for f = params.behField
         for ff = params.imgField
             S = nbCorr.(corrName).(f).(ff);
             for fff = dataFields
