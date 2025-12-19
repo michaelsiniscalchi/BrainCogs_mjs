@@ -9,6 +9,12 @@ figs = figure('Name',[glm.sessionID, '-', char(glm.modelName), '-cell', cellID],
 
 T = tiledlayout(2,3,"TileSpacing","loose","Padding","loose");
 
+pNames = string(fieldnames(glm.predictorIdx))';
+pNames = pNames(pNames~="B0");
+for f = pNames
+predictorIdx.(f) = glm.predictorIdx.(f)-1; %idx offset by 1 for bias term or later plot VIF for bias
+end
+
 %Panel 1: Ridge trace
 ax = nexttile();
 %Plot ridge trace with log-scaled X
@@ -17,7 +23,7 @@ Xk = repmat(log10(mdl.Lambda),1,2);
 y = mdl.CV.ridgeTrace;
 p = plot(X, y); hold on;
 %Assign colors/linestyles
-p = assignLineFormatting(p, glm.predictorIdx, colors);
+p = assignLineFormatting(p, predictorIdx, colors);
 %Plot fitted lambda for this cell
 Yk = [min(y(:))-0.05*range(y(:)), max(y(:))+0.05*range(y(:))]; %Y-position of dotted line for lambda
 plot(Xk,Yk,'k:','LineWidth',1);
@@ -35,7 +41,7 @@ nexttile()
 y = glm.VIF_trace;
 p = plot(X, y); hold on;
 %Assign colors/linestyles
-p = assignLineFormatting(p, glm.predictorIdx, colors);
+p = assignLineFormatting(p, predictorIdx, colors);
 %Plot fitted lambda for this cell
 Yk = [min(y(:))-0.05*range(y(:)), max(y(:))+0.05*range(y(:))];
 plot(Xk,Yk,'k:','LineWidth',1);
@@ -49,23 +55,23 @@ axis square tight
 %Legend
 ax = nexttile();
 ax.Visible = "off";
-leg = makeLegend(p, glm.predictorIdx);
+leg = makeLegend(p, predictorIdx);
 leg.Layout.Tile = 3;
 leg.NumColumns = 2;
 
 %Variance Inflation Factors
 nexttile([1,2])
-varNames = string(fieldnames(glm.predictorIdx));
+varNames = string(fieldnames(predictorIdx));
 for i=1:numel(varNames)
-    firstBasisIdx(i) = glm.predictorIdx.(varNames(i))(1);
+    firstBasisIdx(i) = predictorIdx.(varNames(i))(1);
 end
 x = 1:numel(glm.VIF);%+1 for whitespace at 
 bar(x, glm.VIF,'w'); hold on;
 plot([0,x(end)+1], [5,5], ':k'); %Threshold VIF: ~R2 = 0.80
 title('Variance Inflation Factors')
 xlabel('Predictors'); ylabel('VIF'); 
-set(gca,'XTick',firstBasisIdx-1,...
-    'XTickLabel',varNames,'TickLabelInterpreter','none'); %idx offset by 1 for bias term
+set(gca,'XTick',firstBasisIdx,...
+    'XTickLabel',varNames,'TickLabelInterpreter','none'); 
 txtX = max(xlim)-0.05*max(xlim); txtY = max(ylim)-0.1*max(ylim);
 text(txtX,txtY,['Condition number: ', num2str(glm.conditionNum,3)],...
     'HorizontalAlignment','right','Interpreter','latex');
@@ -81,16 +87,19 @@ for f = string(fieldnames(pIdx))'
     lineStyle = '-';
     if regexp(f,'_position')
         lineStyle = ':';
+    elseif f=="B0"
+        lineStyle = '--';
+   
     end
-    [lineSeries(pIdx.(f)-1).Color] = deal(color);
-    [lineSeries(pIdx.(f)-1).LineStyle] = deal(lineStyle);
+    [lineSeries(pIdx.(f)).Color] = deal(color);
+    [lineSeries(pIdx.(f)).LineStyle] = deal(lineStyle);
 end
 [lineSeries.LineWidth] = deal(1);
 
 function leg = makeLegend(lineSeries, pIdx)
 f = string(fieldnames(pIdx));
 for i = 1:numel(f)
-    subset(i) = pIdx.(f(i))(1)-1; %first instance of each predictor type
+    subset(i) = pIdx.(f(i))(1); %first instance of each predictor type
     labels(i) = f(i);
 end
 leg = legend(lineSeries(subset), labels,...
