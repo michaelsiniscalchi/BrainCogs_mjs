@@ -7,7 +7,7 @@ function [cells, metaData] = summarize_sessions2cells(sessions)
 coefNames = string(fieldnames(sessions(1).predictorIdx));
 coefParams = string(fieldnames(sessions(1).coef));
 kernelNames = string(fieldnames(sessions(1).kernel));
-kernelParams = string(fieldnames(sessions(1).kernel(1).start));
+kernelParams = string(fieldnames(sessions(1).kernel(1).(kernelNames(1))));
 
 session_date = [sessions(:).session_date];
 
