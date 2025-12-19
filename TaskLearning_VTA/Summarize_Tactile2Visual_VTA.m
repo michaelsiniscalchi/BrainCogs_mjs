@@ -12,6 +12,7 @@ addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U
 addpath(genpath(fullfile(dirs.code, 'mym', 'distribution', 'mexa64')));
 
 % Session-specific metadata
+subjectID = string(subjectID);
 [dirs, expData] = expData_Tactile2Visual_VTA(dirs);
 expData = expData(contains({expData.sub_dir}, subjectID)); %Filter by subject
 
