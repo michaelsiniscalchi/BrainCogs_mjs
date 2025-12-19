@@ -129,16 +129,19 @@ end
 % clearvars -except img beh expData mat_file params summarize
 
 if figures.summary_neuroBehCorr
-    %
-    load(mat_file.summary.behavior(subjectID),'sessions');
-    load(mat_file.summary.encoding(subjectID),'cells');
-    save_dir = fullfile(dirs.figures,'Summary',subjectID);
-    P = params.figs.summaryLongitudinalImgBeh;
-    for i = 1:numel(P.panels)
-        panelSpec = P.panels(i);
-        P.minNumSessions = 5;
-        figs = fig_summaryPsyTrackEncodingBySession(sessions, cells, panelSpec, P);
-        save_multiplePlots(figs, save_dir); %save as FIG and PNG
+    mdlNames = params.encoding.modelName;
+    for i = 1:numel(mdlNames)
+        load(mat_file.summary.behavior(subjectID),'sessions');
+        load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells');
+        save_dir = fullfile(dirs.figures,'Summary', subjectID, strjoin([mdlNames(i)]));
+        P = params.figs.summaryLongitudinalImgBeh;
+        for j = 1:numel(P.panels)
+            panelSpec = P.panels(j);
+            P.minNumSessions = 5;
+            P.mdlName = mdlNames(i);
+            figs = fig_summaryPsyTrackEncodingBySession(sessions, cells, panelSpec, P);
+            save_multiplePlots(figs, save_dir); %save as FIG and PNG
+        end
     end
   
 end
@@ -156,7 +159,7 @@ if figures.encoding_model
             for j = 1:numel(varNames)
                 disp(['Plotting response kernels for ' char(varNames(j))]);
                 save_dir = fullfile(dirs.figures,strjoin(['Encoding model-', mdlNames(i)],''),...
-                    strjoin(['Response kernels--', varNames(j)],''));
+                    subjectID, strjoin(['Response kernels--', varNames(j)],''));
 
                 figs = plot_eventKernel_byPerformance(cells, sessions, varNames(j));
                 save_multiplePlots(figs, save_dir);
