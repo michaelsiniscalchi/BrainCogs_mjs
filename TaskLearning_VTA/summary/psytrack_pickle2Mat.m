@@ -31,17 +31,26 @@ W_std = double(S.W_std); %Same for sd
 %Struct array: one for each session
 sessionList = unique(sessionID(:),'stable'); %Get list of unique session dates
 struct_out =...
-    struct("session_date", NaT(size(sessionList)), "meanCoef", weightStruct, "se", weightStruct);
+    struct("session_date", NaT(size(sessionList)), "meanCoef", weightStruct, "sd", weightStruct);
 for i = 1:numel(sessionList)
     struct_out.session_date(i) = sessionList(i); 
     idx = sessionID==sessionList(i);
     for j = 1:numel(pNames)
         struct_out.meanCoef.(D(pNames(j)))(i,:) = mean(W(j,idx)); %Mean weight across trials for each session
-        mse = (W_std(j, idx)).^2; %MSE for each session  
-        struct_out.se.(D(pNames(j)))(i,:) = mean(W(j,idx)) + [-1;1]*sqrt(mean(mse)); %Take square root to yield aggregate SE for each session
+        msd.(D(pNames(j)))(i,:) = mean(W_std(j, idx).^2); %Mean coef variance for each session  
+        struct_out.sd.(D(pNames(j)))(i,:) = ...
+            mean(W(j,idx)) + [1;-1]*sqrt(msd.(D(pNames(j)))(i,:)); %Take square root to yield aggregate SD for each session
+
     end
 end
 
+%R-L Coefficient contrasts
+for cues = {'Towers','Puffs'}
+    struct_out.meanCoef.(['diff',cues{:}]) = ...
+        struct_out.meanCoef.(['right',cues{:}]) - struct_out.meanCoef.(['left',cues{:}]); %Difference in mean coefficients
+    sd = sqrt(msd.(['right',cues{:}]) + msd.(['left',cues{:}])); %Root of sum of variances (assuming independence)
+    struct_out.sd.(['diff',cues{:}]) = struct_out.meanCoef.(['diff',cues{:}]) + sd*[1,-1]; %Express as mean(+/-)SD
+end
 
 
 

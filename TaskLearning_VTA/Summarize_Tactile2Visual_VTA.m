@@ -109,8 +109,8 @@ if summarize.neuroBehCorr
 
     %Hyperparams
     params.paramNames = ["meanCoef","AUC"]; %Scalar estimates from psytrack and encoding model
-    params.behField = ["psyTrack_leftTowers_meanCoef","psyTrack_rightTowers_meanCoef",...
-        "psyTrack_leftPuffs_meanCoef","psyTrack_rightPuffs_meanCoef","psyTrack_bias_meanCoef",...
+    params.behField = ...
+        ["psyTrack_diffTowers_meanCoef","psyTrack_diffPuffs_meanCoef","psyTrack_bias_meanCoef",...
         "pCorrect", "pCorrect_congruent",...
         "glm1_towers_beta","glm1_puffs_beta","glm1_bias_beta"...
         "pLeftTowers","pLeftPuffs",];
@@ -133,16 +133,24 @@ if figures.summary_neuroBehCorr
     for i = 1:numel(mdlNames)
         load(mat_file.summary.behavior(subjectID),'sessions');
         load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells');
-        save_dir = fullfile(dirs.figures,'Summary', subjectID, strjoin([mdlNames(i)]));
+        save_dir = fullfile(dirs.figures,'Neurobehavioral Summary', subjectID,  mdlNames(i));
+        %Longitudinal Plot
         P = params.figs.summaryLongitudinalImgBeh;
         for j = 1:numel(P.panels)
             panelSpec = P.panels(j);
             P.minNumSessions = 5;
             P.mdlName = mdlNames(i);
-            figs = fig_summaryPsyTrackEncodingBySession(sessions, cells, panelSpec, P);
-            save_multiplePlots(figs, save_dir); %save as FIG and PNG
+            if isfield(cells(1).kernel, panelSpec.encVar(2)) ||...
+                    isfield(cells(1).coef, panelSpec.encVar(2))
+                figs = fig_summaryPsyTrackEncodingBySession(sessions, cells, panelSpec, P);
+                save_multiplePlots(figs, save_dir); %save as FIG and PNG
+            end
         end
+        %Summary histogram across cells (rho for each nb correlation)
+
     end
+
+    %Next, for trial Averaged Fluo as well...
   
 end
 
