@@ -48,24 +48,60 @@ ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
 i=i+1;
 
 %--- Cue x Position "Ramps" ---
-%Towers
+%Towers - PsyTrack coef
+ax(i).title         = "Tower Side x Position";
+ax(i).behVar        = "psyTrack_rightTowers_meanCoef";
+ax(i).behVarSE      = "psyTrack_rightTowers_sd"; %or []
+ax(i).encVar        = ["kernel","towerSide_position","AUC"];
+ax(i).color         = {colors.visual, colors.visual2};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["PsyTrack coef: right towers","Encoding kernel (AUC)"];
+i=i+1;
+ax(i).title         = "Tower Side x Position";
+ax(i).behVar        = "psyTrack_leftTowers_meanCoef";
+ax(i).behVarSE      = "psyTrack_leftTowers_sd"; %or []
+ax(i).encVar        = ["kernel","towerSide_position","AUC"];
+ax(i).color         = {colors.visual, colors.visual2};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["PsyTrack coef: left towers","Encoding kernel (AUC)"];
+i=i+1;
+
+%Puffs - PsyTrack coef
+ax(i).title         = "Puff Side x Position";
+ax(i).behVar        = "psyTrack_rightPuffs_meanCoef";
+ax(i).behVarSE      = "psyTrack_rightPuffs_sd"; %or []
+ax(i).encVar        = ["kernel","puffSide_position","AUC"];
+ax(i).color         = {colors.tactile, colors.tactile2};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["PsyTrack coef: right puffs","Encoding kernel (AUC)"];
+i=i+1;
+ax(i).title         = "Puff Side x Position";
+ax(i).behVar        = "psyTrack_leftPuffs_meanCoef";
+ax(i).behVarSE      = "psyTrack_leftPuffs_sd"; %or []
+ax(i).encVar        = ["kernel","puffSide_position","AUC"];
+ax(i).color         = {colors.tactile, colors.tactile2};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["PsyTrack coef: left puffs","Encoding kernel (AUC)"];
+i=i+1;
+
+%Towers - diff PsyTrack
 ax(i).title         = "Tower Side x Position";
 ax(i).behVar        = "psyTrack_diffTowers_meanCoef";
 ax(i).behVarSE      = "psyTrack_diffTowers_sd"; %or []
 ax(i).encVar        = ["kernel","towerSide_position","AUC"];
 ax(i).color         = {colors.visual, colors.visual2};
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
+ax(i).yLabel        = ["PsyTrack L-R coef.","Encoding kernel (AUC)"];
 i=i+1;
 
-%Puffs
+%Puffs - diff PsyTrack
 ax(i).title         = "Puff Side x Position";
 ax(i).behVar        = "psyTrack_diffPuffs_meanCoef";
 ax(i).behVarSE      = "psyTrack_diffPuffs_sd"; %or []
 ax(i).encVar        = ["kernel","puffSide_position","AUC"];
 ax(i).color         = {colors.tactile, colors.tactile2};
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
+ax(i).yLabel        = ["PsyTrack L-R coef.","Encoding kernel (AUC)"];
 i=i+1;
 
 %Towers - bias
@@ -75,7 +111,7 @@ ax(i).behVarSE      = "psyTrack_bias_sd"; %or []
 ax(i).encVar        = ["kernel","towerSide_position","AUC"];
 ax(i).color         = {colors.visual, colors.visual2};
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
+ax(i).yLabel        = ["PsyTrack bias","Encoding kernel (AUC)"];
 i=i+1;
 
 %Puffs - bias
@@ -85,7 +121,7 @@ ax(i).behVarSE      = "psyTrack_bias_sd"; %or []
 ax(i).encVar        = ["kernel","puffSide_position","AUC"];
 ax(i).color         = {colors.tactile, colors.tactile2};
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
+ax(i).yLabel        = ["PsyTrack bias","Encoding kernel (AUC)"];
 i=i+1;
 
 %------- Reward -------
