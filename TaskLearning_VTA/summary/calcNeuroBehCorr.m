@@ -5,13 +5,15 @@
 function [nbCorr, cells] = calcNeuroBehCorr(encoding, beh, params)
 
 %Correlate psytrack weights vs. encoding response kernels
-C = encoding;
+C = encoding; 
 initNum = NaN(numel(C),1); %Initialize numeric fields
 initCell = {cell(numel(C),1)}; %Init cell fields (to store vector data)
 corrName = strjoin(params.paramNames,'_'); %Name of saved MATLAB variable: 'param1_param2'
 
 %Get session dates
+psyDates = [beh(~cellfun(@isempty,{beh.psyTrack_bias_meanCoef})).session_date]; %Dates w/ psyTrack weights
 for i = 1:numel(C)
+    C(i).session_date = C(i).session_date(ismember(C(i).session_date, psyDates)); %Exclude any sessions without psytrack weights
     sessionDates{i} = intersect([beh.session_date], C(i).session_date); %TEMP: should be ismember(psy,cells)...but some psytrack is missing
     behIdx{i} = ismember([beh.session_date], sessionDates{i});
     imgIdx{i} = ismember([C(i).session_date], sessionDates{i});
