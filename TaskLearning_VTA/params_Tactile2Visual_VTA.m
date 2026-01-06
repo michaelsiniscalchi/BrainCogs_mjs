@@ -162,7 +162,7 @@ params.encoding.lambda              = [0 logspace(-3, 6, 19)]; %series of lambda
 params.encoding.lambda_kfolds       = 10;
 params.encoding.getRidgeTrace       = true;
 
-params.encoding.modelName           = ["FM", "FM_noAllCues", "FM_cueTypeXpos"]; %"posXcueSide_pos","only_posXcueSide", "only_posXcueType", 'firstCuesRewVelPos' 'only_position' "FM" 
+params.encoding.modelName           = ["FM", "FM_noAllCues"]; %"posXcueSide_pos","only_posXcueSide", "only_posXcueType", 'firstCuesRewVelPos' 'only_position' "FM" 
 if isscalar(params.encoding.modelName)
     params.encoding                 = specEncodingParams(params.encoding);
 end

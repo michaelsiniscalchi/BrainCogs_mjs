@@ -143,9 +143,6 @@ if figures.summary_neuroBehCorr
                 figs = fig_summaryPsyTrackEncodingBySession(sessions, cells, panelSpec, P);
                 save_multiplePlots(figs, save_dir); %save as FIG and PNG
             end
-
-            %Summary histogram across cells (rho for each nb correlation)
-
         end
     end
 
@@ -156,7 +153,7 @@ end
 if figures.summary_population_nbCorr
     P = params.figs.summaryLongitudinalImgBeh;
     mdlNames = params.encoding.modelName;
-    for i = 3 %1:numel(mdlNames) ********************
+    for i = 1:numel(mdlNames)
         load(mat_file.summary.neuroBehCorr(subjectID, mdlNames(i)), 'meanCoef_AUC');
         save_dir = fullfile(dirs.figures,'Neurobehavioral Summary', subjectID,  mdlNames(i));
         P.mdlName = mdlNames(i);
