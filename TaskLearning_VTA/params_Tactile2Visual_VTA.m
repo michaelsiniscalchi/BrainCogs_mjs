@@ -216,7 +216,9 @@ params.figs.encoding.panels = specEncodingPanels( params.figs );
 params.figs.encoding.panels_contrast = specEncodingPanels_contrast( params.figs );
 
 %% FIGURE: Summary, behavior vs. imaging/encoding across sessions
-params.figs.summaryLongitudinalImgBeh.panels = spec_behEncodingPanels(params.figs.all.colors);
+P.panels = spec_behEncodingPanels(params.figs.all.colors);
+P.minNumSessions = 5;
+params.figs.summaryLongitudinalImgBeh = P;
 
 %% FIGURE: MODULATION INDEX: CHOICE, OUTCOME, AND RULE
 

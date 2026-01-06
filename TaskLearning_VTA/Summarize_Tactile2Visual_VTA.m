@@ -112,7 +112,6 @@ if summarize.neuroBehCorr
         "glm1_towers_beta","glm1_puffs_beta","glm1_bias_beta"...
         "pLeftTowers","pLeftPuffs",];
     params.min_nSessions = 5;
-    params.min_nCells = 3;
 
     for i = 1:numel(mdlNames)
         load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','metaData');    
@@ -136,7 +135,6 @@ if figures.summary_neuroBehCorr
         P = params.figs.summaryLongitudinalImgBeh;
         for j = 1:numel(P.panels)
             panelSpec = P.panels(j);
-            P.minNumSessions = 5;
             P.mdlName = mdlNames(i);
             if isfield(cells(1).kernel, panelSpec.encVar(2)) ||...
                     isfield(cells(1).coef, panelSpec.encVar(2))
@@ -159,7 +157,6 @@ if figures.summary_population_nbCorr
     for i = 1:numel(mdlNames)
         load(mat_file.summary.neuroBehCorr(subjectID, mdlNames(i)), 'meanCoef_AUC');
         save_dir = fullfile(dirs.figures,'Neurobehavioral Summary', subjectID,  mdlNames(i));
-        P.minNumSessions = 3;
         P.mdlName = mdlNames(i);
 
         %Summary histogram across cells (rho for each nb correlation)
