@@ -111,7 +111,8 @@ if summarize.neuroBehCorr
         "pCorrect", "pCorrect_congruent",...
         "glm1_towers_beta","glm1_puffs_beta","glm1_bias_beta"...
         "pLeftTowers","pLeftPuffs",];
-    params.minN = 5;
+    params.min_nSessions = 5;
+    params.min_nCells = 3;
 
     for i = 1:numel(mdlNames)
         load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','metaData');    

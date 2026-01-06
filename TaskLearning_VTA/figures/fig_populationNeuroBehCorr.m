@@ -23,7 +23,8 @@ legend_loc = 'bestoutside'; %'bestoutside';'layout'
 neuroName = panelSpec.encVar(2);
 idx = meanCoef_AUC.(panelSpec.behVar).(neuroName).N >= params.minNumSessions;
 coefs = meanCoef_AUC.(panelSpec.behVar).(neuroName).rho(idx); %Correlation coefficients
-med = median(coefs);
+signedrank = meanCoef_AUC.(panelSpec.behVar).(neuroName).signRank_rho;
+med = median(coefs,"omitnan");
 
 %Abbreviate psytrack variable
 behName = panelSpec.behVar;
@@ -39,7 +40,9 @@ h = histogram(coefs, 10,...
 hold on
 
 ylims = [0, 1.1*max(h.Values)];
-plot([med,med], ylims,'-m',"LineWidth",lineWidth);
+plot([med, med], ylims,'-m',"LineWidth",lineWidth);
+txt = ['p=', num2str(signedrank,1)];
+text(med+0.02*range(xlim), max(ylims)-0.05*range(ylims),txt, "FontSize",8);
 title(strjoin([neuroName 'vs.' behName]),'Interpreter','none');
 xlabel("Correlation coef. (Spearman's rho)");
 ylabel("Number of cells");

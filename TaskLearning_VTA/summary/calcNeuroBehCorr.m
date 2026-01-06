@@ -46,7 +46,7 @@ for f = params.behField
             S.session_dates{i} = sessionDates{i};
             S.N(i) = numel(sessionDates{i});
             S.data{i} = data;
-            if S.N(i)>2
+            if S.N(i)>params.min_nSessions
                 S.ranks{i} = ranks;
                 S.R(i,:) = R(2,1);
                 S.p_R(i,:) = p_R(2,1);
@@ -54,6 +54,7 @@ for f = params.behField
                 S.p_rho(i,:) = p_rho(2,1);
             end
         end
+        S.signRank_rho = signrank(S.rho);
         nbCorr.(corrName).(f).(ff) = S;
     end
 end
