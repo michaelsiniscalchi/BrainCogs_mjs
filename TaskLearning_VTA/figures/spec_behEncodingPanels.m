@@ -264,13 +264,13 @@ ax(i).lineStyle     = ["-","-"];
 ax(i).yLabel        = ["Proportion left tower trials","Encoding kernel (AUC)"];
 i=i+1;
 %Puffs x Position coef vs. pLeftTowers
-ax(i).title         = "Tower Side x Position";
+ax(i).title         = "Puff Side x Position";
 ax(i).behVar        = "pLeftPuffs"; 
 ax(i).behVarSE      = []; %or []
-ax(i).encVar        = ["kernel","towerSide_position","AUC"];
-ax(i).color         = {colors.visual, colors.visual2};
+ax(i).encVar        = ["kernel","puffSide_position","AUC"];
+ax(i).color         = {colors.tactile, colors.tactile2};
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).yLabel        = ["Proportion left tower trials","Encoding kernel (AUC)"];
+ax(i).yLabel        = ["Proportion left puff trials","Encoding kernel (AUC)"];
 i=i+1;
 
 %------- Reward -----------------------------------------------------------
