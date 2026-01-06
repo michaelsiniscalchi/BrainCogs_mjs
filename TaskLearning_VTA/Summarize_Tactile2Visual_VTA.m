@@ -130,7 +130,6 @@ if figures.summary_neuroBehCorr
     for i = 1:numel(mdlNames)
         load(mat_file.summary.behavior(subjectID),'sessions');
         load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells');
-        S = load(mat_file.summary.neuroBehCorr(subjectID, mdlNames(i)));
         save_dir = fullfile(dirs.figures,'Neurobehavioral Summary', subjectID,  mdlNames(i));
         %Longitudinal Plot
         P = params.figs.summaryLongitudinalImgBeh;
@@ -150,7 +149,27 @@ if figures.summary_neuroBehCorr
     end
 
     %Next, for trial Averaged Fluo as well...
-  
+end
+
+%**DEVO** (to be incorporated into prior block)
+if figures.summary_population_nbCorr
+    P = params.figs.summaryLongitudinalImgBeh;
+    mdlNames = params.encoding.modelName;
+    for i = 1:numel(mdlNames)
+        load(mat_file.summary.neuroBehCorr(subjectID, mdlNames(i)),'cells','meanCoef_AUC');
+        save_dir = fullfile(dirs.figures,'Neurobehavioral Summary', subjectID,  mdlNames(i));
+        P.minNumSessions = 3;
+        P.mdlName = mdlNames(i);
+
+        %Summary histogram across cells (rho for each nb correlation)
+        for j = 1:numel(P.panels)
+            panelSpec = P.panels(j);
+            if isfield(meanCoef_AUC, panelSpec.behVar) && isfield(meanCoef_AUC.(panelSpec.behVar), panelSpec.encVar(2))
+                    figs = fig_populationNeuroBehCorr(meanCoef_AUC, panelSpec, P);
+                save_multiplePlots(figs, save_dir); %save as FIG and PNG
+            end
+        end
+    end
 end
 
 if figures.encoding_model

@@ -1,9 +1,8 @@
-%%% plotTrialAvgDFF()
+%%% plot_eventKernel_byBehVar()
 %
-% PURPOSE:  To plot flexible summary of cellular fluorescence data from two-choice sensory
-%               discrimination tasks.
+% PURPOSE:  To overlay event-related temporal kernels from multiple sessions, color coded by a specified behavioral metric   
 %
-% AUTHORS: MJ Siniscalchi 190912
+% AUTHORS: MJ Siniscalchi 2025
 %
 % INPUT ARGS:
 %

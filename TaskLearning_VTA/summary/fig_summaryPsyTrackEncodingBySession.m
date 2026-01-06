@@ -5,9 +5,9 @@ colors = setPlotColors('mjs_tactile2visual');
 
 %% Plot psytrack coef and summary metric from encoding
 
+P = panelSpec;
 
 %Filter cell struct
-P = panelSpec;
 cells = cells(cellfun(@numel,{cells.session_date})>=params.minNumSessions); %Restrict to cells with min number of sessions
 
 %Truncate psyTrack variable name

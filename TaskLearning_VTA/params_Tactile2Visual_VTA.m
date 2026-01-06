@@ -46,10 +46,12 @@ figures.encoding_coefficients               = false;   %Coefficient estimates fo
 figures.encoding_eventKernelsByPerformance  = false;   %Stimulus kernel estimates
 figures.encoding_eventKernelsByPsyTrack     = false;   %Stimulus kernel estimates
 figures.encoding_cv                         = false;   %Cross-validation of lambda, ridge traces, etc.
+
 figures.heatmap_modulation_idx              = false;  %Heatmap of selectivity idxs for COR for each session
 
 % Summary
 figures.summary_neuroBehCorr            = false; %Neurobehavioral correlates
+figures.summary_population_nbCorr           = false; %Summaries across cells, by subject
 figures.summary_behavior                = false; %Summary of descriptive stats, eg, nTrials and {trials2crit, pErr, oErr} for each rule
 figures.summary_selectivity_heatmap     = false; %Heatmap of time- or position-locked selectivity
 figures.summary_selectivity_histogram   = false; %Histogram of time-locked selectivity
