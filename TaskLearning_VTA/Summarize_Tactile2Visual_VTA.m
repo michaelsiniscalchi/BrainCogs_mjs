@@ -202,7 +202,7 @@ if figures.encoding_model
             for j = 1:numel(encodingVars)
                 disp(['Plotting response kernels for ' char(encodingVars(j))]);
                 save_dir = fullfile(dirs.figures,strjoin(['Encoding model-', mdlNames(i)],''),...
-                    strjoin(['Response kernels--', encodingVars(j)],''));
+                    subjectID, strjoin(['Response kernels--', encodingVars(j)],''));
                 for sortBy = psyVars
                     figs = plot_eventKernel_byBehVar( cells, sessions, encodingVars(j), sortBy );
                     save_multiplePlots(figs, save_dir);
