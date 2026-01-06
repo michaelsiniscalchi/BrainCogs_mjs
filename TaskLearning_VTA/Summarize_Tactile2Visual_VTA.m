@@ -108,7 +108,7 @@ if summarize.neuroBehCorr
     params.paramNames = ["meanCoef","AUC"]; %Scalar estimates from psytrack and encoding model
     params.behField = ...
         ["psyTrack_diffTowers_meanCoef","psyTrack_diffPuffs_meanCoef","psyTrack_bias_meanCoef",...
-        "pCorrect", "pCorrect_congruent",...
+        "pCorrect", "pCorrect_congruent", "pCorrect_conflict",...
         "glm1_towers_beta","glm1_puffs_beta","glm1_bias_beta"...
         "pLeftTowers","pLeftPuffs",];
     params.min_nSessions = 5;
@@ -157,7 +157,7 @@ if figures.summary_population_nbCorr
     P = params.figs.summaryLongitudinalImgBeh;
     mdlNames = params.encoding.modelName;
     for i = 1:numel(mdlNames)
-        load(mat_file.summary.neuroBehCorr(subjectID, mdlNames(i)),'cells','meanCoef_AUC');
+        load(mat_file.summary.neuroBehCorr(subjectID, mdlNames(i)), 'meanCoef_AUC');
         save_dir = fullfile(dirs.figures,'Neurobehavioral Summary', subjectID,  mdlNames(i));
         P.minNumSessions = 3;
         P.mdlName = mdlNames(i);

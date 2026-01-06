@@ -16,6 +16,14 @@ ax(i).color         = {colors.left, colors.left2};
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
 i=i+1;
+ax(i).title         = "Left Towers";
+ax(i).behVar        = "psyTrack_leftTowers_meanCoef";
+ax(i).behVarSE      = "psyTrack_leftTowers_sd"; %or []
+ax(i).encVar        = ["kernel","leftTowers","AUC"];
+ax(i).color         = {colors.left, colors.left2};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
+i=i+1;
 
 %Right Towers
 ax(i).title         = "Right Towers";
@@ -26,12 +34,29 @@ ax(i).color         = {colors.right, colors.right2};
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
 i=i+1;
+ax(i).title         = "Right Towers";
+ax(i).behVar        = "psyTrack_rightTowers_meanCoef";
+ax(i).behVarSE      = "psyTrack_rightTowers_sd"; %or []
+ax(i).encVar        = ["kernel","rightTowers","AUC"];
+ax(i).color         = {colors.right, colors.right2};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
+
+i=i+1;
 
 %Left Puffs
 ax(i).title         = "Left Puffs";
 ax(i).behVar        = "psyTrack_leftPuffs_meanCoef";
 ax(i).behVarSE      = "psyTrack_leftPuffs_sd"; %or []
 ax(i).encVar        = ["kernel","firstLeftPuff","AUC"];
+ax(i).color         = {colors.left, colors.left2};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
+i=i+1;
+ax(i).title         = "Left Puffs";
+ax(i).behVar        = "psyTrack_leftPuffs_meanCoef";
+ax(i).behVarSE      = "psyTrack_leftPuffs_sd"; %or []
+ax(i).encVar        = ["kernel","leftPuffs","AUC"];
 ax(i).color         = {colors.left, colors.left2};
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
@@ -46,13 +71,21 @@ ax(i).color         = {colors.right, colors.right2};
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
 i=i+1;
+ax(i).title         = "Right Puffs";
+ax(i).behVar        = "psyTrack_rightPuffs_meanCoef";
+ax(i).behVarSE      = "psyTrack_rightPuffs_sd"; %or []
+ax(i).encVar        = ["kernel","rightPuffs","AUC"];
+ax(i).color         = {colors.right, colors.right2};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["PsyTrack weight","Encoding kernel (AUC)"];
+i=i+1;
 
-%--- Cue x Position "Ramps" ---
+%--- Cue x Position "Ramps" -----------------------------------------------
 %Towers - PsyTrack coef
 ax(i).title         = "Tower Side x Position";
 ax(i).behVar        = "psyTrack_rightTowers_meanCoef";
 ax(i).behVarSE      = "psyTrack_rightTowers_sd"; %or []
-ax(i).encVar        = ["kernel","towerSide_position","AUC"];
+ax(i).encVar        = ["kernel","rightTowers_position","AUC"];
 ax(i).color         = {colors.visual, colors.visual2};
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).yLabel        = ["PsyTrack coef: right towers","Encoding kernel (AUC)"];
@@ -60,7 +93,7 @@ i=i+1;
 ax(i).title         = "Tower Side x Position";
 ax(i).behVar        = "psyTrack_leftTowers_meanCoef";
 ax(i).behVarSE      = "psyTrack_leftTowers_sd"; %or []
-ax(i).encVar        = ["kernel","towerSide_position","AUC"];
+ax(i).encVar        = ["kernel","leftTowers_position","AUC"];
 ax(i).color         = {colors.visual, colors.visual2};
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).yLabel        = ["PsyTrack coef: left towers","Encoding kernel (AUC)"];
@@ -70,7 +103,7 @@ i=i+1;
 ax(i).title         = "Puff Side x Position";
 ax(i).behVar        = "psyTrack_rightPuffs_meanCoef";
 ax(i).behVarSE      = "psyTrack_rightPuffs_sd"; %or []
-ax(i).encVar        = ["kernel","puffSide_position","AUC"];
+ax(i).encVar        = ["kernel","rightPuffs_position","AUC"];
 ax(i).color         = {colors.tactile, colors.tactile2};
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).yLabel        = ["PsyTrack coef: right puffs","Encoding kernel (AUC)"];
@@ -78,7 +111,7 @@ i=i+1;
 ax(i).title         = "Puff Side x Position";
 ax(i).behVar        = "psyTrack_leftPuffs_meanCoef";
 ax(i).behVarSE      = "psyTrack_leftPuffs_sd"; %or []
-ax(i).encVar        = ["kernel","puffSide_position","AUC"];
+ax(i).encVar        = ["kernel","leftPuffs_position","AUC"];
 ax(i).color         = {colors.tactile, colors.tactile2};
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).yLabel        = ["PsyTrack coef: left puffs","Encoding kernel (AUC)"];
@@ -91,7 +124,7 @@ ax(i).behVarSE      = "psyTrack_diffTowers_sd"; %or []
 ax(i).encVar        = ["kernel","towerSide_position","AUC"];
 ax(i).color         = {colors.visual, colors.visual2};
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).yLabel        = ["PsyTrack L-R coef.","Encoding kernel (AUC)"];
+ax(i).yLabel        = ["PsyTrack R-L coef.","Encoding kernel (AUC)"];
 i=i+1;
 
 %Puffs - diff PsyTrack
@@ -101,7 +134,7 @@ ax(i).behVarSE      = "psyTrack_diffPuffs_sd"; %or []
 ax(i).encVar        = ["kernel","puffSide_position","AUC"];
 ax(i).color         = {colors.tactile, colors.tactile2};
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).yLabel        = ["PsyTrack L-R coef.","Encoding kernel (AUC)"];
+ax(i).yLabel        = ["PsyTrack R-L coef.","Encoding kernel (AUC)"];
 i=i+1;
 
 %Towers - bias
@@ -124,7 +157,48 @@ ax(i).lineStyle     = ["-","-"];
 ax(i).yLabel        = ["PsyTrack bias","Encoding kernel (AUC)"];
 i=i+1;
 
-%------- Reward -------
+%--------------------------------------------------------------------------
+%Towers - GLM
+%Towers x Position coef
+ax(i).title         = "Tower Side x Position";
+ax(i).behVar        = "glm1_towers_beta"; 
+ax(i).behVarSE      = "glm1_towers_se"; %or []
+ax(i).encVar        = ["kernel","towerSide_position","AUC"];
+ax(i).color         = {colors.visual, colors.visual2};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["GLM R-L coef.","Encoding kernel (AUC)"];
+i=i+1;
+%Bias
+ax(i).title         = "Tower Side x Position";
+ax(i).behVar        = "glm1_bias_beta"; %Towers
+ax(i).behVarSE      = "glm1_bias_se"; %or []
+ax(i).encVar        = ["kernel","towerSide_position","AUC"];
+ax(i).color         = {colors.visual, colors.visual2};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["GLM bias coef.","Encoding kernel (AUC)"];
+i=i+1;
+
+%Puffs - GLM
+%Puffs x Position coef
+ax(i).title         = "Puff Side x Position";
+ax(i).behVar        = "glm1_puffs_beta";
+ax(i).behVarSE      = "glm1_puffs_se"; %or []
+ax(i).encVar        = ["kernel","puffSide_position","AUC"];
+ax(i).color         = {colors.tactile, colors.tactile2};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["GLM R-L coef.","Encoding kernel (AUC)"];
+i=i+1;
+%Bias
+ax(i).title         = "Puff Side x Position";
+ax(i).behVar        = "glm1_bias_beta"; %Towers
+ax(i).behVarSE      = "glm1_bias_se"; %or []
+ax(i).encVar        = ["kernel","puffSide_position","AUC"];
+ax(i).color         = {colors.tactile, colors.tactile2};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["GLM bias coef.","Encoding kernel (AUC)"];
+i=i+1;
+
+%------- Reward -----------------------------------------------------------
 %Reward - pCorrect
 ax(i).title         = "Reward";
 ax(i).behVar        = "pCorrect";

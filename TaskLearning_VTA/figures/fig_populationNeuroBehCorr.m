@@ -35,7 +35,8 @@ end
 
 %Generate Histogram
 fig = figure("Name",strjoin(["Rho", panelSpec.encVar(2), behName],'-'),"Position",fig_pos);
-h = histogram(coefs, 10,...
+edges = -1:0.2:1;
+h = histogram(coefs, edges,...
     "LineWidth", lineWidth, "FaceColor", panelSpec.color{2}, "EdgeColor",panelSpec.color{1}); 
 hold on
 
