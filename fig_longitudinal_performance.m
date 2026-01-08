@@ -15,14 +15,15 @@ colors = params.colors;
 %Load performance data
 prefix = 'Performance';
 
+%Performance as a function of training day
 for i = 1:numel(subjects)
-    %Performance as a function of training day
-    shapingLabel="";
-    if params.omitShaping
-        shapingLabel = "+shaping";
-    end
+       
     figs(i) = figure(...
-        'Name',join([prefix, subjects(i).ID, string(vars), shapingLabel],'_'));
+        'Name',join([prefix, subjects(i).ID, string(vars)],'_'));
+    if ~params.omitShaping
+        figs(i).Name = join([figs(i).Name, "+shaping"], '');
+    end
+
     tiledlayout(1,1);
     ax = nexttile();
     hold on;
