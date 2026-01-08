@@ -142,7 +142,8 @@ for i = 1:numel(subjects)
     %Cutoff L-maze data
     zoom2TMaze = false; %Cutoff L-maze data
     if all(ismember(vars,{'pCorrect','pCorrect_conflict','pCorrect_congruent',...
-            'maxCorrectMoving','maxCorrectMoving_congruent','maxCorrectMoving_conflict'}))
+            'maxCorrectMoving','maxCorrectMoving_congruent','maxCorrectMoving_conflict'}))...
+            && params.omitShaping
         zoom2TMaze = true;
         taskRule(taskRule=="forcedChoice") = "";
     end
