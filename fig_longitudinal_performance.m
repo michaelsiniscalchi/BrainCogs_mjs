@@ -17,8 +17,12 @@ prefix = 'Performance';
 
 for i = 1:numel(subjects)
     %Performance as a function of training day
+    shapingLabel="";
+    if params.omitShaping
+        shapingLabel = "+shaping";
+    end
     figs(i) = figure(...
-        'Name',join([prefix, subjects(i).ID, string(vars)],'_'));
+        'Name',join([prefix, subjects(i).ID, string(vars), shapingLabel],'_'));
     tiledlayout(1,1);
     ax = nexttile();
     hold on;
