@@ -97,7 +97,7 @@ if plots.longitudinal_performance && numel(subjects.sessions)>1
     saveDir = fullfile(dirs.results,'Performance');
 
     params = struct('colors', colors, 'lineWidth', 1.5,...
-        'markerSize', 6,'omitShaping','true');
+        'markerSize', 6,'omitShaping',false);
     vars = {...
         ["pCorrect_congruent", "pCorrect_conflict"],... %for presentation
         ["pCorrect_congruent", "pCorrect_conflict", "bias"],... %for assessing criterion
