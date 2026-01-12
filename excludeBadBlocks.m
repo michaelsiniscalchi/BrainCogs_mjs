@@ -133,6 +133,8 @@ function [ logs, excludeBlocks ] = excludeBadBlocks( logs )
             "mjs20_179",datetime('07-Dec-2024'), 'all';...   %premature tactile rule--should have been lvl 6 L-maze
 
             "mjs20_569",datetime('06-May-2024'),'all';...   %changed fields in logs.block for second block (could amend code to accommodate)
+
+            "mjs20_40",datetime('10-Apr-2025'),'all';...   %Different task: variable reward
             }; 
 
 % "mjs20_103",datetime('03-Oct-2023'), 1;... %Restarted
