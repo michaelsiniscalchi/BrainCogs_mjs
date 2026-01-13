@@ -84,6 +84,7 @@ parfor i = 1:nStacks
 end
 
 %Concatenate data cells from individual stacks
+%***Careful here: method of truncation appears to require imaging to begin after virmen starts sending timestamps. Check!***
 cellF = cell2mat(cellF); %nNeurons x nFrames
 npF  = cell2mat(npF);
 %Truncate to match image time vector, t 

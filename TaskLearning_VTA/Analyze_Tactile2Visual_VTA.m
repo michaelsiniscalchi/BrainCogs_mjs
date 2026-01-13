@@ -146,7 +146,6 @@ if calculate.fluorescence
         if calculate.trial_average_dFF %Trial averaged dF/F with bootstrapped CI
             load(mat_file.img_beh(i),'trialDFF','sessions','trials','cellID');
             for j = 1:numel(params.bootAvg) %For each trigger event
-                % for j = 6 %***DEVO just outcome
                 P = params.bootAvg(j);
                 if ~exist('bootAvg') || ~isfield(bootAvg, P.trigger)
                     bootAvg.(P.trigger) = struct();

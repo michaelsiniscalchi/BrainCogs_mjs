@@ -8,8 +8,13 @@ for i = 1:numel(vrTime)
     %Extract block/trial/iteration idxs from I2C packets
     blockIdx = stackInfo.I2C.blockIdx(i);
     trialIdx = stackInfo.I2C.trialIdx(i);
-    iter = stackInfo.I2C.iteration(i);
-    vrTime(i) = getTrialIterationTime( behavior.logs, blockIdx, trialIdx, iter );
+    
+    %Virmen-reported iterations have an error of +1, 
+    % due to function indices = logTick() in ExperimentLog.m, 
+    % which assigns i=i+1 before sending the I2C signal 
+    iter = stackInfo.I2C.iteration(i)-1;
+    
+    vrTime(i) = getTrialIterationTime( behavior.logs, blockIdx, trialIdx, iter ); 
     if isnan(vrTime(i))
     disp();
     end

@@ -7,12 +7,12 @@ function [time_mat, maxY, iter] = getTimebyPosition(trialData, eventTimes, ySamp
 
 %Abbreviate
 position = {trialData.position};
-time = cellfun(@(t,st) t+st,{trialData.time},{eventTimes.start},'UniformOutput',false);
+time = cellfun(@(t,st) t+st,{trialData.time},{eventTimes.logStart},'UniformOutput',false);
 
 %Get times corresponding to input sample y-positions
 maxY            = cellfun(@(pos) cummax(pos(:,2)), position, 'UniformOutput', false); %Take cumulative max
-iter          = accumfun(2, @(x) binarySearch(x, ySample, 1, 1)', maxY);
-time_mat    = accumfun(2, @(x) time{x}(iter(:,x)), 1:numel(position));
+iter            = accumfun(2, @(x) binarySearch(x, ySample, 1, 1)', maxY);
+time_mat        = accumfun(2, @(x) time{x}(iter(:,x)), 1:numel(position));
 
 %Main method taken from sampleViewAngleVsY(), written by Sue Ann Koay
 %   A couple issues with cummax(y) strategy for dealing with
