@@ -8,23 +8,22 @@ for i = 1:numel(vrTime)
     %Extract block/trial/iteration idxs from I2C packets
     blockIdx = stackInfo.I2C.blockIdx(i);
     trialIdx = stackInfo.I2C.trialIdx(i);
+    iter = stackInfo.I2C.iteration(i);
     
     %Virmen-reported iterations have an error of +1, 
     % due to function indices = logTick() in ExperimentLog.m, 
-    % which assigns i=i+1 before sending the I2C signal 
-    iter = stackInfo.I2C.iteration(i)-1;
-    
+    % which assigns i=i+1 before sending the I2C signal.
+    % However, the elapsed time taken just before iteration i is assigned
+    % to time(i+1) because of the same bug, so the time assigned here is 
+    % close to the time at the beginning of iteration i....
+   
     vrTime(i) = getTrialIterationTime( behavior.logs, blockIdx, trialIdx, iter ); 
-    if isnan(vrTime(i))
-    disp();
-    end
 end
 
 %% Assign one timestamp to each frame
 %Initialize
 frameNum = unique(stackInfo.I2C.frameNumber); %Unique frame numbers
 meanTime = zeros(size(frameNum)); %ViRMEn time
-% stackInfo.t = zeros(sum(stackInfo.nFrames),1); %Iterpolated ViRMEn time for each frame in stack
 
 %Assign mean value of multiple timestamps per frame 
 for i = 1:numel(frameNum)

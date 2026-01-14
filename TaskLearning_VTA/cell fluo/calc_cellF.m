@@ -84,13 +84,17 @@ parfor i = 1:nStacks
 end
 
 %Concatenate data cells from individual stacks
-%***Careful here: method of truncation appears to require imaging to begin after virmen starts sending timestamps. Check!***
 cellF = cell2mat(cellF); %nNeurons x nFrames
 npF  = cell2mat(npF);
-%Truncate to match image time vector, t 
+
+%Truncate to match image time vector, t
+%   t may be shorter than number of frames because I2C data are absent at
+%   end (either from aborted behavior or missing data). Time vector was
+%   therefore truncated to avoid extrapolation.
 t = expData.img_beh.t;
-cellF = cellF(:, 1:numel(t));
+cellF = cellF(:, 1:numel(t)); 
 npF = npF(:, 1:numel(t));
+
 %Store in structure
 cells.t = t; %time vector 
 cells.cellF = mat2cell(cellF, ones(1,numel(roi)), numel(t)); %cellular fluorescence, 1 x nTimepoints, one cell per neuron

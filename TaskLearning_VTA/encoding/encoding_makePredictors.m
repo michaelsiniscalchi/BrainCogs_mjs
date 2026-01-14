@@ -69,7 +69,7 @@ for i = 1:numel(eventNames)
     %Index samples in 't' corresponding to event times
     idx = NaN(numel(tempTimes),1);
     parfor j = 1:numel(tempTimes)
-        idx(j) = sum(t < tempTimes(j)); %First frame after event
+        idx(j) = sum(t <= tempTimes(j))+1; %First frame after event
     end
     impulse.(eventNames{i})(idx) = true;
 end

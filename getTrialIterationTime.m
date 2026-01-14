@@ -19,6 +19,13 @@ if firstTrialStartTime < currentBlockStartTime
         end
     end
 end
+
+%Note: Virmen-reported iterations have an error of +1,
+% due to function indices = logTick() in ExperimentLog.m
+% which increments before assigning the "current" iteration elapsed time, 
+% and before sending the I2C signal, etc. Note also that the current
+% iteration elapsed time is measured prior to the current iteration.
+
 trialStartTime = log.block(blockIdx).trial(trialIdx).start;
 iterTime = log.block(blockIdx).trial(trialIdx).time(iteration); 
 
