@@ -30,8 +30,8 @@ for i = 1:numel(events)
     idx = NaN(numel(event_times),numel(rel_idx)); %Indices for all frames in row corresponding to each event
     frameDelay = NaN(size(event_times)); %Time delay between event and next frame time
     for j = 1:numel(event_times)
-        % idx_t0 = find(t >= event_times(j)-dt/1.999 & t <= event_times(j)+dt/1.999,1,'first'); %Occasionally, exactly centered event_times(i) yield null set or two results with threshold set to dt/2
-        idx_t0 = find(t >= event_times(j), 1, 'first'); %First frametime after event
+        % idx_t0 = find(t >= event_times(j), 1, 'first'); %First frametime after event
+        idx_t0 = sum(t<event_times(j))+1; %First frametime after event
         if ~isempty(idx_t0)
             idx(j,:) = idx_t0 + rel_idx;
             frameDelay(j) = t(idx_t0) - event_times(j);
