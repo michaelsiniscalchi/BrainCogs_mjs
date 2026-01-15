@@ -31,8 +31,9 @@ for i = 1:numel(events)
     frameDelay = NaN(size(event_times)); %Time delay between event and next frame time
     for j = 1:numel(event_times)
         % idx_t0 = find(t >= event_times(j), 1, 'first'); %First frametime after event
-        idx_t0 = sum(t<event_times(j))+1; %First frametime after event
-        if ~isempty(idx_t0)
+        % if idx_t0<numel(t) && ~isempty(idx_t0)
+        idx_t0 = sum(t < event_times(j))+1; %First frametime after event
+        if idx_t0 < numel(t)
             idx(j,:) = idx_t0 + rel_idx;
             frameDelay(j) = t(idx_t0) - event_times(j);
         end
