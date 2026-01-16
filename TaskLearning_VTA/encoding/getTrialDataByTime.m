@@ -34,7 +34,10 @@ for i = 1:numel([trialData.eventTimes.logStart])
 
     %ITI indicator variable
     itiStart = trialData.eventTimes(i).outcome; %ITI spans time of outcome to start of next trial
-    B.ITI{i} = double(B.time{i}>itiStart); %Convert to double; model requires NaN for excluded time points
+    itiEnd = trialData.eventTimes(i).start; %End of ITI from previous trial; due to an error in virmen iteration indexing/timing in the ITI, the actual start-time of trial is on iteration 3
+    % B.ITI{i} = double(B.time{i}>itiStart); %Convert to double; model requires NaN for excluded time points
+    B.ITI{i} = double(B.time{i}>itiStart | B.time{i}<itiEnd); %Convert to double; model requires NaN for excluded time points
+
 
 end
 
