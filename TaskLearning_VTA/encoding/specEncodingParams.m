@@ -13,8 +13,8 @@ bSpline.position.df          = 5; %number of terms for position splines
 
 %Cues
 bSpline.cue.degree      = 3; %degree of each (Bernstein polynomial) term
-bSpline.cue.nSamples    = 30; %N time points for spline basis set;
-bSpline.cue.df          = 4; %number of terms:= order + N internal knots
+bSpline.cue.nSamples    = 60; %N time points for spline basis set;
+bSpline.cue.df          = 7; %number of terms:= order + N internal knots
 
 %Reward
 bSpline.outcome.degree      = 3; %degree of each (Bernstein polynomial) term
