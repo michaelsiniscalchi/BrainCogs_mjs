@@ -580,11 +580,11 @@ expData(i).subjectID = "mjs20_713";
 expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
-% expData(i).sub_dir = '250826-m713-maze8'; 
-% expData(i).subjectID = "mjs20_713";
-% expData(i).mainMaze = 8;
-% expData(i).npCorrFactor = 0.3;
-% i = i+1;
+expData(i).sub_dir = '250826-m713-maze8'; 
+expData(i).subjectID = "mjs20_713";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 
 %M714 DAT-cre::RiboL1-jGCaMP8s
 expData(i).sub_dir = '250703-m714-maze7'; 
