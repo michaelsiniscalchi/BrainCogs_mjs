@@ -7,7 +7,6 @@ setup_figprops('timeseries')  %placeholder
 lineWidth = 2;
 markerSize = 3;
 
-% predNames = fieldnames(glm.predictorIdx);
 kernelNames = string(fieldnames(glm.kernel));
 cellIDs = glm.cellID;
 sessionID = glm.sessionID;
@@ -22,9 +21,9 @@ nDataPoints = numel(mdl.Coefficients.Estimate)-1;
 nGroups = numel(predictorNames);
 plotBaseline(0:nDataPoints+iOffset*(nGroups-1)); %Plot baseline at B=0 
 for i = 1:numel(predictorNames)
-    idx = glm.predictorIdx.(predictorNames{i}); %Predictor index in results table 
-    estimate = mdl.Coefficients.Estimate(glm.predictorIdx.(predictorNames{i})); %Coeffs
-    se = mdl.Coefficients.SE(glm.predictorIdx.(predictorNames{i})); %SE of coeffs
+    idx = glm.termIdx.(predictorNames{i}); %Predictor index in results table 
+    estimate = mdl.Coefficients.Estimate(glm.termIdx.(predictorNames{i})); %Coeffs
+    se = mdl.Coefficients.SE(glm.termIdx.(predictorNames{i})); %SE of coeffs
     X = offset + idx - min(idx); %Plot domain
     C = colors.(predictorNames{i}); %Color
     
@@ -91,8 +90,8 @@ end
 plotBaseline(0:numel(pNames)+1); %Plot baseline at B=0 
 for i = 1:numel(pNames)
     
-    estimate = mdl.Coefficients.Estimate(glm.predictorIdx.(pNames{i})); %Coeffs
-    se = mdl.Coefficients.SE(glm.predictorIdx.(pNames{i})); %SE of coeffs
+    estimate = mdl.Coefficients.Estimate(glm.termIdx.(pNames{i})); %Coeffs
+    se = mdl.Coefficients.SE(glm.termIdx.(pNames{i})); %SE of coeffs
     X = i;
     C = colors.(pNames{i}); %Color
     

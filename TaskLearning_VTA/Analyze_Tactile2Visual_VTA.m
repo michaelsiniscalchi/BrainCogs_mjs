@@ -167,21 +167,22 @@ if calculate.fluorescence
         % Encoding model
         if calculate.encoding_model
             %Load combined imaging & behavioral data
-            img_beh = load(mat_file.img_beh(i),'dFF','cellF','t','cellID','sessions','trialData','trials');
+            load(mat_file.img_beh(i),'trialData','trials','dFF','t','cellID');
             mdlNames = params.encoding.modelName;
             for k = 1:numel(mdlNames)
-                params.encoding.modelName = mdlNames(k);
-                params.encoding = specEncodingParams(params.encoding);
                 %Format predictors
-                [ predictors, encodingData ] = encoding_makePredictors( img_beh, params.encoding );
+                params.encoding.modelName = mdlNames(k);
+                params.encoding = specEncodingParams(params.encoding);            
+                [ X, encodingData ] = encoding_makePredictors( trialData, trials, t, params.encoding );
+
                 %Run encoding model
-                encodingMdl = encodingModel(predictors, img_beh.dFF, encodingData);
+                encodingMdl = encodingModel(X, dFF, cellID, encodingData);
 
                 %Align model-predicted dFF
-                cells = struct('dFF', {encodingMdl.predictedDFF}, 't', img_beh.t);
-                encodingMdl.trialDFF = alignCellFluo(cells, img_beh.trialData.eventTimes, params.align);
+                cells = struct('dFF', {encodingMdl.predictedDFF}, 't', t);
+                encodingMdl.trialDFF = alignCellFluo(cells, trialData.eventTimes, params.align);
                 [encodingMdl.trialDFF.cueRegion, encodingMdl.trialDFF.position] = ...
-                    alignFluoByPosition(cells, img_beh.trialData, params.align);
+                    alignFluoByPosition(cells, trialData, params.align);
 
                 %Trial-averaged model prediction
                 for j = 1:numel(params.bootAvg) %For each trigger event
@@ -189,7 +190,7 @@ if calculate.fluorescence
                         encodingMdl.bootAvg.(params.bootAvg(j).trigger) = struct();
                     end
                     encodingMdl.bootAvg.(params.bootAvg(j).trigger) = ...
-                        calc_trialAvgFluo(encodingMdl.trialDFF, img_beh.trials,...
+                        calc_trialAvgFluo(encodingMdl.trialDFF, trials,...
                         params.bootAvg(j), encodingMdl.bootAvg.(params.bootAvg(j).trigger)); %Include var bootAvg if multiple params.bootAvg use the same trigger (eg, w/o baseline subtraction)
                 end
 
@@ -208,11 +209,25 @@ if calculate.fluorescence
 
             end %end for j = 1:numel(params.encoding.modelName)
             params.encoding.modelName = mdlNames; %Restore for figures, further sessions, etc 
+            
         end
-    end
+
+        if calculate.encoding_stats
+%             %Generate pseudosessions and predictors for all models
+            img_beh = load(mat_file.img_beh(i),'dFF','t','cellID','trialData','trials');
+            mdlNames = params.encoding.modelName;
+            for j = 1:numel(mdlNames)
+                  encodingParams = specEncodingParams(params.encoding, mdlNames(j));
+                    % session = load(mat_file.results.encoding(i, mdlNames(j)), 'cellID','predictedDFF','predictorIdx','bSpline');                
+                    pValues = calcEncodingStats(img_beh, encodingParams);
+                    save(mat_file.results.encoding(i, mdlNames(j)),'pValues','-append');
+            end
+
+        end
 
     disp(['Total time needed for cellular fluorescence analyses: ' num2str(toc) 'sec.']);
-end
+    end %i = 1:numel(expData)
+end %calculate.fluorescence
 
 %% SUMMARY (Separate later into stand alone function)
 

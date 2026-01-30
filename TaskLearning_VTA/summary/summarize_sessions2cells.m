@@ -4,14 +4,14 @@ function [cells, metaData] = summarize_sessions2cells(sessions)
 % nan if absent
 % clearvars cellIDs cells S
 
-coefNames = string(fieldnames(sessions(1).predictorIdx));
+coefNames = string(fieldnames(sessions(1).termIdx));
 coefParams = string(fieldnames(sessions(1).coef));
 kernelNames = string(fieldnames(sessions(1).kernel));
 kernelParams = string(fieldnames(sessions(1).kernel(1).(kernelNames(1))));
 
 session_date = [sessions(:).session_date];
 
-predictorIdx = sessions(1).predictorIdx;
+termIdx = sessions(1).termIdx;
 
 %Aggregate all data into cell arrays
 for i = 1:numel(sessions)
@@ -29,7 +29,7 @@ for i = 1:numel(sessions)
         for cName = coefNames'
             for cParam = coefParams'
                 S.coef.(cName).(cParam){i,:}{j,:} =...
-                    sessions(i).coef.(cParam)(j, predictorIdx.(cName));
+                    sessions(i).coef.(cParam)(j, termIdx.(cName));
             end
         end
     end

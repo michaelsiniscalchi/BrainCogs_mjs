@@ -9,12 +9,6 @@ figs = figure('Name',[glm.sessionID, '-', char(glm.modelName), '-cell', cellID],
 
 T = tiledlayout(2,3,"TileSpacing","loose","Padding","loose");
 
-pNames = string(fieldnames(glm.predictorIdx))';
-pNames = pNames(pNames~="B0");
-for f = pNames
-predictorIdx.(f) = glm.predictorIdx.(f)-1; %idx offset by 1 for bias term or later plot VIF for bias
-end
-
 %Panel 1: Ridge trace
 ax = nexttile();
 %Plot ridge trace with log-scaled X
@@ -23,7 +17,7 @@ Xk = repmat(log10(mdl.Lambda),1,2);
 y = mdl.CV.ridgeTrace;
 p = plot(X, y); hold on;
 %Assign colors/linestyles
-p = assignLineFormatting(p, predictorIdx, colors);
+p = assignLineFormatting(p, glm.termIdx, colors);
 %Plot fitted lambda for this cell
 Yk = [min(y(:))-0.05*range(y(:)), max(y(:))+0.05*range(y(:))]; %Y-position of dotted line for lambda
 plot(Xk,Yk,'k:','LineWidth',1);
@@ -41,7 +35,7 @@ nexttile()
 y = glm.VIF_trace;
 p = plot(X, y); hold on;
 %Assign colors/linestyles
-p = assignLineFormatting(p, predictorIdx, colors);
+p = assignLineFormatting(p, glm.termIdx, colors);
 %Plot fitted lambda for this cell
 Yk = [min(y(:))-0.05*range(y(:)), max(y(:))+0.05*range(y(:))];
 plot(Xk,Yk,'k:','LineWidth',1);
@@ -55,15 +49,15 @@ axis square tight
 %Legend
 ax = nexttile();
 ax.Visible = "off";
-leg = makeLegend(p, predictorIdx);
+leg = makeLegend(p, glm.termIdx);
 leg.Layout.Tile = 3;
 leg.NumColumns = 2;
 
 %Variance Inflation Factors
 nexttile([1,2])
-varNames = string(fieldnames(predictorIdx));
+varNames = string(fieldnames(glm.termIdx));
 for i=1:numel(varNames)
-    firstBasisIdx(i) = predictorIdx.(varNames(i))(1);
+    firstBasisIdx(i) = glm.termIdx.(varNames(i))(1);
 end
 x = 1:numel(glm.VIF);%+1 for whitespace at 
 bar(x, glm.VIF,'w'); hold on;

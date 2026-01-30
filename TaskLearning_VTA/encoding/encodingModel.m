@@ -1,38 +1,14 @@
-function glm = encodingModel( predictors, dFF, encodingData )
+function glm = encodingModel( X, dFF, cellID, encodingData )
 
 %-------Multiple Linear Regression Model------------------------------------------------
 
-%Create Matrix of Regressors
-pNames = string(fieldnames(predictors))';
-X = [];
-varNames = string([]);
-
-%Name components of regression splines by number
-idx.B0 = 1;  %1st term reserved for intercept
-for P = pNames
-    nTerms = size(predictors.(P), 2);
-    tempNames = P; %Initialize as predictor name, no numeric suffix
-    if nTerms>1
-        for i = 1:nTerms %Append term index for b-spline or higher order predictor (moments, etc.)
-            tempNames(i) = strjoin([P, num2str(i)],'');
-        end
-    end
-    varNames = [varNames, tempNames]; %#ok<AGROW>
-    idx.(P) = 1 + size(X,2) + (1:nTerms); %1st term reserved for intercept
-    X = [X, predictors.(P)]; %#ok<AGROW>
-end
-
-%Z-score the predictor matrix
-X = normalize(X,1,"zscore");
-
 %Initialize output struct
-nCells = size(dFF,1);
-nPredictors = size(X,2);
 glm = struct('modelName', "",'sessionID',"",'session_date',[],...
     'model',[], 'cellID', "", 'X', [], 'coef', struct(), 'kernel', struct(),...
     'conditionNum',[],'VIF',[],'VIF_trace',[],...
     'rank',[],'corrMatrix',[],...
-    'predictedDFF',{cell(size(dFF))},'predictorIdx',[],'predictorNames',"");
+    'termIdx',[],'predictorIdx',[],...
+    'predictedDFF',{cell(size(dFF))},'predictorNames',"");
 
 for i = 1:numel(dFF)
 
@@ -40,16 +16,16 @@ for i = 1:numel(dFF)
     
     if encodingData.regularization=="ridge"
         %10-fold CV with each lambda to find minimum MSE
-        [lambda, lambda_cv] = cvLambda(X, y, encodingData.lambda,...
+        [lambda, cv] = cvLambda(X, y, encodingData.lambda,...
             encodingData.lambda_kfolds, encodingData.trialIdx); %Find lambda value that minimizes MSE
         
         if encodingData.getRidgeTrace
             %Ridge regression on all timepoints w/ ridge trace for validation
             [yHat, ridgeTrace, mse] = ridgePredict(X, y, encodingData.lambda); %[y_hat, beta, mse] = ridgePredict(x,y,k)
             kIdx = encodingData.lambda==lambda;
-            yHat = yHat(:,kIdx); %Predicted response for each lambda
-            B = ridgeTrace(:,kIdx); %Ridge coefficients for each lambda
-            mse = mse(kIdx); %MSE for each lambda
+            yHat = yHat(:,kIdx); %Predicted response for optimal lambda
+            B = ridgeTrace(:,kIdx); %Ridge coefficients for optimal lambda
+            mse = mse(kIdx); %MSE for optimal lambda
 
             %VIFs adjusted for each lambda
             if isempty(glm.VIF_trace)
@@ -69,7 +45,7 @@ for i = 1:numel(dFF)
         mdl.Fitted = struct('Response', yHat, 'MSE', mse);
         mdl.Rsquared = r_squared;
         mdl.Lambda = lambda;
-        mdl.CV = struct('ridgeTrace', ridgeTrace(2:end,:), 'cvLambda', lambda_cv); %Exclude B0 from ridege trace
+        mdl.CV = struct('ridgeTrace', ridgeTrace(2:end,:), 'cvLambda', cv); %Exclude B0 from ridege trace
     else
         mdl = fitglm(X, y, 'PredictorVars', varNames);
     end
@@ -101,10 +77,10 @@ for i = 1:numel(dFF)
         end
         
         %Coefficient estimates and SE
-        estimate = bSpline * mdl.Coefficients.Estimate(idx.(varName)); %(approx. resp func) = bSpline * Beta
+        estimate = bSpline * mdl.Coefficients.Estimate(encodingData.termIdx.(varName)); %(approx. resp func) = bSpline * Beta
         [mse, se] = deal(nan(size(estimate))); %initialize
         if encodingData.regularization~="ridge" %Coef SE estimates not meaningful after regularization
-            mse = (mdl.Coefficients.SE(idx.(varName))).^2; %Calculate MSE, which is SE^2
+            mse = (mdl.Coefficients.SE(encodingData.termIdx.(varName))).^2; %Calculate MSE, which is SE^2
             se = sqrt(bSpline * mse); %Square root of weighted MSE
         end
 
@@ -141,7 +117,7 @@ glm.rank = rank(X); %Rank of design matrix, X
 glm.corrMatrix = corrcoef(X(:,2:end)); %Correlation matrix, only the predictors; omitting rows containing NaN
 
 %Metadata
-glm.predictorIdx = idx;
+glm.cellID = cellID;
 for F = string(fieldnames(encodingData))'
     glm.(F) = encodingData.(F);
 end
@@ -167,7 +143,7 @@ for j = 1:numel(k)
     VIF(:,j) = diag(inv(R)); %Equivalent matrix operation for VIF: Trace of Inverse Correlation MAtrix 
 end
 
-function [lambda_fit, cv] = cvLambda( X, y, lambda, kFolds, trialIdx )
+function [lambda_fit, cvError] = cvLambda( X, y, lambda, kFolds, trialIdx )
 trialIDs = unique(trialIdx);
 CV = cvpartition(numel(trialIDs), "KFold", kFolds);
 mse = nan(kFolds,numel(lambda)); %Initialize
@@ -180,12 +156,12 @@ for i = 1:CV.NumTestSets
     y_hat = [ones(nTest,1), X(testIdx,:)]*beta; %Predicted response; size(y_hat) = [nObs, nLambda];
     mse(i,:) = mean((y(testIdx) - y_hat).^2,1,"omitnan"); %Calc MSE; size(mse) = [kFolds, nLambda] 
 end
-cv = mean(mse); %Cross-validation MSE
-lambda_fit = lambda(cv==min(cv)); %Lambda value with lowest CV MSE
+cvError = mean(mse); %Cross-validation MSE
+lambda_fit = lambda(cvError==min(cvError)); %Lambda value with lowest CV MSE
 
-function [y_hat, beta, mse] = ridgePredict(x,y,k)
+function [y_hat, beta, mse] = ridgePredict( x, y, k )
 
-beta = nan(size(x,2)+1, numel(k)); %Initialize ridge trace: size(beta)=[nPredictors, nLambda]
+beta = nan(size(x,2)+1, numel(k)); %Initialize ridge trace: size(beta)=[nPredictors+nIntercept, nLambda]
 parfor i = 1:numel(k)
     beta(:, i) = ridge(y, x, k(i),0); %Last ARG=0, restore scale of the data, and include intercept
 end
@@ -194,6 +170,7 @@ mse = mean((y - y_hat).^2, 1, "omitmissing"); %Training mse
 
 %NEXT STEP: determine the relative influence of each class of predictors in
 %the model (ie, firstTower(1:n) or velocity) using mdl2 = removeTerms(mdl1, terms)
+%**** NOT VALID FOR RIDGE REGRESSION...NEED ALT ANALYSIS
 % mdl1 = removeTerms(mdl,'x2')
 % %Variance Inflation Factor (VIF)
 % parfor i = 1:numel(varNames) %start with ITI + position

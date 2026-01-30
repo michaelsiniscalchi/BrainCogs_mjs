@@ -1,4 +1,8 @@
-function params = specEncodingParams(params)
+function params = specEncodingParams(params, modelName)
+
+if nargin<2 %params.modelName can contain multiple model names; use ARG #2 to specify one
+    modelName = params.modelName; %Only useful if scalar
+end
 
 %Predictors for full/partial models
 %Initialize
@@ -22,7 +26,17 @@ bSpline.outcome.nSamples    = 150; %N time points for spline basis set;
 bSpline.outcome.df          = 15; %number of terms:= order + N internal knots
 params.bSpline = bSpline;
 
-switch params.modelName
+switch modelName
+
+    case 'AllPredictors'
+        params.predictorNames = ["start",...
+            "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
+            "leftPuffs","rightPuffs","leftTowers","rightTowers",...
+            "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position",...
+            "towerSide_position", "puffSide_position", "position",...
+            "reward","noReward",...
+            "heading","speed"];
+        params.positionSpline = true;
 
     case 'FM'
         params.predictorNames = ["start",...

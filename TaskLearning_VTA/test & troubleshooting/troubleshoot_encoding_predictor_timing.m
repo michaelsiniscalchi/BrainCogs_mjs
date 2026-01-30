@@ -16,16 +16,29 @@ expData = expData(contains({expData(:).sub_dir}', search_filter)); %Filter by da
 experiment = 'mjs_tactile2visual'; %If empty, fetch data from all experiments
 [calculate, summarize, figures, mat_file, params] = params_Tactile2Visual_VTA(dirs, expData, options);
 
-%Check syncing of predictors with behavior times
+% Optionally run analysis
+
+
+% Check syncing of predictors with behavior times
 load(mat_file.results.encoding(1,"FM_noAllCues"), 'X', 'predictorIdx');
-load(mat_file.img_beh(1),'t','trialData');
-idx = encodingModel.predictorIdx.start(1);
-startTimes = trialData.eventTimes.start;
+load(mat_file.img_beh(1),'t','trialData','sessions');
+for f = ["start", "reward", "noReward","position"]
+    idx.start.(f) = predictorIdx.(f)(1);
+    idx.end.(f) = predictorIdx.(f)(end);
+end
+
+for f = ["start", "logStart", "outcome"]
+   eventTimes.(f) = [trialData.eventTimes.(f)];
+end
+
+P = "noReward";
+E = "outcome";
+startEnd = "start";
 
 figure;
-plot(t, X(:, idx)); hold on;
-for i=1:numel(startTimes)
-    plot([startTimes(i), startTimes(i)],ylim);
+plot(t, X(:, idx.(startEnd).(P))); hold on;
+for i=1:numel(eventTimes.(E))
+    plot([eventTimes.(E)(i), eventTimes.(E)(i)], ylim);
 end
 
 %Check syncing of predicted dFF with behavior times
