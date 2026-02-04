@@ -219,8 +219,8 @@ if calculate.fluorescence
             for j = 1:numel(mdlNames)
                   encodingParams = specEncodingParams(params.encoding, mdlNames(j));
                     % session = load(mat_file.results.encoding(i, mdlNames(j)), 'cellID','predictedDFF','predictorIdx','bSpline');                
-                    pValues = calcEncodingStats(img_beh, encodingParams);
-                    save(mat_file.results.encoding(i, mdlNames(j)),'pValues','-append');
+                    [ pValues, pSignificant ] = calcEncodingStats(img_beh, encodingParams);
+                    save(mat_file.results.encoding(i, mdlNames(j)),'pValues','pSignificant','-append');
             end
 
         end
@@ -242,13 +242,3 @@ end %calculate.fluorescence
 % summarize_Tactile2Visual_VTA(search_filter, options);
 figures_Tactile2Visual_VTA(search_filter, options); %In a separate function for brevity.
 
-%% Notes
-%
-%Determine relative contributions of each predictor
-%Generate pseudo-sessions of behavior for approximating null distribution
-% pseudoData = generatePseudoSessions(); %Design matrices X from shuffled trial data
-% for j = 1:numel(encodingMdl.model)
-%     % encodingMdl.relativeContribution =...
-%     %     calcRelContrib(encodingMdl.model{j}, encodingMdl.predictorIdx);
-%     [ RC, F, p ] = calcRelContrib(encodingMdl.model{j}, idx);
-% end

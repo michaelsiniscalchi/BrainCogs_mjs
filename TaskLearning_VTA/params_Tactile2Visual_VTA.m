@@ -160,13 +160,13 @@ params.bootAvg                  = specBootAvgParams(params.bootAvg); %params.boo
 params.encoding.dsFactor            = 1; %Downsample from interpolated rate of 1/params.interdt
 params.encoding.regularization      = "ridge";
 params.encoding.lambda              = [0 logspace(-3, 6, 19)]; %series of lambda values for cross-validation
-params.encoding.lambda_kfolds       = 10;
+params.encoding.lambda_kfolds       = 5;
 params.encoding.getRidgeTrace       = true;
 
-params.encoding.pseudoSessions      = true;
-params.encoding.nShuffles           = 100; %Number of shuffles for generating null distribution
+params.encoding.alpha               = 0.01;
+params.encoding.nShuffles           = 200; %Number of shuffles for generating null distribution
 
-params.encoding.modelName           = ["FM", "FM_noAllCues"]; %"posXcueSide_pos","only_posXcueSide", "only_posXcueType", 'firstCuesRewVelPos' 'only_position' "FM" 
+params.encoding.modelName           = ["FM_noAllCues"]; %"posXcueSide_pos","only_posXcueSide", "only_posXcueType", 'firstCuesRewVelPos' 'only_position' "FM" 
 if isscalar(params.encoding.modelName)
     params.encoding                 = specEncodingParams(params.encoding);
 end
