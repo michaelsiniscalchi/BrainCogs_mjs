@@ -217,9 +217,9 @@ if calculate.fluorescence
             img_beh = load(mat_file.img_beh(i),'dFF','t','cellID','trialData','trials');
             mdlNames = params.encoding.modelName;
             for j = 1:numel(mdlNames)
-                  encodingParams = specEncodingParams(params.encoding, mdlNames(j));
-                    % session = load(mat_file.results.encoding(i, mdlNames(j)), 'cellID','predictedDFF','predictorIdx','bSpline');                
-                    [ pValues, pSignificant ] = calcEncodingStats(img_beh, encodingParams);
+                  encodingParams = specEncodingParams(params.encoding, mdlNames(j));            
+                    % [ pValues, pSignificant ] = calcEncodingStats(img_beh, encodingParams);
+                    [ pValues, pSignificant ] = calcEncodingStats_parallel(img_beh, encodingParams);
                     save(mat_file.results.encoding(i, mdlNames(j)),'pValues','pSignificant','-append');
             end
 
