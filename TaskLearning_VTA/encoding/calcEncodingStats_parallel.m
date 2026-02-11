@@ -46,11 +46,12 @@ nShuffles = params.nShuffles;
 %Initialize sliced variables
 pValues_mat = NaN(numel(dFF), numel(pNames));
 
+% parfor i = 1:numel(dFF)
 parfor i = 1:numel(dFF)
     % Calculate F-statistic for Full vs. Reduced model
     
     %Full model
-    F = NaN(1,numel(pNames)) %Initialize
+    F = NaN(1,numel(pNames)); %Initialize
     y = dFF{i};
     [ rss_full, df_full ] = ...
         cvRidge(X, y, lambda, trialIdx, lambda_kfolds);
@@ -102,5 +103,5 @@ end
 %Convert matrix of p-values to struct
 for p = 1:numel(pNames)
     pSignificant.(pNames(p)) = mean(pValues_mat(:,p)<params.alpha);
-    pValues.(pNames(p)) = pValues_mat(:,p);
+    pValues.(pNames(p)) = pValues_mat(:, p)';
 end

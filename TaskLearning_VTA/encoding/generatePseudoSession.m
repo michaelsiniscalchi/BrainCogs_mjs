@@ -35,4 +35,8 @@ eventTimes = img_beh.trialData.eventTimes;
 
 %Make Predictors
 [ X, encodingData ] = encoding_makePredictors(trialData, trials, img_beh.t, params); 
-trialIdx = encodingData.trialIdx;
+
+%Circularly shift design matrix to decorrelate trial start-times from true and pseudo-sessions 
+k = randi(sum(encodingData.trialIdx==encodingData.trialIdx(1))); %Number of elements to shift, drawn from Uniform()
+X = circshift(X, k);
+trialIdx = circshift(encodingData.trialIdx, k); %Also shift trial index to match
