@@ -101,7 +101,7 @@ for i = 1:numel(dFF)
     end
 
     %P-value, calculated as P(F_null>F)
-    pValues_mat(i,:) = mean(F_null > F); 
+    pValues_mat(i,:) = mean(F_null > F, 1); 
 
 end
 
