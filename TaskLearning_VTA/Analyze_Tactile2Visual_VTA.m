@@ -218,8 +218,8 @@ if calculate.fluorescence
             mdlNames = params.encoding.modelName;
             for j = 1:numel(mdlNames)
                   encodingParams = specEncodingParams(params.encoding, mdlNames(j));            
-                    % [ pValues, pSignificant ] = calcEncodingStats(img_beh, encodingParams);
-                    [ pValues, pSignificant ] = calcEncodingStats_parallel(img_beh, encodingParams);
+                    % [ pValues, pSignificant ] = calcEncodingStats_parallel(img_beh, encodingParams);
+                    [ pValues, pSignificant ] = calcEncodingStats_parShuffle(img_beh, encodingParams);
                     save(mat_file.results.encoding(i, mdlNames(j)),'pValues','pSignificant','-append');
             end
 
