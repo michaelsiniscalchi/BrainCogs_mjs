@@ -13,7 +13,7 @@ calculate.dFF                       = false; %Calculate dF/F, with optional neur
 calculate.align_signals             = false; %Interpolate dF/F and align to behavioral events
 calculate.trial_average_dFF         = false; %dF/F averaged over specified subsets of trials
 calculate.encoding_model            = false; %Encoding model
-
+calculate.encoding_stats            = false; %Stats, eg pValues for each regressor and pSignificant neurons
 
 %% SUMMARIZE RESULTS
 summarize.behavior                  = false;
