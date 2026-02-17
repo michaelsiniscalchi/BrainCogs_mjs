@@ -17,7 +17,7 @@ Xk = repmat(log10(mdl.Lambda),1,2);
 y = mdl.CV.ridgeTrace;
 p = plot(X, y); hold on;
 %Assign colors/linestyles
-p = assignLineFormatting(p, glm.termIdx, colors);
+p = assignLineFormatting(p, glm.predictorIdx, colors);
 %Plot fitted lambda for this cell
 Yk = [min(y(:))-0.05*range(y(:)), max(y(:))+0.05*range(y(:))]; %Y-position of dotted line for lambda
 plot(Xk,Yk,'k:','LineWidth',1);
@@ -35,7 +35,7 @@ nexttile()
 y = glm.VIF_trace;
 p = plot(X, y); hold on;
 %Assign colors/linestyles
-p = assignLineFormatting(p, glm.termIdx, colors);
+p = assignLineFormatting(p, glm.predictorIdx, colors);
 %Plot fitted lambda for this cell
 Yk = [min(y(:))-0.05*range(y(:)), max(y(:))+0.05*range(y(:))];
 plot(Xk,Yk,'k:','LineWidth',1);
@@ -49,7 +49,7 @@ axis square tight
 %Legend
 ax = nexttile();
 ax.Visible = "off";
-leg = makeLegend(p, glm.termIdx);
+leg = makeLegend(p, glm.predictorIdx);
 leg.Layout.Tile = 3;
 leg.NumColumns = 2;
 

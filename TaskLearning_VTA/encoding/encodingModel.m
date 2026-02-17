@@ -77,30 +77,39 @@ for i = 1:numel(dFF)
         end
         
         %Coefficient estimates and SE
-        estimate = bSpline * mdl.Coefficients.Estimate(encodingData.termIdx.(varName)); %(approx. resp func) = bSpline * Beta
-        [mse, se] = deal(nan(size(estimate))); %initialize
+        termIdx = encodingData.termIdx.(varName)';
+        estimate = bSpline * mdl.Coefficients.Estimate(termIdx); %(approx. resp func) = bSpline * Beta
+        mse = nan(size(termIdx)); %initialize
         if encodingData.regularization~="ridge" %Coef SE estimates not meaningful after regularization
-            mse = (mdl.Coefficients.SE(encodingData.termIdx.(varName))).^2; %Calculate MSE, which is SE^2
-            se = sqrt(bSpline * mse); %Square root of weighted MSE
+            mse = mdl.Coefficients.SE(termIdx).^2; %Calculate MSE, which is SE^2
         end
 
         %Spatial/temporal kernels
-        glm.kernel(i).(varName).estimate = estimate'; %transpose for plotting
-        glm.kernel(i).(varName).se = (estimate + [1,-1].*se)'; %Express as estimate +/- se; transpose for plotting
-        glm.kernel(i).(varName).x = (0:binWidth:binWidth*(size(bSpline, 1)-1)) + x_min;
-        
-        %AUC
-        winDuration = range(glm.kernel(i).(varName).x);
-        glm.kernel(i).(varName).AUC = mean(estimate)*winDuration;
-        glm.kernel(i).(varName).AUC_se = sqrt(mean(mse).*winDuration);
-        
-        %Peak
-        peak = max(abs(estimate)); %Find extreme value
-        peakIdx = estimate==peak | estimate==-peak; %Get idx of extreme value
-        glm.kernel(i).(varName).peak = estimate(peakIdx); %Recover sign
-        glm.kernel(i).(varName).peak_se = se(peakIdx,:)';
-        %L2 Norm of kernel estimate
-        glm.kernel(i).(varName).L2 = norm(estimate); %Approx vector magnitude
+        glm.kernel(i).(varName) = kernelEstimates(estimate, mse, bSpline, binWidth, x_min);
+
+        %Kernel for position interaction terms expressed as sum of main and interaction effects
+        if ismember(varName, encodingData.positionVarNames) && varName~="position"
+            %Main effect estimates
+            mainEffectPos = ...
+                bSpline * mdl.Coefficients.Estimate(encodingData.termIdx.position); 
+            msePos = ...
+                mdl.Coefficients.SE(encodingData.termIdx.position).^2; %Calculate MSE, which is SE^2
+            %Kernel names
+            if varName=="towerSide_position"
+                    kernelNames = ["leftTowers_position", "rightTowers_position"];
+            elseif varName=="puffSide_position"
+                    kernelNames = ["leftPuffs_position", "rightPuffs_position"];
+            end
+            %Derive kernels
+            cueSide = [-1,1]; %["left","right"]
+            for j = 1:numel(kernelNames) 
+               sideEstimate = mainEffectPos + cueSide(j).*estimate; %Sum of main and interaction kernels
+               sideMSE = msePos+mse; %Sum of main and interaction MSE
+               glm.kernel(i).(kernelNames(j)) =...
+                   kernelEstimates(sideEstimate, sideMSE, bSpline, binWidth, x_min);
+            end
+        end
+
     end
 end
 
@@ -109,8 +118,9 @@ glm.X = [ones(size(X,1),1), X]; %Append a column of ones for constant term
 X = glm.X(~any(isnan(glm.X),2),:); %Remove NaN rows, which are omitted in regression
 
 %Calculate VIF and condition number for inversion of moment matrix
-VIF = getVIF(X); %Variance Inflation Factor (VIF)
-glm.VIF = VIF(2:end,:); %Include constant term in VIF calculation, but don't store VIF for c
+% VIF = getVIF(X); %Variance Inflation Factor (VIF)
+% glm.VIF = VIF(2:end,:); %Include constant term in VIF calculation, but don't store VIF for c
+glm.VIF = getVIF(X); %Variance Inflation Factor (VIF)
 glm.conditionNum = cond(X);
 
 glm.rank = rank(X); %Rank of design matrix, X
@@ -168,6 +178,29 @@ end
 y_hat = [ones(size(x,1),1), x]*beta; %Append a column of ones for intercept
 mse = mean((y - y_hat).^2, 1, "omitmissing"); %Training mse
 
+function kernelStruct = kernelEstimates(estimate, mse, bSpline, binWidth, x_min)
+
+%Standard Error, if applicable (else, mse=NaN)
+se = sqrt(bSpline * mse); %Square root of weighted MSE
+
+kernelStruct.estimate = estimate'; %transpose for plotting
+kernelStruct.se = (estimate + [1,-1].*se)'; %Express as estimate +/- se; transpose for plotting
+kernelStruct.x = (0:binWidth:binWidth*(size(bSpline, 1)-1)) + x_min;
+
+%AUC
+winDuration = range(kernelStruct.x);
+kernelStruct.AUC = mean(estimate)*winDuration;
+kernelStruct.AUC_se = sqrt(mean(mse).*winDuration);
+
+%Peak
+peak = max(abs(estimate)); %Find extreme value
+peakIdx = estimate==peak | estimate==-peak; %Get idx of extreme value
+kernelStruct.peak = estimate(peakIdx); %Recover sign
+kernelStruct.peak_se = se(peakIdx,:)';
+
+%L2 Norm of kernel estimate
+kernelStruct.L2 = norm(estimate); %Approx vector magnitude
+
 %NEXT STEP: determine the relative influence of each class of predictors in
 %the model (ie, firstTower(1:n) or velocity) using mdl2 = removeTerms(mdl1, terms)
 %**** NOT VALID FOR RIDGE REGRESSION...NEED ALT ANALYSIS
@@ -197,4 +230,21 @@ mse = mean((y - y_hat).^2, 1, "omitmissing"); %Training mse
 % [mdl, FitInfo] = ...
 % fitrlinear(X', dFF{i},'ObservationsIn','columns','Lambda',lambda);
 %  glm.model{i} = mdl;
-
+%
+% Kernels Estimates
+% glm.kernel(i).(varName).estimate = estimate'; %transpose for plotting
+% glm.kernel(i).(varName).se = (estimate + [1,-1].*se)'; %Express as estimate +/- se; transpose for plotting
+% glm.kernel(i).(varName).x = (0:binWidth:binWidth*(size(bSpline, 1)-1)) + x_min;
+%
+% %AUC
+% winDuration = range(glm.kernel(i).(varName).x);
+% glm.kernel(i).(varName).AUC = mean(estimate)*winDuration;
+% glm.kernel(i).(varName).AUC_se = sqrt(mean(mse).*winDuration);
+%
+% %Peak
+% peak = max(abs(estimate)); %Find extreme value
+% peakIdx = estimate==peak | estimate==-peak; %Get idx of extreme value
+% glm.kernel(i).(varName).peak = estimate(peakIdx); %Recover sign
+% glm.kernel(i).(varName).peak_se = se(peakIdx,:)';
+% %L2 Norm of kernel estimate
+% glm.kernel(i).(varName).L2 = norm(estimate); %Approx vector magnitude
