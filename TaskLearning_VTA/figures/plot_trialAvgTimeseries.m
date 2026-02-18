@@ -62,6 +62,7 @@ for i = 1:nPanels
 
     leg.Box = 'off';
     leg.AutoUpdate = 'off';
+    leg.Interpreter = 'none';
     
     % Axis label & title
     xlabel(xLabel);
