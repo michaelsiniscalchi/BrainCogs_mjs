@@ -92,6 +92,22 @@ ax(i).lineStyle     = ["-","-"];
 ax(i).xLabel        = 'Position (cm)';
 i=i+1;
 
+%Plot position interactions with main effect
+ax(i).title         = "Position x Puff Side + Position";
+ax(i).varName       = ["leftPuffs_position", "rightPuffs_position", "position"];
+ax(i).window        = [-30, 250];
+ax(i).color         = {colors.left, colors.right, colors.gray}; 
+ax(i).lineStyle     = ["-","-","--"];
+ax(i).xLabel        = 'Position (cm)';
+i=i+1;
+ax(i).title         = "Position x Tower Side + Position";
+ax(i).varName       = ["leftTowers_position", "rightTowers_position", "position"];
+ax(i).window        = [-30, 250];
+ax(i).color         = {colors.left, colors.right, colors.gray}; 
+ax(i).lineStyle     = ["-","-","--"]; 
+ax(i).xLabel        = 'Position (cm)';
+i=i+1;
+
 % ax(i).title         = "Position";
 % ax(i).comparison    = "position";
 % ax(i).trigger       = "cueRegion";
