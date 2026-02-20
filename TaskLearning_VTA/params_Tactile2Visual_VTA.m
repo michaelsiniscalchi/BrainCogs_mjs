@@ -166,7 +166,7 @@ params.encoding.getRidgeTrace       = true;
 params.encoding.alpha               = 0.01;
 params.encoding.nShuffles           = 200; %Number of shuffles for generating null distribution
 
-params.encoding.modelName           = ["FM_noAllCues"]; %"posXcueSide_pos","only_posXcueSide", "only_posXcueType", 'firstCuesRewVelPos' 'only_position' "FM" 
+params.encoding.modelName           = ["only_position","posXcueSide_pos"]; %"posXcueSide_pos","only_posXcueSide", "only_posXcueType", 'firstCuesRewVelPos' 'only_position' "FM" 
 if isscalar(params.encoding.modelName)
     params.encoding                 = specEncodingParams(params.encoding);
 end
