@@ -88,7 +88,7 @@ for i = 1:numel(dFF)
         glm.kernel(i).(varName) = kernelEstimates(estimate, mse, bSpline, binWidth, x_min);
 
         %Kernel for position interaction terms expressed as sum of main and interaction effects
-        if ismember(varName, encodingData.positionVarNames) && varName~="position"
+        if ismember(varName, ["towerSide_position", "puffSide_position"])
             %Main effect estimates
             mainEffectPos = ...
                 bSpline * mdl.Coefficients.Estimate(encodingData.termIdx.position); 
