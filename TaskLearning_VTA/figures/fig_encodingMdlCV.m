@@ -91,12 +91,11 @@ end
 [lineSeries.LineWidth] = deal(1);
 
 function leg = makeLegend(lineSeries, pIdx)
-f = string(fieldnames(pIdx));
-for i = 1:numel(f)
-    subset(i) = pIdx.(f(i))(1); %first instance of each predictor type
-    labels(i) = f(i);
+labels = fieldnames(pIdx);
+for i = 1:numel(labels)
+    subset(i) = pIdx.(labels{i})(1); %first instance of each predictor type
 end
-leg = legend(lineSeries(subset), {labels},... %cell array in case of single-regressor models, where MATLAB interprets a string as a property name
+leg = legend(lineSeries(subset), labels,... %cell array in case of single-regressor models, where MATLAB interprets a string as a property name
     'Location', 'bestoutside','FontSize', 10, 'Interpreter','none');
 
 % %Co-plot CV error and condition number

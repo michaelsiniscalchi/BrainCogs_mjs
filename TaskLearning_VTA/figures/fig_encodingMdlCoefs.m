@@ -37,12 +37,13 @@ for i = 1:numel(predictorNames)
 end
 title('Encoding Model Coefficients')
 ax(1) = gca;
-set(ax(1),'XTick',txtX,'XTickLabel',predictorNames);
+set(ax(1),'XTick',txtX,'XTickLabel',predictorNames,'TickLabelInterpreter','none');
 ax(1).YLabel.String = 'Regression coefficient';
 axis tight; box off
 
 %AUC of each kernel
-figs(2) = figure('Name',[glm.sessionID,'-kernel AUC-','-cell', cellIDs{cellIdx}], 'Position', [300,300,1000,500]);
+figs(2) = figure('Name',[glm.sessionID,'-kernel AUC-','-cell', cellIDs{cellIdx}],...
+    'Position', [300,300,1000,500]);
 pNames = predictorNames(ismember(predictorNames, kernelNames));
 kernel = glm.kernel(cellIdx);
 plotBaseline(0:numel(pNames)+1); %Plot baseline at AUC=0 
