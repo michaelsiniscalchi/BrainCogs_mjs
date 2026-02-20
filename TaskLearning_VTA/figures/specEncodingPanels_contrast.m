@@ -44,7 +44,7 @@ ax(i).lineStyle     = ["-","-"];
 ax(i).xLabel        = 'Time from cue (s)';
 i=i+1;
 
-% %All Puffs
+%All Puffs
 ax(i).title         = "Puffs";
 ax(i).varName       = ["leftPuffs", "rightPuffs"];
 ax(i).window        = [-1, 2];
@@ -106,6 +106,15 @@ ax(i).varName       = ["leftTowers_position", "rightTowers_position", "position"
 ax(i).window        = [-inf, inf];
 ax(i).color         = {colors.left, colors.right, colors.gray}; 
 ax(i).lineStyle     = ["-","-","--"]; 
+ax(i).xLabel        = 'Position (cm)';
+i=i+1;
+
+%Plot only main effect of position, for troubleshooting
+ax(i).title         = "Position";
+ax(i).varName       = ["position"];
+ax(i).window        = [-inf, inf];
+ax(i).color         = {colors.data}; 
+ax(i).lineStyle     = ["-"];
 ax(i).xLabel        = 'Position (cm)';
 i=i+1;
 
