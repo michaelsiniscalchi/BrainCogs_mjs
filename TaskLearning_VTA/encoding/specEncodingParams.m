@@ -68,6 +68,10 @@ switch modelName
         params.predictorNames = "position";
         params.positionSpline = true; 
 
+    case 'position_speed'
+        params.predictorNames = ["position","speed"];
+        params.positionSpline = true;
+
     case 'only_cues'
         params.predictorNames = [...
             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower",...
@@ -83,18 +87,6 @@ switch modelName
         params.predictorNames = [
             "firstLeftPuff","firstRightPuff","firstLeftTower","firstRightTower"...
             ];
-   
-    case 'only_posXcueSide'
-        params.predictorNames = [...
-            "towerSide_position","puffSide_position"...
-            ];
-        params.positionSpline = true;
-   
-    case 'only_posXcueType'
-        params.predictorNames = [...
-            "leftPuffs_position","rightPuffs_position","leftTowers_position","rightTowers_position",...
-            ];
-        params.positionSpline = true;
 
     case 'posXcueSide_pos' %Minimal posXcueSide model with position term
         params.predictorNames = [...

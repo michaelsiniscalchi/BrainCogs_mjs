@@ -166,7 +166,7 @@ params.encoding.getRidgeTrace       = true;
 params.encoding.alpha               = 0.01;
 params.encoding.nShuffles           = 200; %Number of shuffles for generating null distribution
 
-params.encoding.modelName           = ["only_position","posXcueSide_pos"]; %"posXcueSide_pos","only_posXcueSide", "only_posXcueType", 'firstCuesRewVelPos' 'only_position' "FM" 
+params.encoding.modelName           = "position_speed"; %"FM_cueTypeXpos" "posXcueSide_pos","only_posXcueSide", "only_posXcueType", 'firstCuesRewVelPos' 'only_position' "FM" 
 if isscalar(params.encoding.modelName)
     params.encoding                 = specEncodingParams(params.encoding);
 end
@@ -216,8 +216,8 @@ clearvars p
 
 %% FIGURE: Single-unit encoding model
 
-params.figs.encoding.panels = specEncodingPanels( params.figs );
-params.figs.encoding.panels_contrast = specEncodingPanels_contrast( params.figs );
+params.figs.encoding.panels = specEncodingPanels( params.figs ); %For observed vs. predicted dF/F
+params.figs.encoding.panels_contrast = specEncodingPanels_contrast( params.figs ); %left-cue vs. right-cue, etc
 
 %% FIGURE: Summary, behavior vs. imaging/encoding across sessions
 P.panels = spec_behEncodingPanels(params.figs.all.colors);
