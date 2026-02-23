@@ -31,68 +31,83 @@ function [ pValues, pSignificant ] = calcEncodingStats( img_beh, params )
 %Full Design Matrix
 [X, encodingData] = ...
     encoding_makePredictors(img_beh.trialData, img_beh.trials, img_beh.t, params); %Make Predictors
-pIdx = encodingData.predictorIdx;
 
-for i = 1:numel(img_beh.dFF)
+%Unpack variables for parallelization
+dFF = img_beh.dFF;
+beh = rmfield(img_beh,{'dFF','cellID'});
+pNames = string(fieldnames(encodingData.predictorIdx));
+pIdx = struct2cell(encodingData.predictorIdx);
+trialIdx = encodingData.trialIdx;
+
+lambda = params.lambda;
+lambda_kfolds = params.lambda_kfolds;
+nShuffles = params.nShuffles;
+
+%Initialize sliced variables
+pValues_mat = NaN(numel(dFF), numel(pNames));
+
+% parfor i = 1:numel(dFF) %TEST parfor i = 1:numel(dFF) AND parfor j = 1:nShuffles
+for i = 1:numel(dFF)
     % Calculate F-statistic for Full vs. Reduced model
     
     %Full model
-    y = img_beh.dFF{i};
-    [ rss.full, df.full ] = ...
-        cvRidge(X, y, params.lambda, encodingData.trialIdx, params.lambda_kfolds);
+    F = NaN(1,numel(pNames)); %Initialize
+    y = dFF{i};
+    [ rss_full, df_full ] = ...
+        cvRidge(X, y, lambda, trialIdx, lambda_kfolds);
 
-    
-    for f = params.predictorNames
+    %Reduced model
+    for p = 1:numel(pNames)   
 
-        %Reduced model
         reducedIdx = true(1, size(X,2)); %Initialize predictor idx for reduced model
-        reducedIdx(pIdx.(f)) = false; %Drop variable of interest
+        reducedIdx(pIdx{p}) = false; %Drop variable of interest
 
         X_reduced = X(:, reducedIdx);
-        [ rss.reduced, df.reduced ] = ...
-            cvRidge(X_reduced, y, params.lambda, encodingData.trialIdx, params.lambda_kfolds);
+        [ rss_reduced, df_reduced ] = ...
+            cvRidge(X_reduced, y, lambda, trialIdx, lambda_kfolds);
 
-        F.(f) = ((rss.reduced-rss.full)/(df.reduced-df.full)) / (rss.full/df.full);
+        %F-statistic for Full vs. Reduced Model
+        F(p) = ((rss_reduced-rss_full)/(df_reduced-df_full)) / (rss_full/df_full);
     end
 
     % Null Distribution for F-stat
-    for j = 1:params.nShuffles
+    F_null = NaN(nShuffles, numel(pNames)); %Initialize
+    % for j = 1:nShuffles
+    parfor j = 1:nShuffles
         %Construct new design matrix from shuffled trials
-        [X_null, trialIdx] = generatePseudoSession(img_beh, params);
+        [X_null, pseudoIdx] = generatePseudoSession(beh, params);
 
         %Full model - shuffled trials
-        [ rss.full, df.full ] = ...
-            cvRidge(X_null, y, params.lambda, trialIdx, params.lambda_kfolds);
+        [ rss_full, df_full ] = ...
+            cvRidge(X_null, y, lambda, pseudoIdx, lambda_kfolds);
 
         %Reduced models - shuffled trials
-        for f = params.predictorNames
+        F_null_temp = NaN(1,numel(pNames));
+        for p = 1:numel(pNames)
             reducedIdx = true(1, size(X,2)); %Initialize predictor idx for reduced model
-            reducedIdx(pIdx.(f)) = false; %Drop variable of interest
+            reducedIdx(pIdx{p}) = false; %Drop variable of interest
             X_reduced = X_null(:, reducedIdx);
 
-            [ rss.reduced, df.reduced ] = ...
-                cvRidge(X_reduced, y, params.lambda, trialIdx, params.lambda_kfolds);
+            [ rss_reduced, df_reduced ] = ...
+                cvRidge(X_reduced, y, lambda, pseudoIdx, lambda_kfolds);
 
-            F_null.(f)(j) = ((rss.reduced-rss.full)/(df.reduced-df.full)) / (rss.full/df.full);
-            %In initial tests, found some RSS_full>RSS_reduced
+            %Null Distribution for the F-statistic (size: nShuffles x nPredictors)
+            % F_null(j, p) = ((rss_reduced-rss_full)/(df_reduced-df_full)) / (rss_full/df_full);
+            F_null_temp(p) = ((rss_reduced-rss_full)/(df_reduced-df_full)) / (rss_full/df_full); %Null F-stat for each reduced model
         end
+
+        %Null Distribution for the F-statistic (size: nShuffles x nPredictors)
+        F_null(j, :) = F_null_temp; %Populate with row of null F-stats, one for each dropped variable
     end
 
     %P-value, calculated as P(F_null>F)
-    for f = params.predictorNames
-        pValues.(f)(i) = mean(F_null.(f)>F.(f));
-    end
+    pValues_mat(i,:) = mean(F_null > F, 1); 
+
 end
 
-%Finally, get the proportion of cells p<alpha for each variable
-for f = params.predictorNames
-    pSignificant.(f) = mean(pValues.(f)<params.alpha);
+%Get the proportion of cells p<alpha for each variable
+%Convert matrix of p-values to struct
+for p = 1:numel(pNames)
+    pSignificant.(pNames(p)) = mean(pValues_mat(:,p)<params.alpha);
+    pValues.(pNames(p)) = pValues_mat(:, p)';
 end
-
-
-
-function [y_hat, rss, mse] = ridgePredict( x, y, k )
-beta = ridge(y, x, k, 0); %Last ARG=0, restore scale of the data, and include intercept
-y_hat = [ones(size(x,1),1), x]*beta; %Append a column of ones for intercept
-rss = norm(y - y_hat);
-mse = mean((y - y_hat).^2, 1, "omitmissing"); %Training mse

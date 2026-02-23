@@ -71,7 +71,7 @@ for i = 1:numel(cellIdx)
     ax_titles = {panels(:).title}'; %Specified in params.panels
 
     figs(i) = plot_trialAvgTimeseries(panels, ax_titles, xLabel, yLabel, legend_loc);
-
+    
     figName = join([panels.title,'_', glm.sessionID, '_cell', glm.cellID{idx}],''); %Figure name
     figs(i).Name = figName;
     figs(i).Position = fig_pos; %LBWH

@@ -117,7 +117,7 @@ for event = string(fieldnames(impulse))'
 end
 
 %Position splines (alternative to linear position, for interactions)
-bSp = NaN; %Basis funcs for position
+
 binEdges = NaN; %Positions for domain of basis funcs
 if ~isempty(params.positionVars)
     binEdges = trialData.positionRange(1):params.bSpline.position.binWidth:trialData.positionRange(2);
@@ -125,7 +125,7 @@ if ~isempty(params.positionVars)
         trialData.positionRange(1); %Trials where mouse moves backward from start position will likely be excluded, but need idx for implementation of position splines
     posIdx = discretize(predictors.position, binEdges); %Index each cm across position range; with wider bins, use discretize()
 
-    bSp = makeBSpline(params.bSpline.position.degree,...
+    bSp = makeBSpline(params.bSpline.position.degree,... %Basis funcs for position
         params.bSpline.position.df, numel(binEdges)-1);
 
     idx = ~isnan(posIdx);
