@@ -34,9 +34,14 @@ eventTimes = img_beh.trialData.eventTimes;
     trialData.session_date = img_beh.trialData.session_date;
 
 %Make Predictors
-[ X, encodingData ] = encoding_makePredictors(trialData, trials, img_beh.t, params); 
+[ X, encodingData ] = encoding_makePredictors(trialData, trials, img_beh.t, params);
+
+%Exclude any NaN rows (also excluded in the regression)
+exclIdx = any(isnan(X),2); 
+X = X(~exclIdx,:);
+trialIdx = encodingData.trialIdx(~exclIdx);
 
 %Circularly shift design matrix to decorrelate trial start-times from true and pseudo-sessions 
-k = randi(sum(encodingData.trialIdx==encodingData.trialIdx(1))); %Number of elements to shift, drawn from Uniform()
+k = randi(sum(trialIdx==trialIdx(1))); %Number of elements to shift, drawn from Uniform()
 X = circshift(X, k);
 trialIdx = circshift(encodingData.trialIdx, k); %Also shift trial index to match
