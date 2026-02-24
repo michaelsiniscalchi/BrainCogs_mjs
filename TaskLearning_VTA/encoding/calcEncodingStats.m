@@ -33,21 +33,15 @@ function [ pValues, pSignificant ] = calcEncodingStats( img_beh, params )
     encoding_makePredictors(img_beh.trialData, img_beh.trials, img_beh.t, params); %Make Predictors
 
 %Unpack variables for parallelization
-dFF = img_beh.dFF; 
+dFF = img_beh.dFF;
 beh = rmfield(img_beh,{'dFF','cellID'});
-trialIdx = encodingData.trialIdx;
 pNames = string(fieldnames(encodingData.predictorIdx));
 pIdx = struct2cell(encodingData.predictorIdx);
+trialIdx = encodingData.trialIdx;
 
 lambda = params.lambda;
 lambda_kfolds = params.lambda_kfolds;
 nShuffles = params.nShuffles;
-
-%Remove NaN rows (also omitted in regression)
-exclIdx = any(isnan(X),2); 
-X = X(~exclIdx,:);
-dFF = cellfun(@(C) C(~exclIdx), dFF,'UniformOutput', false); %Also exclude values corresponding to any(isnan(X),2)
-trialIdx = trialIdx(~exclIdx);
 
 %Initialize sliced variables
 pValues_mat = NaN(numel(dFF), numel(pNames));
@@ -90,7 +84,7 @@ for i = 1:numel(dFF)
         %Reduced models - shuffled trials
         F_null_temp = NaN(1,numel(pNames));
         for p = 1:numel(pNames)
-            reducedIdx = true(1, size(X_null,2)); %Initialize predictor idx for reduced model
+            reducedIdx = true(1, size(X,2)); %Initialize predictor idx for reduced model
             reducedIdx(pIdx{p}) = false; %Drop variable of interest
             X_reduced = X_null(:, reducedIdx);
 
