@@ -236,9 +236,8 @@ end %calculate.fluorescence
 %   -organize session data in structure for comparisons and longit. plotting
 %   -start with summary measures (peak & mean dF/F across 2-s following trigger)
 %Also calculate mean dF/F across cells
-
+% summarize_Tactile2Visual_VTA(search_filter, options);
 
 %% FIGURES
-% summarize_Tactile2Visual_VTA(search_filter, options);
-figures_Tactile2Visual_VTA(search_filter, options); %In a separate function for brevity.
+% figures_Tactile2Visual_VTA(search_filter, options); %In a separate function for brevity.
 
