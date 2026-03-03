@@ -213,16 +213,14 @@ if calculate.fluorescence
         end
 
         if calculate.encoding_stats
-%             %Generate pseudosessions and predictors for all models
+            %Estimate p-values and proportion of neurons significant for each predictor
             img_beh = load(mat_file.img_beh(i),'dFF','t','cellID','trialData','trials');
             mdlNames = params.encoding.modelName;
             for j = 1:numel(mdlNames)
-                  encodingParams = specEncodingParams(params.encoding, mdlNames(j));            
-                    % [ pValues, pSignificant ] = calcEncodingStats_parallel(img_beh, encodingParams);
-                    [ pValues, pSignificant ] = calcEncodingStats(img_beh, encodingParams);
-                    save(mat_file.results.encoding(i, mdlNames(j)),'pValues','pSignificant','-append');
+                encodingParams = specEncodingParams(params.encoding, mdlNames(j));
+                [ pValues, pSignificant ] = calcEncodingStats(img_beh, encodingParams);
+                save(mat_file.results.encoding(i, mdlNames(j)),'pValues','pSignificant','-append'); %Save
             end
-
         end
 
     disp(['Total time needed for cellular fluorescence analyses: ' num2str(toc) 'sec.']);

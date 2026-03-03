@@ -69,7 +69,7 @@ for i = 1:numel(subjects)
             'noTowers',[], 'hiTowers', [], 'loTowers', [],...
             'leftPuffs',[],'rightPuffs',[],...
             'noPuffs', [], 'hiPuffs', [], 'loPuffs', [],...
-            'leftCues',[],'rightCues',[],... %logical
+            'leftCues',[],'rightCues',[], 'noCues',[],... %logical
             'visualRule',[],'tactileRule',[],'forcedChoice',[],... %logical
             'correct',[],'error',[],'omit',[],'congruent',[],'conflict',[],... %logical
             'priorLeft',[],'priorRight',[],'priorCorrect',[],'priorError',[],... %logical
@@ -156,7 +156,7 @@ for i = 1:numel(subjects)
             eventTimes(blockIdx==k,1) = getTrialEventTimes(logs, k); %Need logs and block idx for time, because restarts/new blocks cause divergent time references
 
             %Cue positions and number on each side
-            [towerPositions(blockIdx==k,1), puffPositions(blockIdx==k,1)] = getCuePositions(logs, k);
+            [towerPositions(blockIdx==k,:), puffPositions(blockIdx==k,:)] = getCuePositions(logs, k);
 
             nTowers(blockIdx==k,:) = [...
                 arrayfun(@(idx) numel(towerPositions{idx}{1}), find(blockIdx==k)'),... %Left cues
@@ -269,8 +269,10 @@ for i = 1:numel(subjects)
             % leftPuffsHi, leftPuffsLo, rightPuffsHi, rightPuffsLo,...
 
         %Initialize
-        [left, right, leftTowers, rightTowers, noTowers, hiTowers, loTowers,... 
+        [left, right,...
+            leftTowers, rightTowers, noTowers, hiTowers, loTowers,... 
             leftPuffs, rightPuffs, noPuffs, hiPuffs, loPuffs,...
+            leftCues, rightCues, noCues,... %Relevant cue side
             tactileRule, visualRule, forcedChoice,...
             correct, omit, congruent, conflict, forward, stuck] = deal(false(1,numel(blockIdx)));
         level = nan(1,numel(blockIdx));
@@ -336,6 +338,7 @@ for i = 1:numel(subjects)
         rightCues = (rightTowers & visualRule) | (rightPuffs & tactileRule); %Relevant cue
         noTowers = ~leftTowers & ~rightTowers;
         noPuffs = ~leftPuffs & ~rightPuffs;
+        noCues = ~leftCues & ~rightCues;
         [hiTowers, loTowers, hiPuffs, loPuffs] =...
             get_cueQuantiles(trialData(j), forward & ~forcedChoice, 3); %Three quantiles yields P<0.25 and P>=0.75
 
@@ -349,7 +352,7 @@ for i = 1:numel(subjects)
             'noTowers', noTowers, 'hiTowers', hiTowers, 'loTowers', loTowers,... %Cue count
             'leftPuffs',leftPuffs,'rightPuffs',rightPuffs,... %Cue side
             'noPuffs', noPuffs, 'hiPuffs', hiPuffs, 'loPuffs', loPuffs,... %Cue count
-            'leftCues',leftCues,'rightCues',rightCues,... %Relevant cue side
+            'leftCues',leftCues,'rightCues', rightCues, 'noCues', noCues,... %Relevant cue side
             'visualRule',visualRule,'tactileRule',tactileRule,'forcedChoice',forcedChoice,... %Rule
             'correct',correct,'error',err,'omit',omit,... %Outcome
             'priorLeft',[0, left(1:end-1)],'priorRight',[0, right(1:end-1)],... %Trial history
@@ -409,9 +412,9 @@ for i = 1:numel(subjects)
             nTrials(k) = numel(logs.block(k).trial);
             nCompleted(k) = sum(~omit & blockIdx==k);
             nForward(k) = sum(fwdIdx);
-            pCorrect(k) = mean(correct(~omit & blockIdx==k));
-            pCorrect_congruent(k) = mean(correct(~omit & congruent & blockIdx==k));
-            pCorrect_conflict(k) = mean(correct(~omit & conflict & blockIdx==k));
+            pCorrect(k) = mean(correct(~omit & ~noCues & blockIdx==k));
+            pCorrect_congruent(k) = mean(correct(~omit & ~noCues & congruent & blockIdx==k));
+            pCorrect_conflict(k) = mean(correct(~omit & ~noCues & conflict & blockIdx==k));
             pOmit(k) = mean(omit(blockIdx==k));
 
             %Sensory cues
@@ -444,8 +447,9 @@ for i = 1:numel(subjects)
                 - median(trialData(j).response_delay(fwdIdx & left));
 
             %Moving average correct rate (100 trial moving window)
-            tempCorrect = double(correct(blockIdx==k) & ~exclude(blockIdx==k));
-            tempCongruent = congruent(blockIdx==k) & ~exclude(blockIdx==k);
+            tempIdx = blockIdx==k & ~exclude & ~noCues;
+            tempCorrect = double(correct(tempIdx));
+            tempCongruent = congruent(tempIdx);
             hits = struct('all',tempCorrect,'congruent',tempCorrect,'conflict',tempCorrect);
             hits.congruent(~tempCongruent) = NaN;
             hits.conflict(tempCongruent) = NaN;
@@ -471,14 +475,7 @@ for i = 1:numel(subjects)
         cueHistogram = struct('puffs',[],'towers',[],'edges',[]);
         nBins = 4; %bins per cueSide
         psychometric = getPsychometricCurve(trialData(j), trials(j), ~trials(j).exclude, nBins);
-        %***Remove? Probably not needed:
-        % if any(trials(j).conflict) %Multimodal sessions
-        %     trialSubset = trials(j).congruent & ~trials(j).exclude;
-        %     psychometric.congruent = getPsychometricCurve(trialData(j), trials(j), trialSubset, nBins);
-        %     trialSubset = trials(j).conflict & ~trials(j).exclude;
-        %     psychometric.conflict = getPsychometricCurve(trialData(j), trials(j), trialSubset, nBins);
-        % end
-
+       
         %Cue histogram
         nTowers = trialData(j).nTowers;
         nPuffs = trialData(j).nPuffs;

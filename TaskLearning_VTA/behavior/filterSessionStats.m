@@ -108,8 +108,8 @@ for i = 1:numel(subjects)
         S.bias = rightSensitivity-leftSensitivity;
 
         %Recalculate moving average correct rate
-        tempCorrect = double(trials.correct(~trials.exclude));
-        tempCongruent = trials.congruent(~trials.exclude);
+        tempCorrect = double(trials.correct(~trials.exclude & ~trials.noCues));
+        tempCongruent = trials.congruent(~trials.exclude & ~trials.noCues);
         hits = struct('all',tempCorrect,'congruent',tempCorrect,'conflict',tempCorrect);
         hits.congruent(~tempCongruent) = NaN;
         hits.conflict(tempCongruent) = NaN;

@@ -8,6 +8,7 @@ coefNames = string(fieldnames(sessions(1).termIdx));
 coefParams = string(fieldnames(sessions(1).coef));
 kernelNames = string(fieldnames(sessions(1).kernel));
 kernelParams = string(fieldnames(sessions(1).kernel(1).(kernelNames(1))));
+pValNames = string(fieldnames(sessions(1).pValues));
 
 session_date = [sessions(:).session_date];
 
@@ -24,12 +25,22 @@ for i = 1:numel(sessions)
                 S.kernel.(kName).(kParam){i,:}{j,:} =...
                     (sessions(i).kernel(j).(kName).(kParam)); %one cell per entry
             end
+            %p-values
+            if ismember(kName, pValNames)
+                S.kernel.(kName).pValues{i,:}{j,:} =...
+                    sessions(i).pValues.(kName)(j);
+            end
         end
         %Coefficients for kinematic vars, etc.
         for cName = coefNames'
             for cParam = coefParams'
                 S.coef.(cName).(cParam){i,:}{j,:} =...
                     sessions(i).coef.(cParam)(j, termIdx.(cName));
+            end
+            %p-values for grouped coefficients (scalar or spline, etc.)
+            if ismember(cName, pValNames)
+                S.coef.(cName).pValues{i,:}{j,:} =...
+                    sessions(i).pValues.(cName)(j);
             end
         end
     end
