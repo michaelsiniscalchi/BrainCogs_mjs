@@ -184,17 +184,19 @@ for P = pNames
 end
 
 %Z-score the predictor matrix
+X_sd = std(X,[],1); %Store sd of each predictor
 X = normalize(X,1,"zscore");
 
 %Metadata & hyperparams
 encodingData.session_date = trialData.session_date;
 encodingData.predictorIdx = predictorIdx;
+encodingData.predictorSD = X_sd; %Needed for restoring B to scale of data
 encodingData.termIdx = termIdx;
 encodingData.trialIdx = trialIdx;
 encodingData.dt = mean(diff(t),'omitnan'); %Use mean dt
 for f = string(fieldnames(params))' %Store all input hyperparams
     encodingData.(f) = params.(f);
 end
-% encodingData.impulse = impulse; %event-times as delta functions in imaging time frame
+
 encodingData.bSpline = bSpline; %Store series of basis functions
 encodingData.position = binEdges(1:end-1); %Positions for domain of basis funcs
