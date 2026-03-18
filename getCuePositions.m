@@ -12,3 +12,7 @@ for i = 1:numel(trials)
         puffPositions{i} = logs.block(blockIdx).trial(i).puffPos;
     end
 end
+
+% Alternative syntax; not sure if it's faster!
+% [cellfun(@(C) sum([numel(C{1}), numel(C{2})]), {log.block(blockIdx).trial(1:nTrials).cuePos});
+% cellfun(@(C) sum([numel(C{1}), numel(C{2})]), {log.block(blockIdx).trial(1:nTrials).puffPos})]

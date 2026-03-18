@@ -107,12 +107,17 @@ for i = 1:numel(subjects)
             /sum(trials.rightCues(~trials.exclude));
         S.bias = rightSensitivity-leftSensitivity;
 
-        %Recalculate moving average correct rate
-        tempCorrect = double(trials.correct(~trials.exclude & ~trials.noCues));
-        tempCongruent = trials.congruent(~trials.exclude & ~trials.noCues);
+        %Recalculate moving average correct rate 
+        % ***FUTURE, make standalone function and use both here and in getRemoteVRData.m
+        tempIdx = ~(trials.exclude | trials.noCues); %Exclude trials with no relevant cues
+        tempCorrect = double(trials.correct(tempIdx));
+        tempCongruent = trials.congruent(tempIdx);
+        tempConflict = trials.conflict(tempIdx);
+        tempZeroCue = trials.noTowers(tempIdx)|trials.noPuffs(tempIdx);
+
         hits = struct('all',tempCorrect,'congruent',tempCorrect,'conflict',tempCorrect);
-        hits.congruent(~tempCongruent) = NaN;
-        hits.conflict(tempCongruent) = NaN;
+        hits.congruent(tempConflict|tempZeroCue) = NaN;
+        hits.conflict(tempCongruent|tempZeroCue) = NaN;
 
         S.movmeanAccuracy = struct();
         for f = ["all","congruent","conflict"]
@@ -127,9 +132,9 @@ for i = 1:numel(subjects)
         S.maxmeanAccuracy_conflict = maxmeanAccuracy.conflict;
 
         %Moving average perceptual bias
-        hits = struct('leftCue',NaN(1, sum(forwardMask)),'rightCue',NaN(1, sum(forwardMask)));
+        hits = struct('leftCue',NaN(1, sum(tempIdx)),'rightCue',NaN(1, sum(tempIdx)));
         for f = ["left","right","leftCues","rightCues"]
-            mask.(f) = trials.(f)(forwardMask); %Temporary masks
+            mask.(f) = trials.(f)(tempIdx); %Temporary masks
         end
         hits.leftCue(mask.leftCues) = mask.left(mask.leftCues);
         hits.rightCue(mask.rightCues) = mask.right(mask.rightCues);

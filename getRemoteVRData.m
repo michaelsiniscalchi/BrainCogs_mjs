@@ -82,6 +82,7 @@ for i = 1:numel(subjects)
             'nTrials', [], 'nCompleted', [], 'nForward', [],...
             'pCorrect', [], 'pCorrect_congruent',[], 'pCorrect_conflict', [], 'pOmit', [],...
             'pLeftTowers', [], 'pLeftPuffs', [], 'pLeftCues', [],...
+            'pZeroTowers', [], 'pZeroPuffs', [], 'pZeroCues', [],...
             'pStuck', [],...
             'movmeanAccuracy',struct(),...
             'maxmeanAccuracy',NaN,'maxmeanAccuracy_congruent',NaN,'maxmeanAccuracy_conflict',NaN,...
@@ -306,21 +307,22 @@ for i = 1:numel(subjects)
             right(blockIdx==k) = [Trials.choice]==Choice.R;
 
             %Outcomes
-            correct(blockIdx==k) = [Trials.choice]==[Trials.trialType];
+            correct(blockIdx==k) = [Trials.choice]==[Trials.trialType]; 
             omit(blockIdx==k) = [Trials.choice]==Choice.nil;
 
-            %Trials where alternative rules agree or conflict
-            if isfield(Trials,"visualRule")...
-                    && ~any([Trials.forcedChoice])... %Visual or Tactile rule
-                    && any([leftPuffs(blockIdx==k), rightPuffs(blockIdx==k)])... %Block has both Visual and Tactile cues
-                    && any([leftTowers(blockIdx==k), rightTowers(blockIdx==k)])
-                congruent(blockIdx==k) = ...
-                    (leftPuffs(blockIdx==k)==leftTowers(blockIdx==k)) &...
-                    (rightPuffs(blockIdx==k)==rightTowers(blockIdx==k)); %Towers and puffs on same side of maze
-            else %Forced choice
-                congruent(blockIdx==k) = true;
-            end
-            conflict(blockIdx==k) = ~congruent(blockIdx==k);
+            % %Trials where alternative rules agree or conflict
+            % if isfield(Trials,"visualRule")...
+            %         && ~any([Trials.forcedChoice])... %Visual or Tactile rule
+            %         && any([leftPuffs(blockIdx==k), rightPuffs(blockIdx==k)])... %Block has both Visual and Tactile cues
+            %         && any([leftTowers(blockIdx==k), rightTowers(blockIdx==k)])
+            %     congruent(blockIdx==k) = ...
+            %         ~(noTowers(blockIdx==k)|noPuffs(blockIdx==k)) &...
+            %         (leftPuffs(blockIdx==k)==leftTowers(blockIdx==k)) &...
+            %         (rightPuffs(blockIdx==k)==rightTowers(blockIdx==k)); %Towers and puffs on same side of maze
+            % else %Forced choice
+            %     congruent(blockIdx==k) = true;
+            % end
+            % conflict(blockIdx==k) = ~congruent(blockIdx==k) & ~noCues(blockIdx==k);
 
             %Trials where mouse turns greater than pi/2 rad L or R in cue or memory segment
             forward(blockIdx==k) = getStraightNarrowTrials({Trials.position},[0, lCue(k)]);
@@ -332,8 +334,7 @@ for i = 1:numel(subjects)
 
         %Derived trial masks
         forward = forward & ~omit; %Exclude forward trials exceeding time limit
-        err = ~correct & ~omit;
-
+       
         leftCues = (leftTowers & visualRule) | (leftPuffs & tactileRule); %Relevant cue
         rightCues = (rightTowers & visualRule) | (rightPuffs & tactileRule); %Relevant cue
         noTowers = ~leftTowers & ~rightTowers;
@@ -342,6 +343,19 @@ for i = 1:numel(subjects)
         [hiTowers, loTowers, hiPuffs, loPuffs] =...
             get_cueQuantiles(trialData(j), forward & ~forcedChoice, 3); %Three quantiles yields P<0.25 and P>=0.75
 
+        %Amend correct mask to reflect zero-cue trials
+        correct = correct & ~noCues;
+        err = ~(correct | omit | noCues); %exclude omission and zero-cue trials
+        
+        %Trials where alternative rules agree or conflict
+        congruent = ...
+            ~forcedChoice &...
+            ((leftPuffs & leftTowers) | (rightPuffs & rightTowers)); %Relevant and irrelevant cues on same side
+        conflict = ...
+             ~forcedChoice &...
+            ((leftPuffs & rightTowers) | (rightPuffs & leftTowers)); %Relevant and irrelevant cues on opposite sides
+
+        %Exclusions
         exclude = omit | ~forward; %Additions made downstream, eg for warm-up blocks, etc
         exclude(ismember(blockIdx, excludeBlocks)) = true; %Exclude trials from blocks specified in excludeBadBlocks()
 
@@ -418,11 +432,18 @@ for i = 1:numel(subjects)
             pOmit(k) = mean(omit(blockIdx==k));
 
             %Sensory cues
-            pLeftTowers(k) = sum(leftTowers(blockIdx==k))...
+            pLeftTowers(k) = sum(leftTowers(blockIdx==k))... %Proportion of tower-trials w/ towers on left
+                /sum(leftTowers(blockIdx==k)|rightTowers(blockIdx==k));
+            pLeftPuffs(k) = sum(leftPuffs(blockIdx==k))... %Same for puffs
+                /sum(leftPuffs(blockIdx==k)|rightPuffs(blockIdx==k));
+            pLeftCues(k) = sum(leftCues(blockIdx==k))... %Same for relevant cues
+                /sum(leftCues(blockIdx==k)|rightCues(blockIdx==k));
+
+            pZeroTowers(k) = sum(noTowers(blockIdx==k))... %Proportion of trials with no towers
                 /sum(blockIdx==k);
-            pLeftPuffs(k) = sum(leftPuffs(blockIdx==k))...
+            pZeroPuffs(k) = sum(noPuffs(blockIdx==k))... %Same for puffs
                 /sum(blockIdx==k);
-            pLeftCues(k) = sum(leftCues(blockIdx==k))...
+            pZeroCues(k) = sum(noTowers(blockIdx==k) & noPuffs(blockIdx==k))... %No towers or puffs
                 /sum(blockIdx==k);
 
             %Motor
@@ -450,9 +471,11 @@ for i = 1:numel(subjects)
             tempIdx = blockIdx==k & ~exclude & ~noCues;
             tempCorrect = double(correct(tempIdx));
             tempCongruent = congruent(tempIdx);
+            tempConflict = conflict(tempIdx);
+            tempZeroCue = noTowers(tempIdx)|noPuffs(tempIdx);
             hits = struct('all',tempCorrect,'congruent',tempCorrect,'conflict',tempCorrect);
-            hits.congruent(~tempCongruent) = NaN;
-            hits.conflict(tempCongruent) = NaN;
+            hits.congruent(tempConflict|tempZeroCue) = NaN;
+            hits.conflict(tempCongruent|tempZeroCue) = NaN;
             for fields = ["all","congruent","conflict"]
                 movmeanAccuracy(k).(fields) = movmean(hits.(fields),[99 0],'omitnan','Endpoints','discard');
                 maxmeanAccuracy(k).(fields) = max(movmeanAccuracy(k).(fields));
@@ -509,6 +532,9 @@ for i = 1:numel(subjects)
             'pLeftTowers', pLeftTowers,...
             'pLeftPuffs', pLeftPuffs,...
             'pLeftCues', pLeftCues,...
+            'pZeroTowers', pZeroTowers,... %Trials with no towers
+            'pZeroPuffs', pZeroPuffs,... %Trials with no puffs
+            'pZeroCues', pZeroCues,... %Trials with no towers or puffs 
             'pStuck', pStuck,...
             'movmeanAccuracy', movmeanAccuracy,...
             'maxmeanAccuracy', [maxmeanAccuracy.all],...

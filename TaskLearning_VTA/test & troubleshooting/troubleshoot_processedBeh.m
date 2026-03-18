@@ -1,8 +1,8 @@
 clearvars
 
-search_filter = 'm42';
+%search_filter = 'm42';
 % search_filter = '250812-m713-maze7';
-% search_filter = '250826-m713-maze8';
+search_filter = '250826-m713-maze8';
 
 % Set path
 dirs = getRoots();
@@ -21,7 +21,7 @@ experiment = 'mjs_tactile2visual'; %If empty, fetch data from all experiments
 for i=1:numel(expData)
 
     %Load processed behavioral data
-load(mat_file.img_beh(i),'trialData','trials');
+load(mat_file.img_beh(i),'trialData','trials','logs');
 
 %Est. corr. coef. between nPuffs & nTowers
 nPuffs = sum(trialData.nPuffs(~trials.omit,:),2);
