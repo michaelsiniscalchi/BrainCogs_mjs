@@ -650,4 +650,11 @@ expData(i).mainMaze = 8;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
 
+%M39 DAT-cre::RiboL1-jGCaMP8s
+expData(i).sub_dir = '260312-m39-maze10'; %Maze 10 is the unimodal variant 
+expData(i).subjectID = "mjs20_39";
+expData(i).mainMaze = 10;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
 
