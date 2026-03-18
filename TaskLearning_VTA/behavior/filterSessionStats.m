@@ -142,7 +142,7 @@ for i = 1:numel(subjects)
         rightSensitivity = movmean(hits.rightCue,[99 0],'omitnan','Endpoints','discard');
         S.movmeanAccuracy.bias = rightSensitivity-leftSensitivity;
         
-        if S.pLeftCues
+        if ~isnan(S.pLeftCues)
             %Psychometric
             S.psychometric = getPsychometricCurve(trialData, trials, forwardMask, 4); %All trials
   
