@@ -96,7 +96,7 @@ if figures.trial_average_dFF
         %Save figure for each cell plotting all specified valid comparisons
         comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
         for j = 1:numel(comparisons)
-            %
+            %Isolate set of panels for each figure
             panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
             event = [params.figs.bootAvg.panels(panelIdx(1)).trigger]; %All panels in comparison need to have same trigger
             %Exclude panels with no signal (eg, nTrials==0)
@@ -153,13 +153,18 @@ if figures.encoding_model
                     'Predicted dFF', expData(i).sub_dir);
                 comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
                 for j = 1:numel(comparisons)
+                    %Isolate set of panels for each figure
                     panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
-                    event = [params.figs.bootAvg.panels(panelIdx(1)).trigger];
-                    figs = plot_trialAvgDFF(glm.bootAvg.(event), glm.cellID, glm.sessionID,...
-                        params.figs.bootAvg.panels(panelIdx));
-                    save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                    event = [params.figs.bootAvg.panels(panelIdx(1)).trigger]; %All panels in comparison need to have same trigger
+                    %Exclude panels with no signal (eg, nTrials==0)
+                    panelIdx = filterBootPanels(params.figs.bootAvg.panels, panelIdx, glm.bootAvg.(event));
+                    if ~isempty(panelIdx)
+                        figs = plot_trialAvgDFF(glm.bootAvg.(event), glm.cellID, glm.sessionID,...
+                            params.figs.bootAvg.panels(panelIdx));
+                        save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                    end
+                    clearvars figs
                 end
-                clearvars figs
             end
 
             %Response Kernels
