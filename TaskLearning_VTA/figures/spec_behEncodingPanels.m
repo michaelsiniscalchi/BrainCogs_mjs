@@ -6,6 +6,24 @@ i=1;
 
 %Summary Figure for PsyTrack vs. Encoding Model Across Sessions
 
+%------- Start-Trial Event -------------------------------------------------------
+ax(i).title         = "Start of Trial";
+ax(i).behVar        = "pCorrect";
+ax(i).behVarSE      = []; %or []
+ax(i).encVar        = ["kernel","start","pValues"];
+ax(i).color         = {colors.green, colors.black};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["P(correct), all trials","Encoding kernel (p-value)"];
+i=i+1;
+ax(i).title         = "Start of Trial";
+ax(i).behVar        = "pCorrect_conflict";
+ax(i).behVarSE      = []; %or []
+ax(i).encVar        = ["kernel","start","pValues"];
+ax(i).color         = {colors.green, colors.black};
+ax(i).lineStyle     = ["-","-"]; 
+ax(i).yLabel        = ["P(correct), conflict trials","Encoding kernel (p-value)"];
+i=i+1;
+
 %------- Cue Events -------------------------------------------------------
 %Left Towers vs PsyTrack
 ax(i).title         = "Left Towers";

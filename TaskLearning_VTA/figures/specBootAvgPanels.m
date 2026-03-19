@@ -291,6 +291,7 @@ ax(i).lineStyle  = {'-',':'};
 ax(i).xLabel = 'Time from outcome (s)';  % XLabel
 i=i+1;
 
+%---START-OF-TRIAL RESPONSES---------------------------------------------------
 ax(i).title         = 'Time';
 ax(i).comparison    = "time";
 ax(i).trigger       = "start";
@@ -301,7 +302,6 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from start (s)';  % XLabel
 i=i+1;
 
-%---TURN ENTRY RESPONSES---------------------------------------------------
 ax(i).title         = 'Choice';
 ax(i).comparison    = "choice-start";
 ax(i).trigger       = "start";
@@ -312,64 +312,65 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from start (s)';  % XLabel
 i=i+1;
 
-ax(i).title         = 'Choice';
-ax(i).comparison    = "choice-turn";
-ax(i).trigger       = "turnEntry";
-ax(i).trialType     = ["left", "right"];
-ax(i).window        = [-1, 5];
-ax(i).color         = {colors.left, colors.right};
-ax(i).lineStyle     = {'-','-'};
-ax(i).xLabel        = 'Time from turn (s)';  % XLabel
-i=i+1;
-
-ax(i).title         = 'Accuracy';
-ax(i).comparison    = "accuracy-turn";
-ax(i).trigger       = "turnEntry";
-ax(i).trialType     = ["correct", "error"];
-ax(i).window        = [-1, 5];
-ax(i).color         = {colors.correct, colors.err};
-ax(i).lineStyle     = {'-','-'};
-ax(i).xLabel        = 'Time from turn (s)';  % XLabel
-i=i+1;
-
-ax(i).title         = "Congruent Trials";
-ax(i).comparison    = "choice-turn-conflict";
-ax(i).trigger       = "turnEntry";
-ax(i).trialType     = ["left_congruent", "right_congruent"];
-ax(i).window        = [-1, 5];
-ax(i).color         = {colors.left, colors.right};
-ax(i).lineStyle     = {'-','-'};
-ax(i).xLabel        = 'Time from turn (s)';  % XLabel
-i=i+1;
-ax(i).title         = "Conflict Trials";
-ax(i).comparison    = "choice-turn-conflict";
-ax(i).trigger       = "turnEntry";
-ax(i).trialType     = ["left_conflict", "right_conflict"];
-ax(i).window        = [-1, 5];
-ax(i).color         = {colors.left, colors.right};
-ax(i).lineStyle     = {'-','-'};
-ax(i).xLabel        = 'Time from turn (s)';  % XLabel
-i=i+1;
-
-ax(i).title         = "All Trials";
-ax(i).comparison    = "conflict-turnEntry";
-ax(i).trigger       = "turnEntry";
-ax(i).trialType     = ["congruent", "conflict"];
-ax(i).window        = [-1, 5];
-ax(i).color         = {colors.congruent, colors.conflict}; 
-ax(i).lineStyle     = {'-','-'};
-ax(i).xLabel        = 'Time from turn (s)';  % XLabel
-i=i+1;
-
-ax(i).title         = "Correct Trials";
-ax(i).comparison    = "conflict-turnEntry";
-ax(i).trigger       = "turnEntry";
-ax(i).trialType     = ["congruent_correct", "conflict_correct"];
-ax(i).window        = [-1, 5];
-ax(i).color         = {colors.congruent, colors.conflict}; 
-ax(i).lineStyle     = {'-','-'};
-ax(i).xLabel        = 'Time from turn (s)';  % XLabel
-i=i+1;
+%---TURN ENTRY RESPONSES---------------------------------------------------
+% ax(i).title         = 'Choice';
+% ax(i).comparison    = "choice-turn";
+% ax(i).trigger       = "turnEntry";
+% ax(i).trialType     = ["left", "right"];
+% ax(i).window        = [-1, 5];
+% ax(i).color         = {colors.left, colors.right};
+% ax(i).lineStyle     = {'-','-'};
+% ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+% i=i+1;
+% 
+% ax(i).title         = 'Accuracy';
+% ax(i).comparison    = "accuracy-turn";
+% ax(i).trigger       = "turnEntry";
+% ax(i).trialType     = ["correct", "error"];
+% ax(i).window        = [-1, 5];
+% ax(i).color         = {colors.correct, colors.err};
+% ax(i).lineStyle     = {'-','-'};
+% ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+% i=i+1;
+% 
+% ax(i).title         = "Congruent Trials";
+% ax(i).comparison    = "choice-turn-conflict";
+% ax(i).trigger       = "turnEntry";
+% ax(i).trialType     = ["left_congruent", "right_congruent"];
+% ax(i).window        = [-1, 5];
+% ax(i).color         = {colors.left, colors.right};
+% ax(i).lineStyle     = {'-','-'};
+% ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+% i=i+1;
+% ax(i).title         = "Conflict Trials";
+% ax(i).comparison    = "choice-turn-conflict";
+% ax(i).trigger       = "turnEntry";
+% ax(i).trialType     = ["left_conflict", "right_conflict"];
+% ax(i).window        = [-1, 5];
+% ax(i).color         = {colors.left, colors.right};
+% ax(i).lineStyle     = {'-','-'};
+% ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+% i=i+1;
+% 
+% ax(i).title         = "All Trials";
+% ax(i).comparison    = "conflict-turnEntry";
+% ax(i).trigger       = "turnEntry";
+% ax(i).trialType     = ["congruent", "conflict"];
+% ax(i).window        = [-1, 5];
+% ax(i).color         = {colors.congruent, colors.conflict}; 
+% ax(i).lineStyle     = {'-','-'};
+% ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+% i=i+1;
+% 
+% ax(i).title         = "Correct Trials";
+% ax(i).comparison    = "conflict-turnEntry";
+% ax(i).trigger       = "turnEntry";
+% ax(i).trialType     = ["congruent_correct", "conflict_correct"];
+% ax(i).window        = [-1, 5];
+% ax(i).color         = {colors.congruent, colors.conflict}; 
+% ax(i).lineStyle     = {'-','-'};
+% ax(i).xLabel        = 'Time from turn (s)';  % XLabel
+% i=i+1;
 
 %---CUE RESPONSES----------------------------------------------------------
 

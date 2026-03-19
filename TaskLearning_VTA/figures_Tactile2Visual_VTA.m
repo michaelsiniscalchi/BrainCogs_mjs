@@ -92,15 +92,21 @@ if figures.trial_average_dFF
         load(mat_file.results.cellFluo(i),'bootAvg','cellID');
         save_dir = fullfile(dirs.figures,'Cellular fluorescence', expData(i).sub_dir);   %Figures directory: single units
         create_dirs(save_dir); %Create dir for these figures
-        %Save figure for each cell plotting all combinations of choice x outcome
+        
+        %Save figure for each cell plotting all specified valid comparisons
         comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
-        % comparisons = "first-tower"; %TEMP
         for j = 1:numel(comparisons)
+            %
             panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
             event = [params.figs.bootAvg.panels(panelIdx(1)).trigger]; %All panels in comparison need to have same trigger
-            figs = plot_trialAvgDFF(bootAvg.(event), cellID, expData(i).sub_dir,...
-                params.figs.bootAvg.panels(panelIdx));
-            save_multiplePlots(figs, save_dir); %save as FIG and PNG
+            %Exclude panels with no signal (eg, nTrials==0)
+            panelIdx = filterBootPanels(params.figs.bootAvg.panels, panelIdx, bootAvg.(event));
+            %Generate figures
+            if ~isempty(panelIdx)
+                figs = plot_trialAvgDFF(bootAvg.(event), cellID, expData(i).sub_dir,...
+                    params.figs.bootAvg.panels(panelIdx));
+                save_multiplePlots(figs, save_dir); %save as FIG and PNG
+            end
         end
         clearvars figs
     end
@@ -120,7 +126,8 @@ if figures.encoding_model
             glm = load(fullfile(dirs.results, expData(i).sub_dir,...
                 ['encodingMdl-', mdlNames{k}]),...
                 'modelName','bootAvg','kernel','sessionID','cellID','termIdx','predictorIdx',...
-                'lambda','conditionNum','VIF','VIF_trace','corrMatrix');
+                'lambda','conditionNum','VIF','VIF_trace','corrMatrix',...
+                'pValues', 'pSignificant'); %from calcEncodingStats_parallel.
             % glm = load(mat_file.results.encoding(i),'bootAvg','kernel','sessionID','cellID','predictorIdx');
             img = load(mat_file.results.cellFluo(i),'bootAvg');
 
@@ -162,6 +169,7 @@ if figures.encoding_model
                 create_dirs(save_dir); %Create dir for these figures
                 panels = params.figs.encoding.panels_contrast;
                 panels = panels(cellfun(@(C) ~isempty(C), {panels.varName})); %Remove non-event variables
+                %panels = panels(end); %***DEVO
                 for j = 1:numel(panels)
                     if isfield(glm.kernel,panels(j).varName)
                         figs = plot_eventKernel(glm, panels(j));
