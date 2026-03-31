@@ -87,14 +87,17 @@ end
 clearvars sessions predictors S f
 
 if summarize.encoding
-    fields = ["AUC","AUC_se","peak","peak_se","L2"];
     mdlNames = params.encoding.modelName;
+    loadVars = {'session_date','coef','kernel','pValues','pSignificant','alpha',...
+        'cellID','termIdx','eventVars','kinematicVars'};
     for i = 1:numel(mdlNames)
         for j = 1:numel(expData)
-            sessions(j) = load(mat_file.results.encoding(j, mdlNames(i)));
+            sessions(j) = load(mat_file.results.encoding(j, mdlNames(i)), loadVars{:});
         end
         [cells, metaData] = summarize_sessions2cells(sessions);
-        save(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','metaData','-v7.3');
+        population = summarize_popBySession(sessions);
+
+        save(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','population','metaData','-v7.3');
     end
 end
 
@@ -119,6 +122,7 @@ if summarize.neuroBehCorr
         load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','metaData');    
         params.imgField = [metaData.cueVars', metaData.outcomeVars'];
         [nbCorr, cells] = calcNeuroBehCorr(cells, sessions, params);
+        %***NEXT: Incorporate pSignificant into nbCorr***
         
         %Save correlation structures
         save(mat_file.summary.neuroBehCorr(subjectID, mdlNames(i)),'-struct','nbCorr','-v7.3');
@@ -131,8 +135,15 @@ if figures.summary_neuroBehCorr
     mdlNames = params.encoding.modelName;
     for i = 1:numel(mdlNames)
         load(mat_file.summary.behavior(subjectID),'sessions');
-        load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells');
+        load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','population');
         save_dir = fullfile(dirs.figures,'Neurobehavioral Summary', subjectID,  mdlNames(i));
+        %Plot pSignificant for each variable, with session summary
+
+        %Plot nSignificant vs session number as heatmap
+        %ADD subjectID to sessions struct and figure name!!
+        fig = fig_encodingPSignificantHeatmap(population, sessions, subjectID);
+        save_multiplePlots(fig, save_dir); %save as FIG and PNG
+
         %Longitudinal Plot
         P = params.figs.summaryLongitudinalImgBeh;
         for j = 1:numel(P.panels)
@@ -140,8 +151,16 @@ if figures.summary_neuroBehCorr
             P.mdlName = mdlNames(i);
             if isfield(cells(1).kernel, panelSpec.encVar(2)) ||...
                     isfield(cells(1).coef, panelSpec.encVar(2))
-                figs = fig_summaryPsyTrackEncodingBySession(sessions, cells, panelSpec, P);
-                save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                %By Cell
+                % figs = fig_summaryPsyTrackEncodingBySession(sessions, cells, panelSpec, P);
+                % save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                
+                %Proportion of cells significant
+                if isfield(population.pSignificant, panelSpec.encVar(2))
+                    fig = fig_summaryEncodingPSigBySession(sessions, population, panelSpec, P);
+                    save_multiplePlots(fig, save_dir); %save as FIG and PNG
+                end
+
             end
         end
     end
@@ -173,8 +192,12 @@ if figures.encoding_model
     %For each model
     mdlNames = params.encoding.modelName;
     for i = 1:numel(mdlNames)
-        load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','metaData');
+        load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','pSignificant','metaData');
         load(mat_file.summary.behavior(subjectID), 'sessions');
+
+        if figures.encoding_hypothesisTest
+            
+        end
 
         if figures.encoding_eventKernelsByPerformance
             varNames = string(fieldnames(cells(1).kernel));
