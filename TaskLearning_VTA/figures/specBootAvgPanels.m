@@ -277,7 +277,7 @@ ax(i).title         = 'Time';
 ax(i).comparison    = "time";
 ax(i).trigger       = "start";
 ax(i).trialType     = "forward";
-ax(i).window        = [-3, 7];
+ax(i).window        = [-1, 5];
 ax(i).color         = {colors.data}; %Outcome: hit/priorHit vs err/priorHit
 ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from start (s)';  % XLabel
@@ -286,6 +286,27 @@ i=i+1;
 ax(i).title         = 'Choice';
 ax(i).comparison    = "choice-start";
 ax(i).trigger       = "start";
+ax(i).trialType     = ["left", "right"];
+ax(i).window        = [-1, 5];
+ax(i).color         = {colors.left, colors.right};
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from start (s)';  % XLabel
+i=i+1;
+
+%--- Cue Entry RESPONSES---------------------------------------------------
+ax(i).title         = 'Cue Entry';
+ax(i).comparison    = "cue-entry";
+ax(i).trigger       = "cueEntry";
+ax(i).trialType     = "forward";
+ax(i).window        = [-1, 5];
+ax(i).color         = {colors.data}; %Outcome: hit/priorHit vs err/priorHit
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from entry (s)';  % XLabel
+i=i+1;
+
+ax(i).title         = 'Cue Entry';
+ax(i).comparison    = "cue-entry";
+ax(i).trigger       = "cueEntry";
 ax(i).trialType     = ["left", "right"];
 ax(i).window        = [-1, 5];
 ax(i).color         = {colors.left, colors.right};
