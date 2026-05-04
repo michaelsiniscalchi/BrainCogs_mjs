@@ -9,24 +9,38 @@ figures_Tactile2Visual_VTA('240222', options);
 %%
 clearvars
 subjectID ='mjs20_39'; %'250212-m913-maze7'
-sessionDate = '2026-03-12';
+sessionDate = ["2026-04-06","2026-04-07","2026-04-08","2026-04-09","2026-04-10",...
+    "2026-04-13","2026-04-14","2026-04-15","2026-04-16"];
+for date = sessionDate
 % AnalysisNotebook_Tactile2Visual_behavior(subjectID);
-AnalysisNotebook_Tactile2Visual_behavior(subjectID, sessionDate);
+AnalysisNotebook_Tactile2Visual_behavior(subjectID, date);
+end
+
+%%
+clearvars
+subjectID ='mjs20_37'; %'250212-m913-maze7' W:\Data\Raw\behavior\sbolkan\sbolkan_test\20260427_g0
+sessionDate = ["2026-05-01"];
+for date = sessionDate
+% AnalysisNotebook_Tactile2Visual_behavior(subjectID);
+AnalysisNotebook_Tactile2Visual_behavior(subjectID, date);
+end
+
 
 %%
 clearvars;
 % search_filter ='250206-m913-maze7';
 %search_filter ='240305-m175-maze7';
-search_filter ='260312-m39-maze10';
-options.calculate = struct('combined_data',false,'align_signals', false,...
+search_filter ='260415-m37-plt8';
+options.experiment = 'endlessLinearTrack';
+options.calculate = struct('combined_data',true,'align_signals', false,...
     'trial_average_dFF', false, 'encoding_model', false, 'encoding_stats', false);
 options.figures = struct('FOV_mean_projection', false, 'session_summary', false,...
     'trial_average_dFF', true, 'encoding_predictedTrialAvg', false,...
     'encoding_coefficients',false,...
     'encoding_eventKernels',false, 'encoding_cv', false);
 
-% Analyze_Tactile2Visual_VTA(search_filter, options);
-figures_Tactile2Visual_VTA(search_filter, options);
+Analyze_Tactile2Visual_VTA(search_filter, options);
+% figures_Tactile2Visual_VTA(search_filter, options);
 
 %% Sync Test
 clearvars;

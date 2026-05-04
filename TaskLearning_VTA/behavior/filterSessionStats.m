@@ -17,7 +17,7 @@ for i = 1:numel(subjects)
         
         disp(['Filtering session data from ' char(S.session_date)]) %Temp DEVO
 
-        ruleNames = ["visual","tactile","sensory","alternation"];
+        ruleNames = ["visual","tactile","tactileCS","visualCS","leftCS","rightCS"];
         inclBlockIdx = ismember(S.taskRule, ruleNames);
         inclBlockIdx(S.excludeBlocks) = false;
         if ~isempty(S.taskRule) && all(S.taskRule=="forcedChoice")
@@ -26,7 +26,8 @@ for i = 1:numel(subjects)
                 any(S.taskRule(inclBlockIdx)=="tactile") %check for any mixed sessions and flag for block exclusion
             warning(strjoin(["Session from " subjects(i).ID ", " string(S.session_date) "was mixed between rules. Check!"]));
         elseif all(~inclBlockIdx)
-            disp('Warning: "taskRule" must be one of the following: "forcedChoice","visual","tactile","sensory","alternation"...');
+            disp(['Warning: "taskRule" must be one of the following:...' ...
+                ' "forcedChoice","visual","tactile","tactileCS","visualCS","leftCS","rightCS"...']);
             disp('Excluding all blocks in');
             disp(S.new_remote_path_behavior_file);
             exclSessionIdx(j) = true;
@@ -65,7 +66,7 @@ for i = 1:numel(subjects)
         %Counts
         for F = fields.counts, S.(F) = sum(S.(F)); end
 
-        %% Recalculate from TrialData or "Trials" vectors
+        %% Recalculate from TrialData or Trials vectors
         trials = subjects(i).trials(j); %unpack
         trialData = subjects(i).trialData(j); %unpack
         blockIdx = ismember(trials.blockIdx,find(inclBlockIdx)); %Index for trials within included block(s)
@@ -79,7 +80,7 @@ for i = 1:numel(subjects)
         %Truncate field 'trialData'
         fieldStr = string(fieldnames(trialData));
         fieldStr = fieldStr(~ismember(fieldStr,... Exclude fields where D1 is not trial number
-            {'session_date','x_trajectory','theta_trajectory','time_trajectory','positionRange'}));
+            {'session_date','x_trajectory','theta_trajectory','time_trajectory','alignedKinematics','positionRange'}));
         for f = fieldStr'
             trialData.(f) = trialData.(f)(blockIdx,:);
         end

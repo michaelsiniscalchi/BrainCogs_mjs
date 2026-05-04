@@ -30,8 +30,11 @@ addpath(genpath(fullfile(dirs.code, 'mym', 'distribution', 'mexa64')));
 expData = expData(contains({expData(:).sub_dir}', search_filter)); %Filter by data-directory name, etc.
 
 % Set parameters for analysis
-experiment = 'mjs_tactile2visual'; %If empty, fetch data from all experiments
-[calculate, summarize, figures, mat_file, params] = params_Tactile2Visual_VTA(dirs, expData, options);
+if isfield(options, 'experiment') && strcmp(options.experiment, 'endlessLinearTrack')
+    [calculate, summarize, figures, mat_file, params] = params_PavlovianT2V_VTA(dirs, expData, options);
+else
+    [calculate, summarize, figures, mat_file, params] = params_Tactile2Visual_VTA(dirs, expData, options);
+end
 expData = get_imgPaths(dirs, expData, calculate, figures); %Append additional paths for imaging data if required by 'calculate'
 
 % Generate directory structure
@@ -74,14 +77,16 @@ if calculate.combined_data
             key.session_number = expData.session_number;
         end
         %Extract basic behavioral data
-        behavior = getRemoteVRData( experiment, subject, key );
+        behavior = getRemoteVRData( subject, key );
 
         %Restrict stats to main maze and exclude specified blocks
         behavior = restrictImgTrials(behavior, expData(i).mainMaze, expData(i).excludeBlock);
         behavior = filterSessionStats(behavior);
         
         %Logistic regression
-        behavior = analyzeTaskStrategy2(behavior, params.behavior.nBins_psychometric);
+        if strcmp(options.experiment, 'tactile2visual')
+            behavior = analyzeTaskStrategy(behavior, params.behavior.nBins_psychometric);
+        end
 
         %Append behavior data to stackInfo
         stackInfo = syncImagingBehavior(stackInfo, behavior);
@@ -165,7 +170,7 @@ if calculate.fluorescence
         end
 
         % Encoding model
-        if calculate.encoding_model
+        if calculate.encoding_model && strcmp(options.experiment, 't2v')
             %Load combined imaging & behavioral data
             load(mat_file.img_beh(i),'trialData','trials','dFF','t','cellID');
             mdlNames = params.encoding.modelName;

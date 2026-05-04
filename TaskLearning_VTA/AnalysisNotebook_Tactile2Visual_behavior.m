@@ -25,14 +25,16 @@ exe = struct(...
     'reloadData',           true,...
     'updateExperData',      true,...
     'motor_trajectory',     false,... %Running into error 260108 (skip for now)
-    'model_strategy',       true);
+    'model_strategy',       false);
 plots = struct(...
     'motor_trajectory',                 false,... 
     'collision_locations',              false,...
+    'alignedKinematics',                false,...
+    'lickRaster',                       true,...
     'trial_duration',                   false,...
-    'longitudinal_performance',         true,...
-    'longitudinal_glm',                 true,...
-    'session_summary',                  true,...
+    'longitudinal_performance',         false,...
+    'longitudinal_glm',                 false,...
+    'session_summary',                  false,...
     'group_performance',                false);
 
 %Subject info
@@ -42,10 +44,10 @@ if exe.reloadData
     %Switch data source
     if dataSource.remoteLogData && ~dataSource.experimentData
         setupDataJoint_mjs();
-        subjects = getRemoteVRData( experiment, subject, key );
-       
+        subjects = getRemoteVRData( subject, key );
+
         %Exclude warmup trials from stats for Main Mazes
-        subjects = filterSessionStats(subjects);
+        % subjects = filterSessionStats(subjects);
 
     elseif dataSource.experimentData
         subjects = loadExperData([subjects.ID],dirs);
@@ -70,6 +72,36 @@ end
 
 %Get Colors for Plotting
 colors = setPlotColors(experiment);
+
+%Plot aligned kinematics (ie, speed & velocity for now...ToDo: heading)
+if plots.alignedKinematics
+    saveDir = fullfile(dirs.results,'Aligned Kinematics');
+    create_dirs(saveDir);
+    for i=1:numel(subjects.sessions)
+        session = subjects.sessions(i);
+        kinematicData = subjects.trialData(i).alignedKinematics;
+        trialMasks = subjects.trials(i);
+        figs = fig_alignedKinematics(...
+            session, kinematicData, trialMasks, subjects.ID, colors);
+        save_multiplePlots(figs, saveDir);
+        clearvars figs;
+    end
+end
+
+%Plot lick raster aligned to cue/outcome
+if plots.lickRaster
+    saveDir = fullfile(dirs.results,'Lick Raster');
+    create_dirs(saveDir);
+    for i=1:numel(subjects.sessions)
+        session = subjects.sessions(i);
+        trialData = subjects.trialData(i);
+        trialMasks = subjects.trials(i);
+        figs = fig_lickRaster(...
+            session, trialData, trialMasks, subjects.ID, colors);
+        save_multiplePlots(figs, saveDir);
+        clearvars figs;
+    end
+end
 
 %Plot View-Angle and X-Trajectory for each session
 if plots.motor_trajectory
@@ -130,10 +162,6 @@ if plots.longitudinal_glm && numel(subjects.sessions)>1
     vars = {'towers','puffs','bias'};
     figs = fig_longitudinal_glm( subjects, vars, 'glm1', colors );
     save_multiplePlots(figs,saveDir);
-% 
-%     vars = {'towers','puffs','bias','priorChoice'};
-%     figs = fig_longitudinal_glm( subjects, vars, 'glm1', colors );
-%     save_multiplePlots(figs,saveDir);
 
     %All terms
     saveDir = fullfile(dirs.results,'GLM_nTowers_nPuffs');
@@ -150,15 +178,6 @@ if plots.longitudinal_glm && numel(subjects.sessions)>1
     figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
     save_multiplePlots(figs,saveDir);
 
-    %Towers/Puffs separately (no priorChoice term)
-%     saveDir = fullfile(dirs.results,'GLM_nTowers_nPuffs');
-%     vars = {'nTowersLeft','nTowersRight','bias'};
-%     figs = fig_longitudinal_glm( subjects, vars, 'glm3', colors );
-%     save_multiplePlots(figs,saveDir);
-% 
-%     vars = {'nPuffsLeft','nPuffsRight','bias'};
-%     figs = fig_longitudinal_glm( subjects, vars, 'glm3', colors );
-%     save_multiplePlots(figs,saveDir);
 end
 
 

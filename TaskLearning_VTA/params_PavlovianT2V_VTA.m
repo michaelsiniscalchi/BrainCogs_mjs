@@ -1,4 +1,4 @@
-function [ calculate, summarize, figures, mat_file, params ] = params_Tactile2Visual_VTA( dirs, expData, options )
+function [ calculate, summarize, figures, mat_file, params ] = params_PavlovianT2V_VTA( dirs, expData, options )
 
 %Handle input args
 if nargin<3
@@ -6,6 +6,7 @@ if nargin<3
 end
 
 %% CALCULATE OR RE-CALCULATE RESULTS
+% calculate.behavior                  = true;
 calculate.combined_data             = false;  %Combine relevant behavioral and imaging data in one MAT file ; truncate if necessary
 calculate.cellF                     = false; %Extract cellf and neuropilf from ROIs, excluding overlapping regions and extremes of the FOV
 calculate.dFF                       = false; %Calculate dF/F, with optional neuropil subtraction
@@ -50,7 +51,7 @@ figures.heatmap_modulation_idx              = false;  %Heatmap of selectivity id
 
 % Summary
 figures.summary_neuroBehCorr            = false; %Neurobehavioral correlates
-figures.summary_population_nbCorr           = false; %Summaries across cells, by subject
+figures.summary_population_nbCorr       = false; %Summaries across cells, by subject
 figures.summary_behavior                = false; %Summary of descriptive stats, eg, nTrials and {trials2crit, pErr, oErr} for each rule
 figures.summary_selectivity_heatmap     = false; %Heatmap of time- or position-locked selectivity
 figures.summary_selectivity_histogram   = false; %Histogram of time-locked selectivity
@@ -132,7 +133,6 @@ mat_file.figData.fovProj        = @(sessionID) fullfile(dirs.figures,'FOV projec
 %% HYPERPARAMETERS FOR ANALYSIS
 
 % Behavior
-params.behavior.nBins_psychometric = 4; %number of bins (+1 for 0-cues)
 
 % Cellular fluorescence calculations
 params.fluo.exclBorderWidth     = 10; %For calc_cellF: n-pixel border of FOV to be excluded from analysis
@@ -153,7 +153,7 @@ params.bootAvg.CI               = 90; %Confidence interval as decimal
 params.bootAvg.subtractBaseline = false;
 params.bootAvg.smoothWin        = 6; %Smoothing window in samples for peak finding, averaging, etc.
 params.bootAvg.avgWin           = 2; %Time interval (s) post-cue, or surrounding peak, for averaging
-params.bootAvg                  = specBootAvgParams(params.bootAvg); %params.bootAvg.trigger(1:3) = "start","firstcue","outcome", etc...
+params.bootAvg                  = specBootAvgParams_plt(params.bootAvg); %params.bootAvg.trigger(1:3) = "start","firstcue","outcome", etc...
 
 % Encoding model defaults (more spec for multiuple models in specEncodingParams)
 params.encoding.dsFactor            = 1; %Downsample from interpolated rate of 1/params.interdt

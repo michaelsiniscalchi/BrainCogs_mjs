@@ -26,7 +26,14 @@ end
 % and before sending the I2C signal, etc. Note also that the current
 % iteration elapsed time is measured prior to the current iteration.
 
-trialStartTime = log.block(blockIdx).trial(trialIdx).start;
-iterTime = log.block(blockIdx).trial(trialIdx).time(iteration); 
+%Omit last iteration (no time assignment)
+if any(iteration>length(log.block(blockIdx).trial(trialIdx).time))
+    disp(['Warning: conflict between reported event iteration and number of iterations in trial: '...
+        num2str(iteration(end)) ' vs. ' num2str(length(log.block(blockIdx).trial(trialIdx).time))])
+end
 
+%Assign absolute time based on block start time, trial start time, and iteration 
+trialStartTime = log.block(blockIdx).trial(trialIdx).start;
+iteration = iteration(iteration<=length(log.block(blockIdx).trial(trialIdx).time));
+iterTime = log.block(blockIdx).trial(trialIdx).time(iteration); 
 t = referenceTime + trialStartTime + iterTime;

@@ -69,7 +69,11 @@ for i = 1:numel(subject.sessions)
     %--- Psychometric curves for Towers -- all/congruent/conflict trials
     ax(5)=nexttile;
     S(i).psychometric.data = S(i).psychometric; %Rename field for all (congruent|conflict) to "data"
+    try
     S(i).psychometric = rmfield(S(i).psychometric,{'towers','puffs','all'});
+    catch 
+        disp('Warning: No psychometric for towers/puffs.');
+    end
     if ~isempty(S(i).psychometric)
         if ~isempty(S(i).(glmName).psychometric)
             S(i).psychometric.model = S(i).(glmName).psychometric;

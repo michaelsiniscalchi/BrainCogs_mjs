@@ -1,8 +1,4 @@
-function subjects = getRemoteVRData( experiment, subjects, key )
-
-if isempty(experiment)
-    experiment = '';
-end
+function subjects = getRemoteVRData( subjects, key )
 
 %Aggregate log data into single struct by subject
 %#ok<*AGROW>
@@ -60,7 +56,8 @@ for i = 1:numel(subjects)
             'duration', [],'response_time', [],'response_delay', [],...
             'time', [], 'position', [], 'velocity', [], 'heading', [], 'speed', [],...
             'mean_velocity', [], 'duration_cueRegion', [],...
-            'x_trajectory', [],'theta_trajectory', [],'time_trajectory', [],'positionRange', [],...
+            'x_trajectory', [],'theta_trajectory', [],'time_trajectory', [],...
+            'alignedKinematics', [], 'positionRange', [],...
             'collision_locations', [],'pSkid', [],'stuck_locations', [],'stuck_time', []);
 
         trials(numel(sessionDate),1) = ...
@@ -72,7 +69,9 @@ for i = 1:numel(subjects)
             'leftCues',[],'rightCues',[], ... %logical
             'noCues', [], 'hiCues', [], 'loCues', [],...
             'visualRule',[],'tactileRule',[],'forcedChoice',[],... %logical
-            'correct',[],'error',[],'omit',[],'congruent',[],'conflict',[],... %logical
+            'visualCS',[],'tactileCS',[],'leftCS',[],'rightCS',[],... %Pavlovian linear track
+            'correct',[],'error',[],'omit',[],...
+            'rewarded',[],'unrewarded',[],'congruent',[],'conflict',[],... %logical
             'priorLeft',[],'priorRight',[],'priorCorrect',[],'priorError',[],... %logical
             'forward',[],'stuck',[],'exclude',[],...  %logical
             'level',[],'blockIdx',[]); %unsigned integer
@@ -90,6 +89,8 @@ for i = 1:numel(subjects)
             'median_velocity', [], 'median_response_delay', [], 'median_delay_bias', [],...
             'median_pSkid',[],'median_stuckTime',[],...
             'median_duration_cueRegion', [],...
+            'medianTowerInterval', [],...
+            'medianPuffInterval', [],...
             'bias', [],...
             'psychometric', struct('towers',struct(),'puffs',struct(),'all',struct()),...
             'cueHistogram', struct('towers',struct(),'puffs',struct(),'cueCounts',[]),...
@@ -156,7 +157,7 @@ for i = 1:numel(subjects)
 
             %Event times
             eventTimes(blockIdx==k,1) = getTrialEventTimes(logs, k); %Need logs and block idx for time, because restarts/new blocks cause divergent time references
-
+            
             %Cue positions and number on each side
             [towerPositions(blockIdx==k,:), puffPositions(blockIdx==k,:)] = getCuePositions(logs, k);
 
@@ -184,9 +185,6 @@ for i = 1:numel(subjects)
                 cellfun(@(C) angleMPiPi(C(:,3)), position(blockIdx==k),'UniformOutput',false); %Convert from cumulative theta to fwd-relative heading
 
             %Kinematic "velocity" or running speed
-            % [dy1,dx1,dY,dX,dT]= arduinoReader('get');
-            % rawData           = [dy1, dx1, dY, dX, dT];         % For logging
-            % Write function for this!
             speed(blockIdx==k) = calcRunningSpeed({Trials.sensorDots});
             
             %Mean velocity in Cue Region
@@ -226,6 +224,11 @@ for i = 1:numel(subjects)
             firstTrial = lastTrial+1;
         end
 
+        %Kinematics time-locked to events
+        timeWindow = [-1, 3]; %outcome is 3 s from CS
+        alignedKinematics = ...
+            alignVelocityTrace(position, velocity, speed, time, eventTimes, ["firstPuff","firstTower"], timeWindow); %Last arg, window 
+
         %Concatenate as matrix if only one maze
         if isscalar(unique(cellfun(@(T) size(T,1),x_trajectory)))
             x_trajectory = [x_trajectory{:}];
@@ -257,6 +260,7 @@ for i = 1:numel(subjects)
             'x_trajectory', x_trajectory,...
             'theta_trajectory', theta_trajectory,...
             'time_trajectory', time_trajectory,...
+            'alignedKinematics', alignedKinematics,...
             'positionRange', positionRange,...
             'collision_locations', {collision_locations},... %Unique X,Y locations of collisions at cm resolution (X simplified to -1,1 for L/R walls)
             'stuck_locations', {stuck_locations},...
@@ -266,9 +270,6 @@ for i = 1:numel(subjects)
             'mean_velocity', cell2mat(cellfun(@mean,velocity,'UniformOutput',false))); %Mean velocity across all iterations in trial (x,y,theta)
 
         %---Trial masks--------------------------------------------------------------------
-            %For cue num analysis...
-            % leftTowersHi, leftTowersLo, rightTowersHi, rightTowersLo,...
-            % leftPuffsHi, leftPuffsLo, rightPuffsHi, rightPuffsLo,...
 
         %Initialize
         [left, right,...
@@ -276,7 +277,8 @@ for i = 1:numel(subjects)
             leftPuffs, rightPuffs, noPuffs, hiPuffs, loPuffs,...
             leftCues, rightCues, noCues, hiCues, loCues,... %Relevant cue side
             tactileRule, visualRule, forcedChoice,...
-            correct, omit, congruent, conflict, forward, stuck] = deal(false(1,numel(blockIdx)));
+            tactileCS, visualCS, leftCS, rightCS,...
+            correct, rewarded, omit, congruent, conflict, forward, stuck] = deal(false(1,numel(blockIdx)));
         level = nan(1,numel(blockIdx));
         mazeLevel = [logs.block.mazeID];
         for k = 1:numel(logs.block)
@@ -303,27 +305,27 @@ for i = 1:numel(subjects)
                 tactileRule(blockIdx==k) = [Trials.tactileRule];
             end
 
+            %Conditioned stimulus
+            % tactileCS, visualCS, leftCS, rightCS,...
+            csPresented = false(1, numel(Trials));
+            if isfield(Trials,"modalityRule") %Pavlovian linear track
+                tactileCS(blockIdx==k) = [Trials.modalityRule]==StimulusModality('tactile');
+                visualCS(blockIdx==k) = [Trials.modalityRule]==StimulusModality('visual');
+                leftCS(blockIdx==k) = [Trials.sideRule]==StimulusLaterality('L');
+                rightCS(blockIdx==k) = [Trials.sideRule]==StimulusLaterality('R');
+                %Check if CS was presented
+                CS = [Trials.CS];
+                csPresented(blockIdx==k) = [CS.presented];
+            end
+
             %Choices
             left(blockIdx==k) = [Trials.choice]==Choice.L;
             right(blockIdx==k) = [Trials.choice]==Choice.R;
 
             %Outcomes
             correct(blockIdx==k) = [Trials.choice]==[Trials.trialType]; 
+            rewarded(blockIdx==k) = logical([Trials.rewardFactor]); %For cases where correct choice made but reward omitted or choice undefined (ie, Pavlovian Paradigm)
             omit(blockIdx==k) = [Trials.choice]==Choice.nil;
-
-            % %Trials where alternative rules agree or conflict
-            % if isfield(Trials,"visualRule")...
-            %         && ~any([Trials.forcedChoice])... %Visual or Tactile rule
-            %         && any([leftPuffs(blockIdx==k), rightPuffs(blockIdx==k)])... %Block has both Visual and Tactile cues
-            %         && any([leftTowers(blockIdx==k), rightTowers(blockIdx==k)])
-            %     congruent(blockIdx==k) = ...
-            %         ~(noTowers(blockIdx==k)|noPuffs(blockIdx==k)) &...
-            %         (leftPuffs(blockIdx==k)==leftTowers(blockIdx==k)) &...
-            %         (rightPuffs(blockIdx==k)==rightTowers(blockIdx==k)); %Towers and puffs on same side of maze
-            % else %Forced choice
-            %     congruent(blockIdx==k) = true;
-            % end
-            % conflict(blockIdx==k) = ~congruent(blockIdx==k) & ~noCues(blockIdx==k);
 
             %Trials where mouse turns greater than pi/2 rad L or R in cue or memory segment
             forward(blockIdx==k) = getStraightNarrowTrials({Trials.position},[0, lCue(k)]);
@@ -334,28 +336,41 @@ for i = 1:numel(subjects)
         end
 
         %Derived trial masks
+        if isfield(Trials,"modalityRule") %Pavlovian linear track 
+            omit = ~csPresented & ~rewarded; %Mouse did not run far enough to encounter stim or reward at end of maze
+        end
+
         forward = forward & ~omit; %Exclude forward trials exceeding time limit
        
-        leftCues = (leftTowers & visualRule) | (leftPuffs & tactileRule); %Relevant cue
-        rightCues = (rightTowers & visualRule) | (rightPuffs & tactileRule); %Relevant cue
+        leftCues = ...
+            (leftTowers & (visualRule|visualCS)) |...
+            (leftPuffs & (tactileRule|tactileCS)) |...
+            (leftCS & (leftPuffs | leftTowers)); %Relevant cue
+        rightCues = ...
+            (rightTowers & (visualRule|visualCS)) |... 
+            (rightPuffs & (tactileRule|tactileCS)) |...
+            (rightCS & (rightPuffs | rightTowers)); %Relevant cue
+
         noTowers = ~leftTowers & ~rightTowers;
         noPuffs = ~leftPuffs & ~rightPuffs;
         noCues = ~leftCues & ~rightCues;
+        
         [hiTowers, loTowers, hiPuffs, loPuffs] =...
             get_cueQuantiles(trialData(j), forward & ~forcedChoice, 3); %Three quantiles yields P<0.25 and P>=0.75
         hiCues = (hiTowers & visualRule) | (hiPuffs & tactileRule); %Relevant cue
         loCues = (loTowers & visualRule) | (loPuffs & tactileRule); %Relevant cue
 
         %Amend correct mask to reflect zero-cue trials
+        unrewarded = ~rewarded;
         correct = correct & ~noCues;
         err = ~(correct | omit | noCues); %exclude omission and zero-cue trials
         
         %Trials where alternative rules agree or conflict
         congruent = ...
-            ~forcedChoice &...
+            ~(forcedChoice | visualCS | tactileCS | leftCS | rightCS) &... %Exclude trials with no choice
             ((leftPuffs & leftTowers) | (rightPuffs & rightTowers)); %Relevant and irrelevant cues on same side
         conflict = ...
-             ~forcedChoice &...
+            ~(forcedChoice | visualCS | tactileCS | leftCS | rightCS) &... %Exclude trials with no choice
             ((leftPuffs & rightTowers) | (rightPuffs & leftTowers)); %Relevant and irrelevant cues on opposite sides
 
         %Exclusions
@@ -372,7 +387,9 @@ for i = 1:numel(subjects)
             'leftCues',leftCues,'rightCues', rightCues, 'noCues', noCues,... %Relevant cue side
             'hiCues', hiCues, 'loCues', loCues,...
             'visualRule',visualRule,'tactileRule',tactileRule,'forcedChoice',forcedChoice,... %Rule
-            'correct',correct,'error',err,'omit',omit,... %Outcome
+            'visualCS',visualCS,'tactileCS',tactileCS,'leftCS',leftCS,'rightCS',rightCS,... %Pavlovian Rule
+            'correct',correct,'error',err,'omit',omit,...
+            'rewarded',rewarded,'unrewarded',unrewarded,... %Outcome
             'priorLeft',[0, left(1:end-1)],'priorRight',[0, right(1:end-1)],... %Trial history
             'priorCorrect',[0, correct(1:end-1)],'priorError',[0, err(1:end-1)],...
             'conflict',conflict,'congruent',congruent,...
@@ -386,9 +403,25 @@ for i = 1:numel(subjects)
         %Response time
         trialData(j).response_time(~forward | omit) = NaN;
 
+        %Additional event times
+        [eventTimes.reward, eventTimes.noReward]     = deal(NaN); %Time of Reward/noReward--used for encoding model
+        [eventTimes(trials.rewarded).reward]     = eventTimes(trials.rewarded).outcome;
+        [eventTimes(~trials.rewarded).noReward]     = eventTimes(~trials.rewarded).outcome;
+        trialData(j).eventTimes = eventTimes; %Store in output struct
+
+        %Median inter-cue interval
+        interTowerIntervals = [...
+            arrayfun(@(idx) single(diff(eventTimes(idx).leftTowers)), find(trials.forward),'UniformOutput',false),...
+            arrayfun(@(idx) single(diff(eventTimes(idx).rightTowers)), find(trials.forward),'UniformOutput',false)];
+        medianTowerInterval = median([interTowerIntervals{:}],'omitmissing');
+        interPuffIntervals = [...
+            arrayfun(@(idx) single(diff(eventTimes(idx).leftPuffs)), find(trials.forward),'UniformOutput',false),...
+            arrayfun(@(idx) single(diff(eventTimes(idx).rightPuffs)), find(trials.forward),'UniformOutput',false)];
+        medianPuffInterval = median([interPuffIntervals{:}],'omitmissing');
+
         %Response delay (latency from turn-entry to choice)
-        if any([trialData(j).eventTimes.turnEntry])
-            turnTime = [trialData(j).eventTimes.turnEntry]-[trialData(j).eventTimes.logStart];
+        if any([eventTimes.turnEntry])
+            turnTime = [eventTimes.turnEntry]-[eventTimes.logStart];
             trialData(j).response_delay = trialData(j).response_time - turnTime';
         end
 
@@ -402,7 +435,7 @@ for i = 1:numel(subjects)
         movmeanAccuracy = struct('all',[],'congruent',[],'conflict',[]);
         maxmeanAccuracy = struct('all',[],'congruent',[],'conflict',[]);
 
-        ruleNames = ["forcedChoice","visualRule","tactileRule","alternateTrials"];
+        ruleNames = ["forcedChoice","visualRule","tactileRule","modalityRule","sideRule"];
         rule = strings(1,numel(logs.block));
         for k = 1:numel(logs.block)
             %Task rule: tactile/visual task
@@ -413,14 +446,19 @@ for i = 1:numel(subjects)
                 end
             end
 
-            if isfield(maze(k),"alternateTrials") && isempty(rule(k))
-                rule(k) = "sensory";
-            elseif rule(k)=="alternateTrials"
-                rule(k) = "alternation";
-            elseif rule(k)=="visualRule"
+            if rule(k)=="visualRule"
                 rule(k) = "visual";
             elseif rule(k)=="tactileRule"
                 rule(k) = "tactile";
+            elseif rule(k)=="modalityRule"
+                enumeration = str2double(maze(k).modalityRule); %enumeration:= {0,1,2} for {bimodal,tactile,visual}
+                rule(k) = strjoin([string(StimulusModality(enumeration)),'CS'],''); 
+            elseif rule(k)=="sideRule"
+                rule(k) = "leftCS";
+                enumeration = str2double(maze(k).sideRule); %enumeration:= {0,1,2} for {bilateral,left,right}
+                if StimulusLaterality(enumeration)=="R"
+                     rule(k) = "rightCS";
+                end
             end
 
             reward_scale(k) = [logs.block(k).trial(1).rewardScale];
@@ -460,10 +498,6 @@ for i = 1:numel(subjects)
             %Perceptual bias
             leftSensitivity = sum(leftCues(left & blockIdx==k))/sum(leftCues(blockIdx==k));
             rightSensitivity = sum(rightCues(right & blockIdx==k))/sum(rightCues(blockIdx==k));
-            if rule(k)=="forcedChoice"
-                leftSensitivity = sum(leftCues(left & blockIdx==k))/sum(leftCues(blockIdx==k));
-                rightSensitivity = sum(rightCues(right & blockIdx==k))/sum(rightCues(blockIdx==k));
-            end
             bias(k) = rightSensitivity-leftSensitivity;
 
             %Motor bias
@@ -516,7 +550,6 @@ for i = 1:numel(subjects)
         cueHistogram.omit.puffs = histcounts(diff(nPuffs(trials(j).omit,:),[],2), edges);
 
         %Store session data
-        %**FUTURE: include pCorrect and pError as function of trial type (cueCount, etc)
         sessions(j) = struct(...
             'session_date', datetime(sessionDate(j)),...
             'level', mazeLevel,...
@@ -550,6 +583,8 @@ for i = 1:numel(subjects)
             'median_pSkid', median_pSkid,... %Mean proportion of maze where mouse skidded along walls
             'median_stuckTime', median_stuckTime,...
             'median_duration_cueRegion', median_duration_cueRegion,...
+            'medianTowerInterval', medianTowerInterval,...
+            'medianPuffInterval', medianPuffInterval,...
             'bias', bias,...
             'psychometric', psychometric,...
             'cueHistogram', cueHistogram,...
@@ -579,12 +614,19 @@ end
 function speed = calcRunningSpeed( sensorDots )
 
 sensorDots = cellfun(@double, sensorDots, 'UniformOutput', false);
+dotsPerRev = 26059/10;
+cmPerRev = 63.5; %**Check Rig for measurement**
 for i = 1:numel(sensorDots)
     dYdX = double(sensorDots{i}(:,3:4)).*[-1,1]; %Displacement matrix of size nIterations x 3: [-dY, dX, dT]
-    dT = double(sensorDots{i}(:,5))/1000; %Elapsed time since last iteration
+    dT = double(sensorDots{i}(:,5))./1000; %Elapsed time since last iteration (ms-->s)
     dMagnitude = vecnorm(dYdX,2,2).*[sign(dYdX(:,1))]; %Assign speed the sign of Y
-    speed{i} = dMagnitude./dT; %Assign speed the sign of Y
+    dotsPerSecond = dMagnitude./dT;
+    revsPerSecond = dotsPerSecond/dotsPerRev;
+    speed{i} = revsPerSecond*cmPerRev; %Speed in cm
 end
+
+% Ball circumference = 63.5 cm (from RigParameters.m)
+% Dots per Rev = 26059/10
 
 % From function moveArduinoLinearVelocityMEX(vr):
 % 

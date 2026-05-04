@@ -31,12 +31,14 @@
 function eventTimes = getTrialEventTimes(log, blockIdx)
 
 trials = log.block(blockIdx).trial;
-eventTimes(numel(trials),1) = struct(...
-    'logStart',[],'start',[],...
-    'leftTowers',[],'rightTowers',[],'leftPuffs',[],'rightPuffs',[],...
-    'firstTower',[],'lastTower',[],'firstPuff',[],'lastPuff',[],...
-    'cueEntry',[],'turnEntry',[],'armEntry',[],...
-    'choice',[],'outcome',[]); % Initialize
+[eventTimes(1:numel(trials))] = struct(...
+    'logStart',deal(NaN),'start',deal(NaN),...
+    'leftTowers',deal(NaN),'rightTowers',deal(NaN),'leftPuffs',deal(NaN),'rightPuffs',deal(NaN),...
+    'firstTower',deal(NaN),'lastTower',deal(NaN),'firstPuff',deal(NaN),'lastPuff',deal(NaN),...
+    'firstCue',deal(NaN),...
+    'cueEntry',deal(NaN),'turnEntry',deal(NaN),'armEntry',deal(NaN),...
+    'licks',deal(NaN),...
+    'choice',deal(NaN),'outcome',deal(NaN)); % Initialize
 
 for i = 1:numel(trials)
     %Trial start times
@@ -51,24 +53,65 @@ for i = 1:numel(trials)
     eventTimes(i).rightTowers = towerTimes.right;
     eventTimes(i).firstTower = towerTimes.all(1);
     eventTimes(i).lastTower = towerTimes.all(end);
-    if isfield(trials,"puffOnset")
+       
+    % if isfield(trials,"puffOnset")
         puffTimes = getCueOnsetTimes(trials(i).time, logStartTime, trials(i).puffOnset, 'puffs');
         eventTimes(i).puffs = puffTimes.all;
         eventTimes(i).leftPuffs = puffTimes.left; %Superfluous unless AoE is used
         eventTimes(i).rightPuffs = puffTimes.right;
         eventTimes(i).firstPuff = puffTimes.all(1);
         eventTimes(i).lastPuff = puffTimes.all(end);
-    end
+    % end
+    % 
+    % firstCue = [towerTimes.all(1), puffTimes.all(1)];
+    % eventTimes(i).firstCue = firstCue(firstCue==min(firstCue));
 
     %Time of entry into cue region, turn region (easeway before arm entry), and arm region
     fields = ["iCueEntry","iTurnEntry","iArmEntry","iChoice","iOutcome"];
     for j = 1:numel(fields)
-        eventTimes(i).([lower(fields{j}(2)) fields{j}(3:end)]) = NaN; %Initialize, eg 'eventTimes(i).turnEntry'
+        eventTimes(i).([lower(fields{j}(2)) fields{j}(3:end)]) = NaN; %Initialize, eg 'eventTimes(i).turnEntry' ***MAY BE SUPERFLUOUS after changing method of struct initialization (with deal(NaN)) 
         if isfield(trials,fields(j)) && trials(i).(fields(j)) %If boundary crossed in current trial, else remains NaN
             eventTimes(i).([lower(fields{j}(2)) fields{j}(3:end)]) = ...
                 logStartTime + trials(i).time(trials(i).(fields(j))+1); %Timestamp for i+1 is calculated before iteration(i), so add (+1) offset
         end
     end
+
+    %Lick times, if available
+    if isfield(trials,"licks") && ~any(isnan(trials(i).licks(:)))
+        %Timestamp for i+1 is measured before iteration(i),
+        %  with i+1 recorded as lick index (so no extra +1 needed here);
+        %  however, *if* using the NI-Daq counter function,
+        %  licks occurred during interval between reads, so t0 should be
+        %  last iteration time before the read = iteration(i)
+        licks = trials(i).licks(:,trials(i).licks(1,:)>1); %Exclude any entries registered to first iteration (from ITI)
+        iter = licks(1,:) - 1; %(See explanation above: counter function used starting ~5/1/2026)
+        eventTimes(i).licks = getTrialIterationTime(log, blockIdx, i, iter)';
+        
+        %Interpolate additional lick times from iterations with >1 lick
+        nLicks = licks(2,:); %Number of licks in each read
+        xLickIdx = find(nLicks>1); %Reads with multiple licks
+        if any(xLickIdx)
+            iterDurations = diff(trials(i).time); %Durations of all iterations in trial
+            xLickTimes = []; %Additional lick times to append
+            for k = xLickIdx %Loop through each read with multiple licks and
+                dt = iterDurations(iter(k))/double(nLicks(k)); %Total iteration duration/number of licks
+                t0 = eventTimes(i).licks(k); %Time of first lick in current iteration
+                xLickTimes = [xLickTimes, t0 + (dt:dt:dt*double(nLicks(k)-1))]; %Infer extra licktimes based on number and duration of iteration
+            end
+            eventTimes(i).licks = sort([eventTimes(i).licks, xLickTimes]); %Append extra licktimes
+        end
+
+        % figure; %Overlay raw vs. remaining events
+        %plot(eventTimes(i).licks,zeros(1,numel(eventTimes(i).licks)),'|','LineStyle','none'); hold on
+        %Filter doublets with lick frequencies > 10 Hz
+        while any(diff(eventTimes(i).licks)<0.1)
+            idx = find(diff(eventTimes(i).licks)<0.1, 1, 'first') + 1; %Find doublet 
+            eventTimes(i).licks(idx) = []; %Remove second lick
+        end
+        % plot(eventTimes(i).licks, zeros(1,numel(eventTimes(i).licks)),'|','LineStyle','none');
+    end
+    
+    
 end
 
 %FUTURE: could clean up to only include 2 input args: time and {'cueOnset' or 'puffOnset'}
