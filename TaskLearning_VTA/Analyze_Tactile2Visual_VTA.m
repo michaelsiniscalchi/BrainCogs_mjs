@@ -21,9 +21,11 @@ end
 
 % Set path
 dirs = getRoots();
+% addpath(genpath(fullfile(dirs.code, 'mym-mariadbconn', 'distribution', 'mexa64')));
+% addpath(genpath(fullfile(dirs.code, 'mym', 'distribution', 'mexa64')));
+addpath(genpath(fullfile('/jukebox','braininit','Shared', 'mym-modified-linux-rhel9-compiled-globally', 'mym', 'distribution', 'mexa64')));
 addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...
     'datajoint-matlab','compareVersions','GHToolbox');
-addpath(genpath(fullfile(dirs.code, 'mym', 'distribution', 'mexa64')));
 
 % Session-specific metadata
 [dirs, expData] = expData_Tactile2Visual_VTA(dirs);
@@ -46,6 +48,7 @@ diary on;
 disp(datetime);
 
 % Connect to DataJoint
+which mym
 setupDataJoint_mjs();
 
 %% SETUP PARALLEL POOL FOR FASTER PROCESSING
