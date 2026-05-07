@@ -11,9 +11,6 @@ figIdx = 1;
 figs(figIdx) = figure(...
     'Name',strjoin([subjectID, datestr(session.session_date,'yymmdd'), "aligned", "speed"],'-'),...
     'Position',[10,100,600,400]);
-
-
-
 xLabels = [...
     "Time from first cue (s)",...
     "Time from first puff (s)",...
@@ -23,10 +20,10 @@ titles = ["Running Speed","Lateral Movement","Lateral Movement"];
 lgdLabels = ["First puff","First tower"];
 if session.taskRule=="visualCS"
     lgdLabels = ["First puff (CS-)","First tower (CS+)"];
-    titles(2:3) = ["Lateral Movement (CS+)","Lateral Movement (CS-)"];
+    titles(2:3) = ["Lateral Movement (CS-)","Lateral Movement (CS+)"];
 elseif session.taskRule=="tactileCS"
     lgdLabels = ["First puff (CS+)","First tower (CS-)"];
-    titles(2:3) = ["Lateral Movement (CS-)","Lateral Movement (CS+)"];
+    titles(2:3) = ["Lateral Movement (CS+)","Lateral Movement (CS-)"];
 end
 
 %Plot speed/velocity with sd
@@ -58,16 +55,17 @@ figIdx = figIdx+1;
 
 
 %X-velocity, visual, left vs. right trials
-figs(2) = figure(...
+figs(figIdx) = figure(...
     'Name',strjoin([subjectID, datestr(session.session_date,'yymmdd'), "aligned", "xDisplacement"],'-'),...
     'Position',[10,100,1000,400]);
 T = tiledlayout(1,2,"TileSpacing","tight","Padding","tight");
-ax(2) = nexttile(T);
-cueTypes = ["leftTowers","rightTowers"];
 C = {colors.left, colors.right};
+
+ax(2) = nexttile(T);
+cueTypes = ["leftPuffs","rightPuffs"];
 lgdLabels = ["Left cue","Right cue"];
 for i = 1:numel(cueTypes)
-    data = kinematicData.firstTower.xPosition(trialMasks.(cueTypes(i)),:);
+    data = kinematicData.firstPuff.xPosition(trialMasks.(cueTypes(i)),:);
     baseline = mean(data(:,t<=0),2,"omitmissing");
     data = data-baseline; %subtract baseline
     y = mean(data,'omitmissing');
@@ -87,12 +85,9 @@ figIdx = figIdx+1;
 
 %X-velocity, tactile, left vs. right trials
 ax(3) = nexttile(T);
-
-cueTypes = ["leftPuffs","rightPuffs"];
-C = {colors.left, colors.right};
-
+cueTypes = ["leftTowers","rightTowers"];
 for i = 1:numel(cueTypes)
-    data = kinematicData.firstPuff.xPosition(trialMasks.(cueTypes(i)),:);
+    data = kinematicData.firstTower.xPosition(trialMasks.(cueTypes(i)),:);
      baseline = mean(data(:,t<=0),2,"omitmissing");
     data = data-baseline; %subtract baseline
     y = mean(data,'omitmissing');
