@@ -405,18 +405,18 @@ for i = 1:numel(subjects)
 
         %Additional event times
         [eventTimes.reward, eventTimes.noReward]     = deal(NaN); %Time of Reward/noReward--used for encoding model
-        [eventTimes(trials.rewarded).reward]     = eventTimes(trials.rewarded).outcome;
-        [eventTimes(~trials.rewarded).noReward]     = eventTimes(~trials.rewarded).outcome;
+        [eventTimes(rewarded).reward]     = eventTimes(rewarded).outcome;
+        [eventTimes(unrewarded).noReward]     = eventTimes(unrewarded).outcome;
         trialData(j).eventTimes = eventTimes; %Store in output struct
 
         %Median inter-cue interval
         interTowerIntervals = [...
-            arrayfun(@(idx) single(diff(eventTimes(idx).leftTowers)), find(trials.forward),'UniformOutput',false),...
-            arrayfun(@(idx) single(diff(eventTimes(idx).rightTowers)), find(trials.forward),'UniformOutput',false)];
+            arrayfun(@(idx) single(diff(eventTimes(idx).leftTowers)), find(forward),'UniformOutput',false),...
+            arrayfun(@(idx) single(diff(eventTimes(idx).rightTowers)), find(forward),'UniformOutput',false)];
         medianTowerInterval = median([interTowerIntervals{:}],'omitmissing');
         interPuffIntervals = [...
-            arrayfun(@(idx) single(diff(eventTimes(idx).leftPuffs)), find(trials.forward),'UniformOutput',false),...
-            arrayfun(@(idx) single(diff(eventTimes(idx).rightPuffs)), find(trials.forward),'UniformOutput',false)];
+            arrayfun(@(idx) single(diff(eventTimes(idx).leftPuffs)), find(forward),'UniformOutput',false),...
+            arrayfun(@(idx) single(diff(eventTimes(idx).rightPuffs)), find(forward),'UniformOutput',false)];
         medianPuffInterval = median([interPuffIntervals{:}],'omitmissing');
 
         %Response delay (latency from turn-entry to choice)
