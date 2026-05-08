@@ -32,7 +32,7 @@ which mym
 expData = expData(contains({expData(:).sub_dir}', search_filter)); %Filter by data-directory name, etc.
 
 % Set parameters for analysis
-if isfield(options, 'experiment') && strcmp(options.experiment, 'endlessLinearTrack')
+if isfield(options, 'experiment') && strcmp(options.experiment, 'pavlovianLinearTrack')
     [calculate, summarize, figures, mat_file, params] = params_PavlovianT2V_VTA(dirs, expData, options);
 else
     [calculate, summarize, figures, mat_file, params] = params_Tactile2Visual_VTA(dirs, expData, options);
