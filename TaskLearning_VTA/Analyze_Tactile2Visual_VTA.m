@@ -86,7 +86,7 @@ if calculate.combined_data
         behavior = filterSessionStats(behavior);
         
         %Logistic regression
-        if strcmp(options.experiment, 'tactile2visual')
+        if isfield(options, 'experiment') && strcmp(options.experiment, 'tactile2visual')
             behavior = analyzeTaskStrategy(behavior, params.behavior.nBins_psychometric);
         end
 

@@ -208,7 +208,7 @@ clearvars p;
 % [p.expIDs, p.cellIDs] = list_exampleCells('bootAvg');
 p.expIDs     = [];
 p.cellIDs    = [];
-p.panels = specBootAvgPanels( params.figs );
+p.panels = specBootAvgPanels_plt( params.figs );
 
 params.figs.bootAvg = p;
 clearvars p

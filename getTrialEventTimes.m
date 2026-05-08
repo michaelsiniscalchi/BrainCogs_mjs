@@ -62,9 +62,9 @@ for i = 1:numel(trials)
         eventTimes(i).firstPuff = puffTimes.all(1);
         eventTimes(i).lastPuff = puffTimes.all(end);
     % end
-    % 
-    % firstCue = [towerTimes.all(1), puffTimes.all(1)];
-    % eventTimes(i).firstCue = firstCue(firstCue==min(firstCue));
+ 
+    firstCue = [towerTimes.all(1), puffTimes.all(1)];
+    eventTimes(i).firstCue = firstCue(firstCue==min(firstCue));
 
     %Time of entry into cue region, turn region (easeway before arm entry), and arm region
     fields = ["iCueEntry","iTurnEntry","iArmEntry","iChoice","iOutcome"];

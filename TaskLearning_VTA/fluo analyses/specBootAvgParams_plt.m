@@ -35,8 +35,8 @@ bootParams(i).trigger = "outcome";
 bootParams(i).subtractBaseline = true;
 bootParams(i).getScalarEstimates = true; %Indicator for time-averaging and peak estimation
 bootParams(i).trialSpec = {...
-    "hiTowers",... %***Need trialMask for puff vs. towers trial 
-    "hiPuffs",... %'hiPuffs' trials are uppermost quartile of nPuffs
+    "rewarded",... %***Need trialMask for puff vs. towers trial 
+    "unrewarded",... %'hiPuffs' trials are uppermost quartile of nPuffs
     };
 i = i+1;
 
@@ -58,6 +58,15 @@ bootParams(i).trialSpec = {...
     "forward"...
     "leftTowers",...
     "rightTowers",...
+    };
+i = i+1;
+
+bootParams(i).trigger = "firstCue";
+bootParams(i).subtractBaseline = true;
+bootParams(i).getScalarEstimates = true; %Indicator for time-averaging and peak estimation
+bootParams(i).trialSpec = {...
+    ["hiPuffs"],...
+    ["hiTowers"],...
     };
 i = i+1;
 
