@@ -16,9 +16,9 @@ end
 dirs = getRoots();
 addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...
     'datajoint-matlab','compareVersions','GHToolbox');
-addpath(genpath(fullfile('/jukebox','braininit','Shared',...
-    'mym-modified-linux-rhel9-compiled-globally', 'mym', 'distribution', 'mexa64')));
-which mym
+% addpath(genpath(fullfile('/jukebox','braininit','Shared',...
+%     'mym-modified-linux-rhel9-compiled-globally', 'mym', 'distribution', 'mexa64')));
+% which mym
 
 % Session-specific metadata
 [dirs, expData] = expData_Tactile2Visual_VTA(dirs);

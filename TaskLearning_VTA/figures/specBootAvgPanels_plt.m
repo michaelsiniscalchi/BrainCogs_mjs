@@ -15,7 +15,7 @@ i=1;
 %---CUE RESPONSES----------------------------------------------------------
 ax(i).title      = 'Air Puff Responses';
 ax(i).comparison   = 'first-cue';
-ax(i).trigger    = "firstPuff";
+ax(i).trigger    = "firstCue";
 ax(i).trialType  = ["leftPuffs", "rightPuffs"];
 ax(i).window     = [-inf, inf];
 ax(i).color      = {colors.left, colors.right}; 
@@ -25,7 +25,7 @@ i=i+1;
 
 ax(i).title      = 'Tower Responses';
 ax(i).comparison = 'first-cue';
-ax(i).trigger    = "firstTower";
+ax(i).trigger    = "firstCue";
 ax(i).trialType  = ["leftTowers", "rightTowers"];
 ax(i).window     = [-inf, inf];
 ax(i).color      = {colors.left, colors.right}; 
