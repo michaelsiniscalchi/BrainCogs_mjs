@@ -13,7 +13,7 @@ colors = params.all.colors;
 i=1;
 
 %---CUE RESPONSES----------------------------------------------------------
-ax(i).title      = 'Air Puff Responses';
+ax(i).title      = 'Cue Side (Puffs)';
 ax(i).comparison   = 'first-cue';
 ax(i).trigger    = "firstCue";
 ax(i).trialType  = ["leftPuffs", "rightPuffs"];
@@ -23,7 +23,7 @@ ax(i).lineStyle  = {'-','-'};
 ax(i).xLabel = 'Time from first cue (s)';  % XLabel
 i=i+1;
 
-ax(i).title      = 'Tower Responses';
+ax(i).title      = 'Cue Side (Towers)';
 ax(i).comparison = 'first-cue';
 ax(i).trigger    = "firstCue";
 ax(i).trialType  = ["leftTowers", "rightTowers"];
@@ -33,7 +33,7 @@ ax(i).lineStyle  = {'-','-'};
 ax(i).xLabel = 'Time from first cue (s)';  % XLabel
 i=i+1;
 
-ax(i).title      = 'CS Responses';
+ax(i).title      = 'Cue Modality';
 ax(i).comparison   = 'first-cue';
 ax(i).trigger   = "firstCue";
 ax(i).trialType     = ["towers", "puffs"];

@@ -5,7 +5,7 @@ i = 1;
 
 %Start of trial
 bootParams(i).trigger = "start";
-bootParams(i).subtractBaseline = false;
+bootParams(i).subtractBaseline = true;
 bootParams(i).getScalarEstimates = true; %Indicator for time-averaging and peak estimation
 bootParams(i).trialSpec = {... %***FUTURE: include priorReward and priorNoReward
     "forward",... 
