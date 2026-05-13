@@ -34,6 +34,7 @@ expData = expData(contains({expData(:).sub_dir}', search_filter)); %Filter by da
 % Set parameters for analysis
 if isfield(options, 'experiment') && strcmp(options.experiment, 'pavlovianLinearTrack')
     [calculate, summarize, figures, mat_file, params] = params_PavlovianT2V_VTA(dirs, expData, options);
+    disp(options.experiment);
 else
     [calculate, summarize, figures, mat_file, params] = params_Tactile2Visual_VTA(dirs, expData, options);
 end
