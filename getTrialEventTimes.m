@@ -53,18 +53,21 @@ for i = 1:numel(trials)
     eventTimes(i).rightTowers = towerTimes.right;
     eventTimes(i).firstTower = towerTimes.all(1);
     eventTimes(i).lastTower = towerTimes.all(end);
-       
-    % if isfield(trials,"puffOnset")
-        puffTimes = getCueOnsetTimes(trials(i).time, logStartTime, trials(i).puffOnset, 'puffs');
-        eventTimes(i).puffs = puffTimes.all;
-        eventTimes(i).leftPuffs = puffTimes.left; %Superfluous unless AoE is used
-        eventTimes(i).rightPuffs = puffTimes.right;
-        eventTimes(i).firstPuff = puffTimes.all(1);
-        eventTimes(i).lastPuff = puffTimes.all(end);
-    % end
- 
+
+    puffTimes = getCueOnsetTimes(trials(i).time, logStartTime, trials(i).puffOnset, 'puffs');
+    eventTimes(i).puffs = puffTimes.all;
+    eventTimes(i).leftPuffs = puffTimes.left; %Superfluous unless AoE is used
+    eventTimes(i).rightPuffs = puffTimes.right;
+    eventTimes(i).firstPuff = puffTimes.all(1);
+    eventTimes(i).lastPuff = puffTimes.all(end);
+
+    %First cue, agnostic of sensory modality
     firstCue = [towerTimes.all(1), puffTimes.all(1)];
-    eventTimes(i).firstCue = firstCue(firstCue==min(firstCue));
+    if ~all(isnan(firstCue))
+        eventTimes(i).firstCue = firstCue(firstCue==min(firstCue));
+    else
+        eventTimes(i).firstCue = NaN;
+    end
 
     %Time of entry into cue region, turn region (easeway before arm entry), and arm region
     fields = ["iCueEntry","iTurnEntry","iArmEntry","iChoice","iOutcome"];
