@@ -13,17 +13,6 @@ colors = params.all.colors;
 i=1;
 
 %---CUE RESPONSES----------------------------------------------------------
-
-ax(i).title      = 'Cue Modality';
-ax(i).comparison   = 'first-puff';
-ax(i).trigger   = "firstPuff";
-ax(i).trialType  = ["leftPuffs", "rightPuffs"];
-ax(i).window     = [-inf, inf];
-ax(i).color      = {colors.left, colors.right}; 
-ax(i).lineStyle  = {'-','-'};
-ax(i).xLabel = 'Time from first cue (s)';  % XLabel
-i=i+1;
-
 ax(i).title      = 'Cue Side (Puffs)';
 ax(i).comparison   = 'first-cue';
 ax(i).trigger    = "firstCue";

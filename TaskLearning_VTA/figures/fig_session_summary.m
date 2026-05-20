@@ -7,8 +7,6 @@ for i = 1:numel(subject.sessions)
         continue
     end
 
-    % || all(arrayfun(@(f) isempty(S(i).(f)), ["glm1","glm2"]))
-
     figs(i) = ...
         figure('Name', strjoin([subject.ID, datestr(S(i).session_date,'yymmdd'), S(i).taskRule, string(glmName)],'-'),...
         'Position',[100 100 1500 800]);
