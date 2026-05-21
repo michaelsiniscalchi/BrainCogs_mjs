@@ -164,16 +164,24 @@ for i = 1:numel(subjects)
             eventTimes(blockIdx==k,1) = getTrialEventTimes(logs, k); %Need logs and block idx for time, because restarts/new blocks cause divergent time references
             
             %Cue positions and number on each side 
-            % Caution: if trial was not completed, all cues might not have appeared at their locations
-            [towerPositions(blockIdx==k,:), puffPositions(blockIdx==k,:)] = getCuePositions(logs, k);
 
+            [towerPositions(blockIdx==k,:), puffPositions(blockIdx==k,:)] = getCuePositions(logs, k);
+           
+            % Caution: if trial was not completed, all cues might not have appeared at their locations
+            % nTowers(blockIdx==k,:) = [...
+            %     arrayfun(@(idx) numel(towerPositions{idx}{1}), find(blockIdx==k)'),... %Left cues
+            %     arrayfun(@(idx) numel(towerPositions{idx}{2}), find(blockIdx==k))']; %Right cues
+            % nPuffs(blockIdx==k,:) = [...
+            %     arrayfun(@(idx) numel(puffPositions{idx}{1}), find(blockIdx==k)'),... %Left cues
+            %     arrayfun(@(idx) numel(puffPositions{idx}{2}), find(blockIdx==k))']; %Right cues
+            
             nTowers(blockIdx==k,:) = [...
-                arrayfun(@(idx) numel(towerPositions{idx}{1}), find(blockIdx==k)'),... %Left cues
-                arrayfun(@(idx) numel(towerPositions{idx}{2}), find(blockIdx==k))']; %Right cues
+                arrayfun(@(idx) sum(~isnan(eventTimes(idx).leftTowers)), find(blockIdx==k))',... %Left cues
+                arrayfun(@(idx) sum(~isnan(eventTimes(idx).rightTowers)), find(blockIdx==k))']; %Right cues
 
             nPuffs(blockIdx==k,:) = [...
-                arrayfun(@(idx) numel(puffPositions{idx}{1}), find(blockIdx==k)'),... %Left cues
-                arrayfun(@(idx) numel(puffPositions{idx}{2}), find(blockIdx==k))']; %Right cues
+                arrayfun(@(idx) sum(~isnan(eventTimes(idx).leftPuffs)), find(blockIdx==k))',... %Left cues
+                arrayfun(@(idx) sum(~isnan(eventTimes(idx).rightPuffs)), find(blockIdx==k))']; %Right cues
 
             %Number of licks within cue & outcome periods (for PLT)
             [nLicksCue(blockIdx==k,:), nLicksReward(blockIdx==k,:)] =...
