@@ -25,7 +25,7 @@ stats = struct(...
     );
 
 %Mean within window following trigger
-idx = t>0 & t<params.avgWin; %sample idx for averaging around max
+idx = t>0 & t<params.avgWin; %sample idx for triggered averaging
 timeAvgReps = mean(bootRep(:, idx),2); %time average; one value per bootstrap replicate
 stats.timeAvg = mean(timeAvgReps);
 stats.timeAvg_CI(1,:) = prctile(timeAvgReps, 50+params.CI/2, 1);
@@ -46,7 +46,7 @@ function stats = getScalarEstimate(stats, signal, t, avgWin, statName, func, CI)
 meanSignal = mean(signal);
 idx = meanSignal==func(meanSignal); %Time of peak, etc in the mean trace @func = @max, @min, etc
 if sum(idx)==1 %If distinct peak time
-    stats.(statName) = meanSignal(idx); %max dF/F
+    stats.(statName) = meanSignal(idx); %max/min/peak dF/F
     stats.([statName,'_t']) = t(idx);
     statReps = signal(:,idx); %dF/F from each bootstrap replicate at time of peak in smoothed mean trace
     stats.([statName,'_CI'])(1,:) = prctile(statReps, 50+CI/2, 1);
