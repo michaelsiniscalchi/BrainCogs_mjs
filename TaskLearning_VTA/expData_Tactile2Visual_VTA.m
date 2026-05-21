@@ -697,7 +697,7 @@ expData(i).npCorrFactor = 0.3;
 i = i+1;
 
 %% ------- Pavlovian Linear Track -----------------------------------------
-
+%m37
 expData(i).sub_dir = '260410-m37-plt7'; 
 expData(i).subjectID = "mjs20_37";
 expData(i).mainMaze = 7;
@@ -723,5 +723,10 @@ expData(i).subjectID = "mjs20_37";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
-
+%m00
+expData(i).sub_dir = '260508-m00-plt7'; 
+expData(i).subjectID = "mjs20_00";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 
