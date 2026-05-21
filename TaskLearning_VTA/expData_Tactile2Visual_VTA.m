@@ -723,6 +723,12 @@ expData(i).subjectID = "mjs20_37";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+%m39
+expData(i).sub_dir = '260406-m39-plt8'; 
+expData(i).subjectID = "mjs20_37";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 %m00
 expData(i).sub_dir = '260508-m00-plt7'; 
 expData(i).subjectID = "mjs20_00";
