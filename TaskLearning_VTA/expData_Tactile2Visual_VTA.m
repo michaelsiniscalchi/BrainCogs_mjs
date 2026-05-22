@@ -680,7 +680,7 @@ expData(i).mainMaze = 10;
 expData(i).session_number = 1; %Idx from BrainCogs Database/braininit cup
 expData(i).npCorrFactor = 0.3;
 i = i+1;
-expData(i).sub_dir = '260313-m39-maze10'; 
+expData(i).sub_dir = '260313-m39-maze10'; %NEED to run FIGURES!
 expData(i).subjectID = "mjs20_39";
 expData(i).mainMaze = 10;
 expData(i).npCorrFactor = 0.3;
@@ -698,6 +698,11 @@ i = i+1;
 
 %% ------- Pavlovian Linear Track -----------------------------------------
 %m37
+expData(i).sub_dir = '260406-m37-plt7'; 
+expData(i).subjectID = "mjs20_37";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 expData(i).sub_dir = '260410-m37-plt7'; 
 expData(i).subjectID = "mjs20_37";
 expData(i).mainMaze = 7;

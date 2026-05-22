@@ -60,7 +60,7 @@ for i = 1:numel(subject.sessions)
 
         %--- GLM ------------------------------------------------------
     ax(4)=nexttile;
-    if ~isempty(S(i).(glmName))
+    if isfield(S(i), glmName) && ~isempty(S(i).(glmName))
         plotSessionGLM(S(i), glmName, colors);
     end
 
@@ -73,7 +73,7 @@ for i = 1:numel(subject.sessions)
         disp('Warning: No psychometric for towers/puffs.');
     end
     if ~isempty(S(i).psychometric)
-        if ~isempty(S(i).(glmName).psychometric)
+        if isfield(S(i), glmName) && ~isempty(S(i).(glmName)) && ~isempty(S(i).(glmName).psychometric)
             S(i).psychometric.model = S(i).(glmName).psychometric;
         end
     lgd = plotPsychometric(S(i).psychometric, "towers", colors, ""); %p = plotPsychometric(psychStruct, cueName, colors, title_str)

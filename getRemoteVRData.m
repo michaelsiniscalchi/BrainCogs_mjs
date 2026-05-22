@@ -185,7 +185,7 @@ for i = 1:numel(subjects)
 
             %Number of licks within cue & outcome periods (for PLT)
             [nLicksCue(blockIdx==k,:), nLicksReward(blockIdx==k,:)] =...
-                getLicksPerEpoch(eventTimes);
+                getLicksPerEpoch(eventTimes(blockIdx==k));
             
             %Response time from trial start to choice (modified after generating trial masks)
             response_time(blockIdx==k)  = arrayfun(@(idx) Trials(idx).time(Trials(idx).iterations), 1:numel(Trials));
@@ -291,14 +291,14 @@ for i = 1:numel(subjects)
 
         %---Trial masks--------------------------------------------------------------------
 
-        %Initialize
+        %Initialize non-derived masks
         [left, right,...
-            leftTowers, rightTowers, noTowers, hiTowers, loTowers,... 
-            leftPuffs, rightPuffs, noPuffs, hiPuffs, loPuffs,...
-            leftCues, rightCues, noCues, hiCues, loCues,... %Relevant cue side
+            leftTowers, rightTowers,... 
+            leftPuffs, rightPuffs,...
             tactileRule, visualRule, forcedChoice,...
             tactileCSRule, visualCSRule, leftCSRule, rightCSRule,...
-            correct, rewarded, omit, congruent, conflict, forward, stuck] = deal(false(1,numel(blockIdx)));
+            csPresented,...
+            correct, rewarded, omit, forward, stuck] = deal(false(1,numel(blockIdx)));
         level = nan(1,numel(blockIdx));
         mazeLevel = [logs.block.mazeID];
         for k = 1:numel(logs.block)
@@ -326,8 +326,6 @@ for i = 1:numel(subjects)
             end
 
             %Conditioned stimulus
-            % tactileCS, visualCS, leftCS, rightCS,...
-            csPresented = false(1, numel(Trials));
             if isfield(Trials,"modalityRule") %Pavlovian linear track
                 tactileCSRule(blockIdx==k) = [Trials.modalityRule]==StimulusModality('tactile');
                 visualCSRule(blockIdx==k) = [Trials.modalityRule]==StimulusModality('visual');
@@ -394,7 +392,7 @@ for i = 1:numel(subjects)
 
         %Amend correct mask to reflect zero-cue trials
         unrewarded = ~rewarded;
-        correct = correct & ~noCues;
+        correct = correct & ~noCues; %Correct only if cues were presented (not random wins)
         err = ~(correct | omit | noCues); %exclude omission and zero-cue trials
         
         %Trials where alternative rules agree or conflict

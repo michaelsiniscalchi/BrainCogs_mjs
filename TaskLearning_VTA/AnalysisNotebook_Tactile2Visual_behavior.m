@@ -29,12 +29,12 @@ exe = struct(...
 plots = struct(...
     'motor_trajectory',                 false,... 
     'collision_locations',              false,...
-    'alignedKinematics',                true,...
-    'lickRaster',                       true,...
+    'alignedKinematics',                false,...
+    'lickRaster',                       false,...
     'trial_duration',                   false,...
     'longitudinal_performance',         false,...
     'longitudinal_glm',                 false,...
-    'session_summary',                  false,...
+    'session_summary',                  true,...
     'group_performance',                false);
 
 %Subject info
@@ -47,7 +47,7 @@ if exe.reloadData
         subjects = getRemoteVRData( subject, key );
 
         %Exclude warmup trials from stats for Main Mazes
-        % subjects = filterSessionStats(subjects);
+        subjects = filterSessionStats(subjects);
 
     elseif dataSource.experimentData
         subjects = loadExperData([subjects.ID],dirs);
@@ -144,16 +144,27 @@ end
 if plots.session_summary
     saveDir = fullfile(dirs.results,'session-summary');
     for i = 1:numel(subjects)
+        subject = loadExperData(subjects(i).ID, dirs);
+        if any(ismember([subject.sessions.taskRule],...
+                ["visualCS","tactileCS","leftCS","rightCS"]))
+            for j = 1:numel(subject.sessions)
+                figs(j) = fig_pltSession_summary(subject.sessions(j),...
+                    subject.trialData(j), subject.trials(j), subject.ID, colors);
+            end
+            save_multiplePlots(figs, saveDir);
+        end
+
+        %Rule switching task (operant)
+        if any(ismember([subject.sessions.taskRule],["visual","tactile"]))
         %GLM2
         %(nTowersLeft_nTowersRight_nPuffsLeft_nPuffsRight_priorChoice_bias)
-        subject = loadExperData(subjects(i).ID, dirs);
         figs = fig_session_summary( subject, 'glm2', colors );
         save_multiplePlots(figs,saveDir);
         %GLM1 towers_puffs_bias
         saveDir = fullfile(dirs.results,'session-summary','glm1');
-        subject = loadExperData(subjects(i).ID, dirs);
         figs = fig_session_summary( subject, 'glm1', colors );
         save_multiplePlots(figs,saveDir);
+        end
     end
 end
 
