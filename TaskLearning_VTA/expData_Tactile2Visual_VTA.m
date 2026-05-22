@@ -737,7 +737,7 @@ expData(i).npCorrFactor = 0.3;
 i = i+1;
 %m39
 expData(i).sub_dir = '260406-m39-plt8'; 
-expData(i).subjectID = "mjs20_37";
+expData(i).subjectID = "mjs20_39";
 expData(i).mainMaze = 8;
 expData(i).session_number = 1; %Idx from BrainCogs Database/braininit cup
 expData(i).npCorrFactor = 0.3;
