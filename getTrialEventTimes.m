@@ -43,6 +43,7 @@ trials = log.block(blockIdx).trial;
 for i = 1:numel(trials)
     %Trial start times
     logStartTime = getTrialIterationTime(log, blockIdx, i, 1); %The first time entry in trial, measured from start of session; trial time vector is relative to this entry; needs correction in some cases because the reference time for trials(i).start changes after restarts, etc.
+    % logStartTime = log.block(blockIdx).trial(i).start;
     eventTimes(i).logStart = logStartTime; %Time when world becomes visible: time(2)
     eventTimes(i).start = getTrialIterationTime(log, blockIdx, i, 3); %Time when world becomes visible: recorded as time(3)-- time(1), t0, initialize trial; time(2), issue command to make world visible; i=3, world becomes visible
 

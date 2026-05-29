@@ -34,6 +34,7 @@ end
 
 %Assign absolute time based on block start time, trial start time, and iteration 
 trialStartTime = log.block(blockIdx).trial(trialIdx).start;
-iteration = iteration(iteration<=length(log.block(blockIdx).trial(trialIdx).time)); %Omit last iteration (no time assignment)
+% %Omit last iteration (no time assignment) **Is this ever an issue?***
+% iteration = iteration(iteration<=length(log.block(blockIdx).trial(trialIdx).time));
 iterTime = log.block(blockIdx).trial(trialIdx).time(iteration); 
 t = referenceTime + trialStartTime + iterTime;

@@ -35,28 +35,13 @@ timeIdx = 1:ds_factor:numel(img_beh.t);%Downsample for publications, etc.
 t = (img_beh.t(timeIdx) ./ 60); %Unit: seconds->minutes
 dFF = cellfun(@(C) C(timeIdx),img_beh.dFF(cellIdx),'UniformOutput',false);
 
-startTimes = ([img_beh.trialData.eventTimes.firstCue] ./ 60); %Unit: seconds->minutes
+startTimes = ([img_beh.trialData.eventTimes.logStart] ./ 60); %Unit: seconds->minutes
 % trigTimes = (img_beh.trialData.(params.trigTimes) ./ 60); %'cueTimes' or 'responseTimes'
 
 % Make color-coded backdrop for each rule block
 spc = params.spacing; %Unit: sd
 ymax = 0;
 ymin = -spc*(nROIs+0.5); %Cell idx negated so cell 1 is on top
-% for i = 1:numel(img_beh.blocks.type)
-%     firstTrial = img_beh.blocks.firstTrial(i);
-%     nTrials = min(img_beh.blocks.nTrials(i), img_beh.blocks.nTrials(end)-1); %First startTime of next block or last startTime of last block
-%     t1 = startTimes(firstTrial); %Time of first trial in ith block
-%     t2 = startTimes(firstTrial+nTrials); %Time of first trial in (i+1)th block
-%     switch img_beh.blocks.type{i}
-%         case 'sound'; c = 'w';
-%         case 'actionL'; c = color.red;
-%         case 'actionR'; c = color.blue;
-%     end
-%     fill([t1;t1;t2;t2],[ymax;ymin;ymin;ymax],c,...
-%         'FaceAlpha',params.FaceAlpha,'EdgeColor','none');
-%     hold on;
-% end
-
 % Mark beginning of each trial, if desired
 if params.trialMarkers
     c = cell(numel(startTimes),1);
