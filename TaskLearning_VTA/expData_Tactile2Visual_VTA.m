@@ -770,6 +770,11 @@ expData(i).subjectID = "mjs20_37";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+expData(i).sub_dir = '260528-m37-plt10'; 
+expData(i).subjectID = "mjs20_37";
+expData(i).mainMaze = 10;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 %m39
 expData(i).sub_dir = '260406-m39-plt8'; %Major timing issue--~3.5 delay on dF/F signal wrt. cue/outcome times...
 expData(i).subjectID = "mjs20_39";
