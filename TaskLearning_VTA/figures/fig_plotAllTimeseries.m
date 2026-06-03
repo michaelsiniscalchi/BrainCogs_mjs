@@ -4,7 +4,6 @@ setup_figprops(timeseries);
 
 % Initialize figure
 figName = img_beh.sessionID;
-    ds_factor = 10; %Downsample factor; set to 1 for no DS
 if isempty(params.cellIDs)
     fig = figure('Name',figName);
     fig.Position = [10 100 1900 800];
@@ -30,12 +29,14 @@ end
 
 % Extract data for plot
 nROIs = sum(cellIdx); %Number of cells to plot
-timeIdx = 1:ds_factor:numel(img_beh.t);%Downsample for publications, etc. **Should smooth, not downsample**
-t = (img_beh.t(timeIdx) ./ 60); %Unit: seconds->minutes
+timeIdx = 1:params.dsFactor:numel(img_beh.t);%Downsample for publications, etc. **Should smooth, not downsample**
+% t = (img_beh.t(timeIdx) ./ 60); %Unit: seconds->minutes
+t = img_beh.t(timeIdx); %Unit: seconds
 dFF = cellfun(@(C) C(timeIdx),img_beh.dFF(cellIdx),'UniformOutput',false);
 
 % startTimes = ([img_beh.trialData.eventTimes.logStart] ./ 60); 
-trigTimes = ([img_beh.trialData.eventTimes.(params.trigTimes)] ./ 60); %Unit: seconds->minutes
+% trigTimes = ([img_beh.trialData.eventTimes.(params.trigTimes)] ./ 60); %Unit: seconds->minutes
+trigTimes = [img_beh.trialData.eventTimes.(params.trigTimes)]; %Unit: seconds
 
 % Make color-coded backdrop for each rule block
 spc = params.spacing; %Unit: sd
@@ -45,8 +46,8 @@ ymin = -spc*(nROIs+0.5); %Cell idx negated so cell 1 is on top
 if params.trialMarkers
     c = cell(numel(trigTimes),1);
     c(:) = {'w'};
-    c(img_beh.trials.correct) = {color.correct};
-    c(img_beh.trials.error) = {color.error};
+    c(img_beh.trials.rewarded) = {color.correct};
+    c(img_beh.trials.unrewarded) = {color.error};
     for i = 1:numel(trigTimes)
         plot([trigTimes(i),trigTimes(i)],[ymin,ymax],'-','Color',c{i},'LineWidth',0.5);  hold on
     end
@@ -71,7 +72,9 @@ set(gca,'YTick',ytick); %Ticks at these spacing values
 set(gca,'YTickLabel',yticklabel);
 
 title(img_beh.sessionID);
-ylabel('Cell Identifier'); xlabel('Time (min)');
+ylabel('Cell Identifier'); 
+% xlabel('Time (min)');
+xlabel('Time (s)');
 set(gca,'box','off');
 axis tight;
 

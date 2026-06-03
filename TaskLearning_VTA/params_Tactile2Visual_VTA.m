@@ -194,6 +194,7 @@ p.expIDs           = [];
 p.cellIDs          = [];
 p.trialMarkers     = true;
 p.trigTimes        = 'outcome'; %'cueTimes' or 'responseTimes'
+p.dsFactor         = 1; %Downsample factor **if necessary, change to binning or smoothing**
 p.ylabel_cellIDs   = true;
 p.spacing          = 10; %Spacing between traces in SD 
 p.FaceAlpha        = 0.2; %Transparency for rule patches
