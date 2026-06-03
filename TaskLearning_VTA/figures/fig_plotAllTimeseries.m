@@ -30,13 +30,12 @@ end
 
 % Extract data for plot
 nROIs = sum(cellIdx); %Number of cells to plot
-
-timeIdx = 1:ds_factor:numel(img_beh.t);%Downsample for publications, etc.
+timeIdx = 1:ds_factor:numel(img_beh.t);%Downsample for publications, etc. **Should smooth, not downsample**
 t = (img_beh.t(timeIdx) ./ 60); %Unit: seconds->minutes
 dFF = cellfun(@(C) C(timeIdx),img_beh.dFF(cellIdx),'UniformOutput',false);
 
-startTimes = ([img_beh.trialData.eventTimes.logStart] ./ 60); %Unit: seconds->minutes
-% trigTimes = (img_beh.trialData.(params.trigTimes) ./ 60); %'cueTimes' or 'responseTimes'
+% startTimes = ([img_beh.trialData.eventTimes.logStart] ./ 60); 
+trigTimes = ([img_beh.trialData.eventTimes.(params.trigTimes)] ./ 60); %Unit: seconds->minutes
 
 % Make color-coded backdrop for each rule block
 spc = params.spacing; %Unit: sd
@@ -44,12 +43,12 @@ ymax = 0;
 ymin = -spc*(nROIs+0.5); %Cell idx negated so cell 1 is on top
 % Mark beginning of each trial, if desired
 if params.trialMarkers
-    c = cell(numel(startTimes),1);
+    c = cell(numel(trigTimes),1);
     c(:) = {'w'};
     c(img_beh.trials.correct) = {color.correct};
     c(img_beh.trials.error) = {color.error};
-    for i = 1:numel(startTimes)
-        plot([startTimes(i),startTimes(i)],[ymin,ymax],'-','Color',c{i},'LineWidth',0.5);  hold on
+    for i = 1:numel(trigTimes)
+        plot([trigTimes(i),trigTimes(i)],[ymin,ymax],'-','Color',c{i},'LineWidth',0.5);  hold on
     end
 end
 

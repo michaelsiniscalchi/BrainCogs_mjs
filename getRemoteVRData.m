@@ -62,9 +62,12 @@ for i = 1:numel(subjects)
             'collision_locations', [],'pSkid', [],'stuck_locations', [],'stuck_time', []);
 
         trials(numel(sessionDate),1) = ...
-            struct('left', [], 'right', [],... %logical
+            struct(...
+            'left', [], 'right', [],... %logical
+            'towers', [],...
             'leftTowers', [], 'rightTowers',[],...
             'noTowers',[], 'hiTowers', [], 'loTowers', [],...
+            'puffs', [],...
             'leftPuffs',[],'rightPuffs',[],...
             'noPuffs', [], 'hiPuffs', [], 'loPuffs', [],...
             'leftCues',[],'rightCues',[], ... %logical
@@ -170,14 +173,6 @@ for i = 1:numel(subjects)
 
             [towerPositions(blockIdx==k,:), puffPositions(blockIdx==k,:)] = getCuePositions(logs, k);
            
-            % Caution: if trial was not completed, all cues might not have appeared at their locations
-            % nTowers(blockIdx==k,:) = [...
-            %     arrayfun(@(idx) numel(towerPositions{idx}{1}), find(blockIdx==k)'),... %Left cues
-            %     arrayfun(@(idx) numel(towerPositions{idx}{2}), find(blockIdx==k))']; %Right cues
-            % nPuffs(blockIdx==k,:) = [...
-            %     arrayfun(@(idx) numel(puffPositions{idx}{1}), find(blockIdx==k)'),... %Left cues
-            %     arrayfun(@(idx) numel(puffPositions{idx}{2}), find(blockIdx==k))']; %Right cues
-            
             nTowers(blockIdx==k,:) = [...
                 arrayfun(@(idx) sum(~isnan(eventTimes(idx).leftTowers)), find(blockIdx==k))',... %Left cues
                 arrayfun(@(idx) sum(~isnan(eventTimes(idx).rightTowers)), find(blockIdx==k))']; %Right cues
@@ -377,8 +372,11 @@ for i = 1:numel(subjects)
             (rightPuffs & (tactileRule|tactileCSRule)) |...
             (rightCSRule & (rightPuffs | rightTowers)); %Relevant cue
 
-        visualCS    = (leftTowers | rightTowers) & csPresented; %For "reduced" tasks like no distractors or pavlovian linear track
-        tactileCS   = (leftPuffs | rightPuffs) & csPresented;
+        puffs = (leftPuffs | rightPuffs);
+        towers = (leftTowers | rightTowers);
+
+        visualCS    = towers & csPresented; %For "reduced" tasks like no distractors or pavlovian linear track
+        tactileCS   = puffs & csPresented;
         leftCS      = (leftTowers | leftPuffs) & csPresented;
         rightCS     = (rightTowers | rightPuffs) & csPresented;
 
@@ -418,8 +416,10 @@ for i = 1:numel(subjects)
         %Save to struct
         trials(j) = struct(...
             'left',left,'right',right,...
+            'towers',towers,...
             'leftTowers',leftTowers,'rightTowers',rightTowers, ... %Cue side
             'noTowers', noTowers, 'hiTowers', hiTowers, 'loTowers', loTowers,... %Cue count
+            'puffs', puffs,...
             'leftPuffs',leftPuffs,'rightPuffs',rightPuffs,... %Cue side
             'noPuffs', noPuffs, 'hiPuffs', hiPuffs, 'loPuffs', loPuffs,... %Cue count
             'visualRule',visualRule,'tactileRule',tactileRule,'forcedChoice',forcedChoice,... %Rule
