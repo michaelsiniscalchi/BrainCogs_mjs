@@ -793,4 +793,21 @@ expData(i).subjectID = "mjs20_00";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+%m01 (Cracked lens after 4 sessions)
+expData(i).sub_dir = '260515-m01-plt8'; 
+expData(i).subjectID = "mjs20_01";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+%m04
+expData(i).sub_dir = '260513-m04-plt7'; %imaging looks pretty bad...
+expData(i).subjectID = "mjs20_04";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '260515-m04-plt7'; %Truncating to 150 stack to look for improvement
+expData(i).subjectID = "mjs20_04";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 
