@@ -788,4 +788,9 @@ expData(i).subjectID = "mjs20_00";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+expData(i).sub_dir = '260519-m00-plt7'; 
+expData(i).subjectID = "mjs20_00";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 
