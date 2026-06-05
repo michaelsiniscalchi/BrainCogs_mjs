@@ -819,7 +819,7 @@ expData(i).npCorrFactor = 0.3;
 i = i+1;
 %m09
 expData(i).sub_dir = '260528-m09-plt7'; %imaging looks pretty bad...
-expData(i).subjectID = "mjs20_09";
+expData(i).subjectID = "mjs20_9";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
