@@ -4,7 +4,8 @@ for i = 1:numel(subjects)
     for j = 1:numel(subjects(i).sessions)
 
         %Skip forced choice (L-Maze) sessions
-        if subjects(i).sessions(j).taskRule=="forcedChoice"
+        if ismember(subjects(i).sessions(j).taskRule,...
+                ["forcedChoice","tactileCS","visualCS","leftCS","rightCS"])
             continue
         end
 

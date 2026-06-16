@@ -26,9 +26,6 @@ if nargin < 3
     end
 end
 
-
-
-
 %Estimate frame rate if metadata could not be extracted (ie using ScanImageTiffReader) 
 if ~isfield(cells,'frameRate')
     cells.frameRate = 1/mean(diff(cells.t));

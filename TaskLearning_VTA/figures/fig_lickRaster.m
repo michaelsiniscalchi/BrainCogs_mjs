@@ -20,14 +20,10 @@ towerMask = trialMasks.leftTowers | trialMasks.rightTowers;
 nTrials = numel(trialData.eventTimes);
 
 for i = 1:nTrials
-    if trialMasks.leftPuffs(i) || trialMasks.rightPuffs(i)
+    if puffMask(i)
         t0 = trialData.eventTimes(i).firstPuff;
-        % X.lickTimes{i} = trialData.eventTimes(i).licks - t0;
-        % X.cueTimes{i} = [trialData.eventTimes(i).leftPuffs, trialData.eventTimes(i).rightPuffs] - t0; 
-    elseif trialMasks.leftTowers(i) || trialMasks.rightTowers(i)
+    elseif towerMask(i)
         t0 = trialData.eventTimes(i).firstTower;
-        % X.lickTimes{i} = trialData.eventTimes(i).licks - t0;
-        % X.cueTimes{i} = [trialData.eventTimes(i).leftTowers, trialData.eventTimes(i).rightTowers] - t0; 
     end
     fieldNames = ["leftPuffs", "rightPuffs", "leftTowers", "rightTowers",...
         "licks","reward","noReward"];

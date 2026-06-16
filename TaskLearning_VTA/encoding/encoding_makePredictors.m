@@ -12,10 +12,8 @@ init.cell = repmat({NaN},size(eventTimes));
 
 %***Put this in getVRData()***--------------------------------------------
 %Append choice and outcome-specific events
-[eventTimes(trials.left).leftChoice]    = eventTimes(trials.left).turnEntry;
-[eventTimes(trials.right).rightChoice]  = eventTimes(trials.right).turnEntry;
-[eventTimes(trials.correct).reward]     = eventTimes(trials.correct).outcome;
-[eventTimes(trials.error).noReward]     = eventTimes(trials.error).outcome;
+[eventTimes(trials.rewarded).reward]     = eventTimes(trials.rewarded).outcome;
+[eventTimes(trials.unrewarded).noReward]     = eventTimes(trials.unrewarded).outcome;
 %---------------------------------------------------------------------------
 
 %Time, TrialIdx, ITI, Position, Velocity, Acceleration, Heading
