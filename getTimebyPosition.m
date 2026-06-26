@@ -14,10 +14,12 @@ maxY            = cellfun(@(pos) cummax(pos(:,2)), position, 'UniformOutput', fa
 iter            = accumfun(2, @(x) binarySearch(x, ySample, 1, 1)', maxY);
 
 %Correction for time indexing in ATT runtime code: time from just before iter(i) stored as time(i+1)
-iter = iter + 1; 
+maxIter = cellfun(@numel,time); 
+maxIterMask = iter==maxIter; %Handle last trial of sessions ended mid-trial; assign last iteration time
+iter(~maxIterMask) = iter(~maxIterMask) + 1; 
 
 %Extract trial-relative times from corresponding iterations
-time_mat        = accumfun(2, @(x) time{x}(iter(:,x)), 1:numel(position));
+time_mat        = accumfun(2, @(i) time{i}(iter(:,i)), 1:numel(trialData));
 
 %Main method taken from sampleViewAngleVsY(), written by Sue Ann Koay
 %   A couple issues with cummax(y) strategy for dealing with

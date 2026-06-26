@@ -24,12 +24,22 @@ expData = struct('sub_dir',[],'subjectID',[],'mainMaze',[],...
 
 % Session metadata
 i=1;
-% expData(i).sub_dir = '230922-m105-maze7-test'; 
-% expData(i).subjectID = "mjs20_105";
-% expData(i).mainMaze = 7;
-% expData(i).npCorrFactor = 0.3;
-% i = i+1;
 
+%m103
+expData(i).sub_dir = '230929-m103-maze7'; % 93% Accuracy; '231003-m103-maze7', 85%; '231005-m103-maze7', 67%
+expData(i).subjectID = "mjs20_103";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
+expData(i).sub_dir = '231003-m103-maze7'; % 93% Accuracy; '231003-m103-maze7', 85%; '231005-m103-maze7', 67%
+expData(i).subjectID = "mjs20_103";
+expData(i).session_number = 1; 
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
+%m105
 expData(i).sub_dir = '230922-m105-maze7'; 
 expData(i).subjectID = "mjs20_105";
 expData(i).mainMaze = 7;
@@ -44,19 +54,6 @@ i = i+1;
 
 expData(i).sub_dir = '231004-m105-maze7'; 
 expData(i).subjectID = "mjs20_105";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-
-expData(i).sub_dir = '230929-m103-maze7'; % 93% Accuracy; '231003-m103-maze7', 85%; '231005-m103-maze7', 67%
-expData(i).subjectID = "mjs20_103";
-expData(i).mainMaze = 7;
-expData(i).npCorrFactor = 0.3;
-i = i+1;
-
-expData(i).sub_dir = '231003-m103-maze7'; % 93% Accuracy; '231003-m103-maze7', 85%; '231005-m103-maze7', 67%
-expData(i).subjectID = "mjs20_103";
-expData(i).session_number = 1; 
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
@@ -651,6 +648,11 @@ expData(i).npCorrFactor = 0.3;
 i = i+1;
 
 %M37 DAT-cre::RiboL1-jGCaMP8s
+expData(i).sub_dir = '260311-m37-maze8'; %Example %5 zero-cues session for Ilana
+expData(i).subjectID = "mjs20_37";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 expData(i).sub_dir = '260312-m37-maze10'; %Maze 10 is the unimodal variant 
 expData(i).subjectID = "mjs20_37";
 expData(i).session_number = 1; %Idx from BrainCogs Database/braininit cup

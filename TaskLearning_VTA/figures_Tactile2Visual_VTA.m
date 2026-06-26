@@ -97,7 +97,8 @@ end
 if figures.trial_average_dFF
     for i = 1:numel(expData)
         %Load data
-        load(mat_file.results.cellFluo(i),'bootAvg','cellID');
+        load(mat_file.results.cellFluo(i),'bootAvg','cellID','trialDFF','sessions','trials');
+        load(mat_file.img_beh(i),'trialDFF','sessions','trials');
         save_dir = fullfile(dirs.figures,'Cellular fluorescence', expData(i).sub_dir);   %Figures directory: single units
         create_dirs(save_dir); %Create dir for these figures
         
@@ -114,6 +115,11 @@ if figures.trial_average_dFF
                 figs = plot_trialAvgDFF(bootAvg.(event), cellID, expData(i).sub_dir,...
                     params.figs.bootAvg.panels(panelIdx));
                 save_multiplePlots(figs, save_dir); %save as FIG and PNG
+               
+                %Plot individual trials
+                % figs = plot_trialDFF( trialDFF.(event), cellID, expData(i).sub_dir, params.figs.bootAvg.panels(panelIdx) );
+                % save_multiplePlots(figs, save_dir); %save as FIG and PNG
+
             end
         end
         clearvars figs
