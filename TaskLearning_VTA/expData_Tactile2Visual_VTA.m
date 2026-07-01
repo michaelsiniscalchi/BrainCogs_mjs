@@ -648,6 +648,11 @@ expData(i).npCorrFactor = 0.3;
 i = i+1;
 
 %M37 DAT-cre::RiboL1-jGCaMP8s
+expData(i).sub_dir = '260108-m37-maze7'; %Last session on Rule-1 (tactile)
+expData(i).subjectID = "mjs20_37";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 expData(i).sub_dir = '260311-m37-maze8'; %Example %5 zero-cues session for Ilana
 expData(i).subjectID = "mjs20_37";
 expData(i).mainMaze = 8;
