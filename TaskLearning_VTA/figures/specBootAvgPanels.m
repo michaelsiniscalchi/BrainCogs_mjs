@@ -341,9 +341,9 @@ ax(i).lineStyle  = {'-','-'};
 ax(i).xLabel = 'Time from first cue (s)';  % XLabel
 i=i+1;
 
-ax(i).title      = 'First Cue Response';
+ax(i).title      = 'Cue Response (Single Modality Trials)';
 ax(i).comparison   = 'first-cue';
-ax(i).trigger   = "firstCue-singleModalityTrials";
+ax(i).trigger   = "firstCue";
 ax(i).trialType = ["puffs_noTowers", "towers_noPuffs"];
 ax(i).window    = [-1, 2];
 ax(i).color      = {colors.tactile, colors.visual}; 
