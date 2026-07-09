@@ -180,7 +180,7 @@ if calculate.fluorescence
         end
 
         % Encoding model
-        if calculate.encoding_model && strcmp(options.experiment, 't2v')
+        if calculate.encoding_model && strcmp(options.experiment, 'tactile2visual')
             %Load combined imaging & behavioral data
             load(mat_file.img_beh(i),'trialData','trials','dFF','t','cellID');
             mdlNames = params.encoding.modelName;
