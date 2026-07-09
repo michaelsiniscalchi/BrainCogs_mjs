@@ -111,27 +111,27 @@ i=i+1;
 %Left vs. Right Choice
 %Explore whether this should be a whole-trial variable, or a regression
 %spline from start or turn
-ax(i).title         = "Left Choice";
-ax(i).comparison    = "choice";
-ax(i).trigger       = "turnEntry";
-ax(i).trialType     = "left";
-ax(i).varName       = "leftChoice";
-ax(i).window        = [-1, 3];
-ax(i).color         = {colors.data2,colors.left}; 
-ax(i).lineStyle     = ["-","-"]; % {pred1,pred2,obs1,obs2}
-ax(i).xLabel        = 'Time from turn (s)';
-i=i+1;
-
-ax(i).title         = "Right Choice";
-ax(i).comparison    = "choice";
-ax(i).trigger       = "turnEntry";
-ax(i).trialType     = "right";
-ax(i).varName       = "rightChoice";
-ax(i).window        = [-1, 3];
-ax(i).color         = {colors.data2,colors.right}; 
-ax(i).lineStyle     = ["-","-"]; % {pred1,pred2,obs1,obs2}
-ax(i).xLabel        = 'Time from turn (s)';
-i=i+1;
+% ax(i).title         = "Left Choice";
+% ax(i).comparison    = "choice";
+% ax(i).trigger       = "turnEntry";
+% ax(i).trialType     = "left";
+% ax(i).varName       = "leftChoice";
+% ax(i).window        = [-1, 3];
+% ax(i).color         = {colors.data2,colors.left}; 
+% ax(i).lineStyle     = ["-","-"]; % {pred1,pred2,obs1,obs2}
+% ax(i).xLabel        = 'Time from turn (s)';
+% i=i+1;
+% 
+% ax(i).title         = "Right Choice";
+% ax(i).comparison    = "choice";
+% ax(i).trigger       = "turnEntry";
+% ax(i).trialType     = "right";
+% ax(i).varName       = "rightChoice";
+% ax(i).window        = [-1, 3];
+% ax(i).color         = {colors.data2,colors.right}; 
+% ax(i).lineStyle     = ["-","-"]; % {pred1,pred2,obs1,obs2}
+% ax(i).xLabel        = 'Time from turn (s)';
+% i=i+1;
 
 %Outcome
 ax(i).title         = "Reward";

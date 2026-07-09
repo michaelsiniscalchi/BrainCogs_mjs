@@ -12,13 +12,19 @@ if nargin<2
     options = struct();
 end
 
-% Set path
-dirs = getRoots();
-addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...
-    'datajoint-matlab','compareVersions','GHToolbox');
-% addpath(genpath(fullfile('/jukebox','braininit','Shared',...
-%     'mym-modified-linux-rhel9-compiled-globally', 'mym', 'distribution', 'mexa64')));
-% which mym
+% Set paths
+[dirs, hostname] = getRoots();
+
+if strcmp(hostname, 'PNI-1S7LK74') %desktop
+    addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...
+        'datajoint-matlab','compareVersions','GHToolbox');
+    addpath(genpath(fullfile('C:','Experiments','mym-mariadbconn','distribution','mexw64')));
+else
+    addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...
+        'datajoint-matlab','compareVersions','GHToolbox');
+    addpath(genpath(fullfile('/jukebox','braininit','Shared',...
+        'mym-modified-linux-rhel9-compiled-globally', 'mym', 'distribution', 'mexa64')));
+end
 
 % Session-specific metadata
 [dirs, expData] = expData_Tactile2Visual_VTA(dirs);
@@ -104,6 +110,7 @@ if figures.trial_average_dFF
         
         %Save figure for each cell plotting all specified valid comparisons
         comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
+        comparisons = ["cueRegion-puffCount", "cueRegion-towerCount"];%DEVO
         for j = 1:numel(comparisons)
             %Isolate set of panels for each figure
             panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
