@@ -64,7 +64,9 @@ for i = 1:nPanels
     leg.AutoUpdate = 'off';
     leg.Interpreter = 'none';
     
-    % Axis label & title
+    % Axis labels & title
+    ax(i).YAxis.TickLabelFormat = '%.3f';
+    ax(i).YAxis.Exponent = 0;
     xlabel(xLabel);
     title(ax_titles{i});    
     axis square tight;
