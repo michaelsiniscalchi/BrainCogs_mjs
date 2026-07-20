@@ -103,14 +103,14 @@ end
 if figures.trial_average_dFF
     for i = 1:numel(expData)
         %Load data
-        load(mat_file.results.cellFluo(i),'bootAvg','cellID','trialDFF','sessions','trials');
+        load(mat_file.results.cellFluo(i),'bootAvg','cellID');
         load(mat_file.img_beh(i),'trialDFF','sessions','trials');
         save_dir = fullfile(dirs.figures,'Cellular fluorescence', expData(i).sub_dir);   %Figures directory: single units
         create_dirs(save_dir); %Create dir for these figures
         
         %Save figure for each cell plotting all specified valid comparisons
         comparisons = unique([params.figs.bootAvg.panels.comparison],'stable');
-        comparisons = ["cueRegion-puffCount", "cueRegion-towerCount"];%DEVO
+        % comparisons = ["cueRegion-puffCount", "cueRegion-towerCount"];%DEVO
         for j = 1:numel(comparisons)
             %Isolate set of panels for each figure
             panelIdx = find([params.figs.bootAvg.panels.comparison]==comparisons(j));
