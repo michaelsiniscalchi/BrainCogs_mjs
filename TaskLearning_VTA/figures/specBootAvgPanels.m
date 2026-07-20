@@ -370,25 +370,25 @@ ax(i).lineStyle  = {'-','-'};
 ax(i).xLabel = 'Time from first cue (s)';  % XLabel
 i=i+1;
 
-% ax(i).title         = "Tower Side";
-% ax(i).comparison    = "tower-onset";
-% ax(i).trigger       = "towers";
-% ax(i).trialType     = ["leftTowers", "rightTowers"];
-% ax(i).window        = [-1, 2];
-% ax(i).color         = {colors.left, colors.right}; %Choice: left/hit/sound vs right/hit/sound
-% ax(i).lineStyle     = {'-','-'};
-% ax(i).xLabel        = 'Time from cue onset (s)';  % XLabel
-% i=i+1;
-% 
-% ax(i).title         = "Puff Side";
-% ax(i).comparison    = "puff-onset";
-% ax(i).trigger       = "puffs";
-% ax(i).trialType     = ["leftPuffs", "rightPuffs"];
-% ax(i).window        = [-1, 2];
-% ax(i).color         = {colors.left, colors.right}; %Choice: left/hit/sound vs right/hit/sound
-% ax(i).lineStyle     = {'-','-'};
-% ax(i).xLabel        = 'Time from cue onset (s)';  % XLabel
-% i=i+1;
+ax(i).title         = "Tower Side";
+ax(i).comparison    = "tower-onset";
+ax(i).trigger       = "towers";
+ax(i).trialType     = ["leftTowers", "rightTowers"];
+ax(i).window        = [-1, 2];
+ax(i).color         = {colors.left, colors.right}; %Choice: left/hit/sound vs right/hit/sound
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from cue onset (s)';  % XLabel
+i=i+1;
+
+ax(i).title         = "Puff Side";
+ax(i).comparison    = "puff-onset";
+ax(i).trigger       = "puffs";
+ax(i).trialType     = ["leftPuffs", "rightPuffs"];
+ax(i).window        = [-1, 2];
+ax(i).color         = {colors.left, colors.right}; %Choice: left/hit/sound vs right/hit/sound
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from cue onset (s)';  % XLabel
+i=i+1;
 
 %%---POSITION (omit for now)-----------------------------------------------
 
