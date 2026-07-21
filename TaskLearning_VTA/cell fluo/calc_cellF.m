@@ -42,23 +42,30 @@ npMasks = reshape(cell2mat(cells.npMask),[nY,nX,numel(cells.npMask)]);
 %Generate inclusion/exclusion masks
 masks.include = false(nX,nY); %Initialize
 masks.exclude = false(nX,nY);
+borderMask = false(nX,nY);
 if nargin > 2
-    masks.exclude([(1:borderWidth) (nY-borderWidth+1:nY)],:) = true; %Frame around image: Top and bottom
-    masks.exclude(:,[(1:borderWidth) (nX-borderWidth+1:nX)]) = true; %Left and right
+    borderMask([(1:borderWidth) (nY-borderWidth+1:nY)],:) = true; %Frame around image: Top and bottom
+    borderMask(:,[(1:borderWidth) (nX-borderWidth+1:nX)]) = true; %Left and right
+    masks.exclude = borderMask;
 end
 masks.exclude(sum(cellMasks,3)>1) = true;     %Overlapping Regions of multiple cells
 masks.include(sum(cellMasks,3)==1 & ~masks.exclude) = true; %Logical idx for all ROIs after exclusion
+
 
 %% Get cellular and neuropil fluorescence, excluding Frame and Overlapping regions
 
 disp(['Getting cellular and neuropil fluorescence, excluding '...
     num2str(borderWidth) '-pixel frame and overlapping regions...']);
 
+% Get aggregate FOV masks for pseudo-FP trace
+exclPix = any(cellMasks(:,:,cells.exclude),3);
+masks.fov = ~(exclPix | borderMask);
+
 % Remove entries for cells excluded in cellROI.m
-cellMasks = cellMasks(:,:,~cells.exclude); %Exclude exclusion masks
-npMasks = npMasks(:,:,~cells.exclude); 
-cells.cellID = cells.cellID(~cells.exclude);
-cells = rmfield(cells,'exclude');
+roiIdx = ~(cells.exclude | cells.reserve); %Temporary idx for selected cells
+cellMasks = cellMasks(:,:,roiIdx); %Exclude reserved cells (all pix==0) and exclusion masks
+npMasks = npMasks(:,:,roiIdx); 
+cells.cellID = cells.cellID(roiIdx);
 
 % Pre-allocate memory and define spatial masks
 [roi, npMask] = deal(cell([size(cellMasks,3),1]));
@@ -66,6 +73,19 @@ for j = 1:numel(roi)
     roi{j} = logical(cellMasks(:,:,j) & ~masks.exclude); %Cell mask from cellROI, excluding specified regions
     npMask{j} = logical(npMasks(:,:,j) & ~masks.exclude); %Neuropil mask from cellROI, excluding specified regions
 end
+
+%Create additional ROI for full FOV & mean across all ROIs (pseudo-FP trace)
+roiIdx = numel(roi)+1;
+roi{roiIdx} = masks.fov; %Whole FOV, excluding areas excluded in cellROI as well as specified border
+npMask{roiIdx} = false(nY,nX);
+cells.cellID{roiIdx} = 'fov';
+
+roiIdx = roiIdx+1;
+roi{roiIdx} = any(cellMasks,3) & ~borderMask;
+% npMask{roiIdx} =  any(npMasks,3) & ~any(cellMasks,3) & ~borderMask;
+npMask{roiIdx} =  any(npMasks,3) & ~masks.exclude;
+cells.cellID{roiIdx} = 'allCells';
+
 
 %Load and Process Stacks in Parallel
 [cellF, npF] = deal(cell(1,nStacks)); %Cells for collecting mean F (nROI x nFrames) for each image stack
@@ -101,6 +121,7 @@ cells.cellF = mat2cell(cellF, ones(1,numel(roi)), numel(t)); %cellular fluoresce
 cells.npF = mat2cell(npF, ones(1,numel(roi)), numel(t)); %neuropil fluorescence, same format
 cells.cellMask = roi;
 cells.npMask = npMask;
+cells = rmfield(cells,{'exclude','reserve'}); %Remove exclusion idxs
 
 function F = getTrace( stack, pixMask )
 nPix = sum(pixMask,"all");
