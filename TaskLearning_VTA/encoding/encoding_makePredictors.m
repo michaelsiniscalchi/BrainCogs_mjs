@@ -182,7 +182,7 @@ for P = pNames
 end
 
 %Z-score the predictor matrix
-X_sd = std(X,[],1); %Store sd of each predictor
+X_sd = std(X,0,1,"omitnan"); %Store sd of each predictor
 X = normalize(X,1,"zscore");
 
 %Metadata & hyperparams
