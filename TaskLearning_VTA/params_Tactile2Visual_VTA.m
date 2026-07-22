@@ -49,11 +49,13 @@ figures.encoding_cv                         = false;   %Cross-validation of lamb
 figures.heatmap_modulation_idx              = false;  %Heatmap of selectivity idxs for COR for each session
 
 % Summary
-figures.summary_neuroBehCorr            = false; %Neurobehavioral correlates
-figures.summary_population_nbCorr           = false; %Summaries across cells, by subject
 figures.summary_behavior                = false; %Summary of descriptive stats, eg, nTrials and {trials2crit, pErr, oErr} for each rule
+figures.summary_psyTrack                = false;  %Summary of psytrack weights across sessions
+figures.summary_neuroBehCorr            = false; %Neurobehavioral correlates
+figures.summary_population_nbCorr       = false; %Summaries across cells, by subject
 figures.summary_selectivity_heatmap     = false; %Heatmap of time- or position-locked selectivity
 figures.summary_selectivity_histogram   = false; %Histogram of time-locked selectivity
+
 figures.summary_modulation				= false; %Box/line plots of selectivity results grouped by rule/learning stage for comparison
 
 % Validation
@@ -165,7 +167,7 @@ params.encoding.getRidgeTrace       = true;
 params.encoding.alpha               = 0.01;
 params.encoding.nShuffles           = 200; %Number of shuffles for generating null distribution
 
-params.encoding.modelName           = "allCues"; %["FM","allCues"] etc
+params.encoding.modelName           = "FM"; %["FM","allCues"] etc
 if isscalar(params.encoding.modelName)
     params.encoding                 = specEncodingParams(params.encoding);
 end
