@@ -165,7 +165,7 @@ params.encoding.getRidgeTrace       = true;
 params.encoding.alpha               = 0.01;
 params.encoding.nShuffles           = 200; %Number of shuffles for generating null distribution
 
-params.encoding.modelName           = "allCues"; %["FM","allCues"] etc
+params.encoding.modelName           = "cues_pos_rew"; %["FM","allCues"] etc
 if isscalar(params.encoding.modelName)
     params.encoding                 = specEncodingParams(params.encoding);
 end
