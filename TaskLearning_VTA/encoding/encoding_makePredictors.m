@@ -188,7 +188,7 @@ X = normalize(X,1,"zscore");
 %Metadata & hyperparams
 encodingData.session_date = trialData.session_date;
 encodingData.predictorIdx = predictorIdx;
-encodingData.predictorSD = X_sd; %Needed for restoring B to scale of data
+encodingData.predictorSD = X_sd(:); %Needed for restoring B to scale of data; column vector for future Beta./sd
 encodingData.termIdx = termIdx;
 encodingData.trialIdx = trialIdx;
 encodingData.dt = mean(diff(t),'omitnan'); %Use mean dt

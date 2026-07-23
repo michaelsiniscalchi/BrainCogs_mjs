@@ -77,11 +77,13 @@ for i = 1:numel(dFF)
         end
         
         %Coefficient estimates and SE
-        termIdx = encodingData.termIdx.(varName)';
-        estimate = bSpline * mdl.Coefficients.Estimate(termIdx); %(approx. resp func) = bSpline * Beta
-        mse = nan(size(termIdx)); %initialize
+        termIdx = encodingData.termIdx.(varName);
+        predictorSD = encodingData.predictorSD(encodingData.predictorIdx.(varName)); %For kernels, transform coefficients back to original scale of regressors
+        estimate = bSpline * (mdl.Coefficients.Estimate(termIdx)./predictorSD); %(approx. resp func) = bSpline * Beta
+        mse = nan(size(predictorSD)); %initialize
         if encodingData.regularization~="ridge" %Coef SE estimates not meaningful after regularization
-            mse = mdl.Coefficients.SE(termIdx).^2; %Calculate MSE, which is SE^2
+            se = mdl.Coefficients.SE(termIdx)./predictorSD;
+            mse = se.^2; %Calculate MSE, which is SE^2
         end
 
         %Spatial/temporal kernels
@@ -90,16 +92,20 @@ for i = 1:numel(dFF)
         %Kernel for position interaction terms expressed as sum of main and interaction effects
         if ismember(varName, ["towerSide_position", "puffSide_position"])
             %Main effect estimates
+            positionIdx = encodingData.termIdx.position;
+            positionSD = encodingData.predictorSD(encodingData.predictorIdx.position); %predictorIdx does not include B0
             mainEffectPos = ...
-                bSpline * mdl.Coefficients.Estimate(encodingData.termIdx.position); 
+                bSpline * (mdl.Coefficients.Estimate(positionIdx)./positionSD); 
             msePos = ...
-                mdl.Coefficients.SE(encodingData.termIdx.position).^2; %Calculate MSE, which is SE^2
+                (mdl.Coefficients.SE(positionIdx)./positionSD).^2; %Calculate MSE, which is SE^2
+            
             %Kernel names
             if varName=="towerSide_position"
                     kernelNames = ["leftTowers_position", "rightTowers_position"];
             elseif varName=="puffSide_position"
                     kernelNames = ["leftPuffs_position", "rightPuffs_position"];
             end
+            
             %Derive kernels
             cueSide = [-1,1]; %["left","right"]
             for j = 1:numel(kernelNames) 
