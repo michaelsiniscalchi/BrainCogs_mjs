@@ -15,7 +15,8 @@ calculate.encoding_model            = false; %Encoding model
 calculate.encoding_stats            = false; %Stats, eg pValues for each regressor and pSignificant neurons
 
 %% SUMMARIZE RESULTS
-summarize.behavior                  = false;
+summarize.imgBehavior               = false;
+summarize.allBehavior               = false;
 summarize.trialAvgFluo              = false;
 summarize.encoding                  = false;
 summarize.pickle2mat                = false;
@@ -114,13 +115,14 @@ mat_file.results.encoding       = @(idx, mdlName) fullfile(dirs.results, expData
 mat_file.results.encoding_cell  = @(idx, mdlName, cellID) fullfile(dirs.results, expData(idx).sub_dir,...
                                     strjoin(['encodingMdl-', mdlName, '-cell', cellID, '.mat'], ''));
 %Aggregated by subject
-mat_file.summary.behavior       = @(subjID) fullfile(dirs.summary, subjID, 'behavior.mat');
-mat_file.summary.trialAvgFluo    = @(subjID) fullfile(dirs.summary, subjID, 'trialAvgFluo.mat');
-mat_file.summary.psyTrack        = @(subjID) fullfile(dirs.summary, subjID, 'psyTrack.mat');
-mat_file.summary.encoding        = @(subjID, mdlName) fullfile(dirs.summary, subjID,...
-                                    strjoin(['encodingMdl-', mdlName, '.mat'], ''));
-mat_file.summary.neuroBehCorr    = @(subjID, mdlName) fullfile(dirs.summary, subjID,... 
-                                    strjoin(['neuroBehCorr-', mdlName, '.mat'], ''));
+mat_file.summary.imgBehavior        = @(subjID) fullfile(dirs.summary, subjID, 'imgBehavior.mat'); %Behavior from imaging sessions
+mat_file.summary.behavior           = @(subjID) fullfile(dirs.summary, subjID, 'behavior.mat'); %All Behavior ***Future, keep it all together and add field 'isImgSession'
+mat_file.summary.trialAvgFluo       = @(subjID) fullfile(dirs.summary, subjID, 'trialAvgFluo.mat');
+mat_file.summary.psyTrack           = @(subjID) fullfile(dirs.summary, subjID, 'psyTrack.mat');
+mat_file.summary.encoding           = @(subjID, mdlName) fullfile(dirs.summary, subjID,...
+                                        strjoin(['encodingMdl-', mdlName, '.mat'], ''));
+mat_file.summary.neuroBehCorr       = @(subjID, mdlName) fullfile(dirs.summary, subjID,... 
+                                        strjoin(['neuroBehCorr-', mdlName, '.mat'], ''));
 
 %Aggregated across subjects
 % mat_file.summary.behavior       = fullfile(dirs.summary,'behavior.mat');
@@ -167,7 +169,7 @@ params.encoding.getRidgeTrace       = true;
 params.encoding.alpha               = 0.01;
 params.encoding.nShuffles           = 200; %Number of shuffles for generating null distribution
 
-params.encoding.modelName           = "FM"; %["FM","allCues"] etc
+params.encoding.modelName           = "allCues"; %["FM","allCues"] etc
 if isscalar(params.encoding.modelName)
     params.encoding                 = specEncodingParams(params.encoding);
 end
