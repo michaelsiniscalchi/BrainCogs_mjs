@@ -221,6 +221,7 @@ clearvars p
 %% FIGURE: Single-unit encoding model
 
 params.figs.encoding.panels = specEncodingPanels( params.figs ); %For observed vs. predicted dF/F
+
 params.figs.encoding.panels_contrast = specEncodingPanels_contrast( params.figs ); %left-cue vs. right-cue, etc
 
 %% SUMMARY FIGURE: Trial-Averaged dF/F
@@ -238,6 +239,7 @@ P = P(ismember([P.comparison],comparisons));
 [P.yLabel] = deal("Cell. fluo. (dF/F)");
 params.figs.summaryBootAvg.panels = P;
 %Additional params
+params.figs.summaryBootAvg.tickLabelFormat = '%.2f';
 params.figs.summaryBootAvg.lineWidth = 0.5;
 params.figs.summaryBootAvg.fontSize = 6;
 

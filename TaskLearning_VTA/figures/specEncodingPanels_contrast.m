@@ -302,4 +302,5 @@ i=i+1;
 % ax(i).xLabel        = 'Position (cm)';
 % i=i+1;
 
+[ax(:).tickLabelFormat] = deal('%.3f');
 [ax(:).yLabel]          = deal('Cellular Fluorescence (dF/F)');

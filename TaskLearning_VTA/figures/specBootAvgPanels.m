@@ -401,6 +401,6 @@ i=i+1;
 % ax(i).lineStyle     = {'-'};
 % ax(i).xLabel        = 'Distance (cm)';  % XLabel
 
-
+[ax(:).tickLabelFormat] = deal('%.2f');
 [ax(:).yLabel]          = deal('Cellular Fluorescence (dF/F)');
 [ax(:).verboseLegend]   = deal(false);

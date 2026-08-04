@@ -62,7 +62,7 @@ for i = 1:numel(panels)
     end
     
     % Axis labels & title
-    ax(i).YAxis.TickLabelFormat = '%.1f';
+    ax(i).YAxis.TickLabelFormat = params.tickLabelFormat;
     ax(i).YAxis.Exponent = 0;
     if ~isempty(xLabel)
         xlabel(xLabel);

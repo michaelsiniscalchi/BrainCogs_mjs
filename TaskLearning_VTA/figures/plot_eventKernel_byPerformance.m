@@ -95,8 +95,7 @@ for i = 1:numel(cellStruct) %Loop through cells
     end
     yLabel = 'Regression coef. (dF/F)';
 
-    tickLabelFormat = '%.1f';
-    figs(i) = plot_trialAvgTimeseries(panel, {panel.title}, xLabel, yLabel, tickLabelFormat, legend_loc);
+    figs(i) = plot_trialAvgTimeseries(panel, {panel.title}, xLabel, yLabel, panel(1).tickLabelFormat, legend_loc);
     figName = join([varName, '-', sortBy, '-cell', cellStruct(i).cellID],''); %Figure name
     figs(i).Name = figName;
     figs(i).Position = fig_pos; %LBWH
