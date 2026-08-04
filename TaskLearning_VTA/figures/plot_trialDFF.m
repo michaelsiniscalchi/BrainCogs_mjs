@@ -9,7 +9,7 @@
 %
 %--------------------------------------------------------------------------
 
-function figs = plot_trialAvgDFF( bootAvg, cellIDs, expID, panels )
+function figs = plot_trialDFF( trialDFF, cellIDs, expID, panels )
 
 % Set up figure properties and restrict number of cells, if desired
 setup_figprops('timeseries')  %set up default figure plotting parameters
@@ -19,9 +19,9 @@ setup_figprops('timeseries')  %set up default figure plotting parameters
 % trialTypes = fieldnames(bootAvg.(event));
 % cellIdx = 1:numel(bootAvg.(event).(trialTypes{1}).cells);
 
-trialTypes = fieldnames(bootAvg);
+trialTypes = fieldnames(trialDFF);
 trialTypes = trialTypes(~ismember(trialTypes,{'t','position'}));
-cellIdx = 1:numel(bootAvg.(trialTypes{1}).cells);
+cellIdx = 1:numel(trialDFF.(trialTypes{1}).cells);
 
 % Initialize figures
 figs = gobjects(numel(cellIdx),1); %Initialize
@@ -45,15 +45,15 @@ for i = 1:numel(cellIdx)
 
         %Time/position axis  
         fields = ["t","position"];
-        fIndex = [isfield(bootAvg,'t'), isfield(bootAvg,'position')]; %If/elseif logic
-        wIndex = bootAvg.(fields(fIndex)) >= panels(j).window(1) &...
-            bootAvg.(fields(fIndex)) <= panels(j).window(2); %Domain from specBootAvgPanels()
-        panels(j).x = bootAvg.(fields(fIndex))(wIndex);
+        fIndex = [isfield(trialDFF,'t'), isfield(trialDFF,'position')]; %If/elseif logic
+        wIndex = trialDFF.(fields(fIndex)) >= panels(j).window(1) &...
+            trialDFF.(fields(fIndex)) <= panels(j).window(2); %Domain from specBootAvgPanels()
+        panels(j).x = trialDFF.(fields(fIndex))(wIndex);
 
         for k = 1:numel(panels(j).trialType)
 
             trialSpec = panels(j).trialType(k); %Trial specifier, eg {'left','hit','sound'}
-            if ~isfield(bootAvg, trialSpec)
+            if ~isfield(trialDFF, trialSpec)
                 panels(j).signal{k} = NaN(size(panels(j).x));
                 panels(j).CI{k} = NaN(2,size(panels(j).x,2));
                 continue;
@@ -71,8 +71,8 @@ for i = 1:numel(cellIdx)
             end
 
             %Signal and confidence bounds
-            panels(j).signal{k} = bootAvg.(trialSpec).cells(idx).signal(wIndex);
-            panels(j).CI{k} = bootAvg.(trialSpec).cells(idx).CI(:,wIndex);
+            panels(j).signal{k} = trialDFF.(trialSpec).cells(idx).signal(wIndex);
+            panels(j).CI{k} = trialDFF.(trialSpec).cells(idx).CI(:,wIndex);
         end
 
         %Labels
@@ -82,9 +82,8 @@ for i = 1:numel(cellIdx)
 
     ax_titles = {panels(:).title}'; %Specified in params.panels
     tickLabelFormat = '%.1f';
-
     figs(i) = plot_trialAvgTimeseries(panels, ax_titles, xLabel, yLabel, tickLabelFormat, legend_loc);
-
+    
     figName = join([panels(j).comparison,'_', expID, '_cell', cellIDs{idx}],''); %Figure name
     figs(i).Name = figName;
     figs(i).Position = fig_pos; %LBWH

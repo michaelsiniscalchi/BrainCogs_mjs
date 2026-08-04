@@ -94,7 +94,8 @@ for i = 1:numel(cellStruct) %Loop through cells
     yLabel = 'Regression coef. (dF/F)';
 
     %Generate figure 
-    figs(i) = plot_trialAvgTimeseries(panel, {panel.title}, xLabel, yLabel, legend_loc);
+    tickLabelFormat = '%.3f';
+    figs(i) = plot_trialAvgTimeseries(panel, {panel.title}, xLabel, yLabel, tickLabelFormat, legend_loc);
 
     %Abbreviate variables for filename
     idx = regexp(sortBy,'(_)');

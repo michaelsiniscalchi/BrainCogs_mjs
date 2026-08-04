@@ -50,8 +50,8 @@ figures.encoding_cv                         = false;   %Cross-validation of lamb
 figures.heatmap_modulation_idx              = false;  %Heatmap of selectivity idxs for COR for each session
 
 % Summary
-figures.summary_behavior                = false; %Summary of descriptive stats, eg, nTrials and {trials2crit, pErr, oErr} for each rule
-figures.summary_psyTrack                = false;  %Summary of psytrack weights across sessions
+figures.summary_performance             = false; %Longitudinal plot of correct rate for congruent and conflict trials
+figures.summary_psyTrack                = false; %Summary of psytrack weights across sessions
 figures.summary_neuroBehCorr            = false; %Neurobehavioral correlates
 figures.summary_population_nbCorr       = false; %Summaries across cells, by subject
 figures.summary_selectivity_heatmap     = false; %Heatmap of time- or position-locked selectivity
@@ -223,7 +223,27 @@ clearvars p
 params.figs.encoding.panels = specEncodingPanels( params.figs ); %For observed vs. predicted dF/F
 params.figs.encoding.panels_contrast = specEncodingPanels_contrast( params.figs ); %left-cue vs. right-cue, etc
 
-%% FIGURE: Summary, behavior vs. imaging/encoding across sessions
+%% SUMMARY FIGURE: Trial-Averaged dF/F
+params.figs.summary_performance = struct(...
+    'markerSize', 5,...
+    'omitShaping', true);
+
+%% SUMMARY FIGURE: Trial-Averaged dF/F
+%Panel specification
+P = params.figs.bootAvg.panels;
+comparisons = ["cue-region", "cueRegion-puffSide", "cueRegion-towerSide", "cueRegion-zeroCues-cueType"];
+P = P(ismember([P.comparison],comparisons));
+[P.gridSize] = deal([6,8]); %General grid layout
+[P([P.comparison]=="cue-region").gridSize] = deal([6,1]); %Specify for figs with multiple subplots
+[P.yLabel] = deal("Cell. fluo. (dF/F)");
+params.figs.summaryBootAvg.panels = P;
+%Additional params
+params.figs.summaryBootAvg.lineWidth = 0.5;
+params.figs.summaryBootAvg.fontSize = 6;
+
+clearvars P
+
+%% SUMMARY FIGURE: Behavior vs. Imaging/Encoding Across Sessions
 P.panels = spec_behEncodingPanels(params.figs.all.colors);
 P.minNumSessions = 5;
 params.figs.summaryLongitudinalImgBeh = P;

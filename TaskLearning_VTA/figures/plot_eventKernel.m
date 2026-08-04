@@ -69,7 +69,9 @@ for i = 1:numel(cellIdx)
     end
 
     ax_titles = {panels(:).title}'; %Specified in params.panels
+    tickLabelFormat = '%.3f';
 
+    figs(i) = plot_trialAvgTimeseries(panels, ax_titles, xLabel, yLabel, tickLabelFormat, legend_loc);
     figs(i) = plot_trialAvgTimeseries(panels, ax_titles, xLabel, yLabel, legend_loc);
     
     figName = join([panels.title,'_', glm.sessionID, '_cell', glm.cellID{idx}],''); %Figure name

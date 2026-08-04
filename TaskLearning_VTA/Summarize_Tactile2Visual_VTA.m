@@ -5,11 +5,19 @@ if nargin<2
     options = struct();
 end
 
-% Set path
-dirs = getRoots();
-addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...
-    'datajoint-matlab','compareVersions','GHToolbox');
-addpath(genpath(fullfile(dirs.code, 'mym', 'distribution', 'mexa64')));
+% Set paths
+[dirs, hostname] = getRoots();
+
+if strcmp(hostname, 'PNI-1S7LK74') %desktop
+    addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...
+        'datajoint-matlab','compareVersions','GHToolbox');
+    addpath(genpath(fullfile('C:','Experiments','mym-mariadbconn','distribution','mexw64')));
+else
+    addGitRepo(dirs,'General','iCorre-Registration','BrainCogs_mjs','TankMouseVR','U19-pipeline-matlab',...
+        'datajoint-matlab','compareVersions','GHToolbox');
+    addpath(genpath(fullfile('/jukebox','braininit','Shared',...
+        'mym-modified-linux-rhel9-compiled-globally', 'mym', 'distribution', 'mexa64')));
+end
 
 % Session-specific metadata
 subjectID = string(subjectID);
@@ -37,19 +45,41 @@ if isempty(gcp('nocreate'))
 end
 
 %Summarize Behavior by Subject
-if summarize.behavior
+if summarize.imgBehavior
     for i = 1:numel(expData)
         load(mat_file.img_beh(i),'sessions');
         S(i) = sessions;
         clearvars sessions
     end
-    [sessions, sessions_vect]  = filterImgSessions(S); %Structure containing bootAvg stats as terminal fields, with cellIDs and behavioral session stats
-    save(mat_file.summary.behavior(subjectID),"-struct","sessions_vect","-v7.3");
-    save(mat_file.summary.behavior(subjectID),"sessions","-v7.3");
+    [sessions, sessions_vect]  = filterImgSessions(S); %Structure containing stats vector as terminal fields, later with cellIDs and imaging stats
+    save(mat_file.summary.imgBehavior(subjectID),"-struct","sessions_vect","-v7.3");
+    save(mat_file.summary.imgBehavior(subjectID),"sessions","-v7.3");
     clearvars S sessions sessions_vect;
 end
 
-%Summarize Longitudinal Trial-Averaged Data by Subject
+if summarize.allBehavior
+    %Get all behavior sessions
+    setupDataJoint_mjs();
+    subject.ID = unique([expData(:).subjectID]);
+    behavior = getRemoteVRData( subject, struct() );
+    %Exclude warmup trials from stats for Main Mazes
+    behavior = filterSessionStats(behavior, ["tactile","visual"], false);
+    % idx = ismember([behavior.sessions.taskRule], ["visual","tactile"]); %Include only main rules (not shaping)
+    %Logistic Regression to analyze strategy
+    behavior = analyzeTaskStrategy(behavior, params.behavior.nBins_psychometric);
+    % FUTURE: PsyTrack analysis
+
+    %Save MAT file with all session data
+    imgDates =  datetime(...
+        string(cellfun(@(C) C(1:6), {expData.sub_dir}, 'UniformOutput', false)),...
+        "InputFormat","yyMMdd");
+    sessionIdx = ismember([behavior.sessions.session_date],imgDates);
+    [behavior.sessions.isImgSession] = deal(false);
+    [behavior.sessions(sessionIdx).isImgSession] = deal(true);
+    save(mat_file.summary.behavior(subjectID),'-struct','behavior','-v7.3');
+end
+
+%Summarize Longitudinal Trial-Averaged Fluorescence by Subject
 if summarize.trialAvgFluo
     for i = 1:numel(expData)
         Beh(i) = load(mat_file.img_beh(i),'sessions','trialData','trials');
@@ -65,24 +95,25 @@ if summarize.pickle2mat
     pklfile_psytrack =...
         fullfile(dirs.summary,subjectID,[subjectID{1}(2:end),'_psytrack_all_sessions.pkl']);
     predictor_names = ["leftTowers", "rightTowers", "leftPuffs", "rightPuffs", "bias"];
-    psyStruct = psytrack_pickle2Mat(pklfile_psytrack, predictor_names);
-    for i=1:numel(expData)
-        S = load(mat_file.img_beh(i),'sessions');
-        img_date(i) = S.sessions.session_date;
-    end
+    psyTrack = psytrack_pickle2Mat(pklfile_psytrack, predictor_names);
 
     %Verify that all imaging sessions are tracked
-    missing = img_date(~ismember(img_date,psyStruct.session_date));
+    behavior = load(mat_file.summary.behavior(subjectID),'sessions');
+    imgIdx = [behavior.sessions.isImgSession];
+    imgDate = [behavior.sessions(imgIdx).session_date];
+    missing = imgDate(~ismember(imgDate, psyTrack.session_date));
     if ~isempty(missing)
         warning("No psytrack data for these sessions:")
         disp(missing);
     end
-    save(mat_file.summary.psyTrack(subjectID),'-struct','psyStruct','-v7.3');
+    
+    %Append to behavior summary
+    save(mat_file.summary.behavior(subjectID),'psyTrack','-append');
 
-    %Append to session data
-    load(mat_file.summary.behavior(subjectID),'sessions');
-    sessions = appendPsyTrackWeights(sessions, psyStruct);
-    save(mat_file.summary.behavior(subjectID),'sessions','-append');
+    %Append to imaging sessions
+    load(mat_file.summary.imgBehavior(subjectID),'sessions');
+    sessions = appendPsyTrackWeights(sessions, psyTrack);
+    save(mat_file.summary.imgBehavior(subjectID),'sessions','-append');
 end
 clearvars sessions predictors S f
 
@@ -104,7 +135,7 @@ end
 if summarize.neuroBehCorr
     
     %Load summary data (add one more for trial avg fluo)
-    load(mat_file.summary.behavior(subjectID), 'sessions');
+    load(mat_file.summary.imgBehavior(subjectID), 'sessions');
     mdlNames = params.encoding.modelName;
 
     %Hyperparams
@@ -131,10 +162,38 @@ if summarize.neuroBehCorr
 end
 % clearvars -except img beh expData mat_file params summarize
 
+%% Figures
+
+if figures.summary_performance
+    %Full performance data for each subject
+    saveDir = fullfile(dirs.figures,'Performance');
+    load(mat_file.summary.behavior(subjectID),'sessions');
+    vars = {["pCorrect_congruent", "pCorrect_conflict"]}; %other fields from sessions struct can be included
+    figParams = params.figs.summary_performance;
+    for i = 1:numel(vars)
+        %Indicating all imaging sessions
+        figs(1) = fig_summary_performance(subjectID, sessions, vars{i}, figParams);
+        for j = 1:numel(expData)
+            figParams.sessionDate = datetime(expData(j).sub_dir(1:6),"InputFormat","yyMMdd");
+            figs(j+1) = fig_summary_performance(subjectID, sessions, vars{i}, figParams);
+        end
+        save_multiplePlots(figs,saveDir);
+        clearvars figs;
+    end
+end
+
+%PsyTrack Weights Across All Sessions
+if figures.summary_psyTrack
+    save_dir = fullfile(dirs.figures,'PsyTrack');
+    load(mat_file.summary.behavior(subjectID), 'psyTrack', 'sessions');
+    fig = fig_summaryPsytrackBySession( psyTrack, sessions, subjectID, params.figs.all ); %
+    save_multiplePlots(fig, save_dir); %save as FIG and PNG
+end
+
 if figures.summary_neuroBehCorr
     mdlNames = params.encoding.modelName;
+    load(mat_file.summary.imgBehavior(subjectID),'sessions');
     for i = 1:numel(mdlNames)
-        load(mat_file.summary.behavior(subjectID),'sessions');
         load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','population');
         save_dir = fullfile(dirs.figures,'Neurobehavioral Summary', subjectID,  mdlNames(i));
         %Plot pSignificant for each variable, with session summary
@@ -188,12 +247,60 @@ if figures.summary_population_nbCorr
     end
 end
 
+
+if figures.trial_avg_dFF
+
+      %Load data from all sessions
+      %bootStruct = load("X:\michael\tactile2visual-vta\summary\m913\trialAvgFluo.mat"); %DEVO
+      bootStruct = load(mat_file.summary.trialAvgFluo(subjectID));
+      cellIDs = bootStruct.cellIDs;
+      bootStruct = rmfield(bootStruct,'cellIDs');
+      %Save directory
+      save_dir = fullfile(dirs.figures,'Cellular fluorescence', subjectID);
+      create_dirs(save_dir); %Create dir for these figures
+        
+        comparisons = unique([params.figs.summaryBootAvg.panels.comparison],'stable');
+        % comparisons = ["cueRegion-zeroCues-cueType"];%DEVO
+        for j = 1:numel(comparisons)
+            
+            %Isolate set of panels for each figure
+            panelIdx = find([params.figs.summaryBootAvg.panels.comparison]==comparisons(j));
+            event = [params.figs.summaryBootAvg.panels(panelIdx(1)).trigger]; %All panels in comparison need to have same trigger
+            %Exclude panels with no signal (eg, nTrials==0)
+            panelIdx = filterBootPanels(params.figs.summaryBootAvg.panels, panelIdx, bootStruct.(event));
+            %Generate figures
+            if ~isempty(panelIdx)
+                %One or more figure per session (all cells)
+                for k = 1:numel(expData)
+                    figs = fig_trialAvgDFF_summaryBySession(  bootStruct.(event),...
+                        k, expData(k).sub_dir, cellIDs,...
+                        params.figs.summaryBootAvg.panels(panelIdx),...
+                        params.figs.summaryBootAvg);
+                    save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                end
+                
+                % %One or more figures per cell (all sessions)
+                % for k = 1:numel(expData)
+                %     figs(k) = fig_trialAvgDFF_summaryBySession( bootStruct, expID, cellIDs, panels )
+                %     figs = plot_trialAvgDFF(bootAvg.(event), cellID, expData(i).sub_dir,...
+                %         params.figs.bootAvg.panels(panelIdx));
+                % end
+                % save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                %Plot individual trials
+                % figs = plot_trialDFF( trialDFF.(event), cellID, expData(i).sub_dir, params.figs.bootAvg.panels(panelIdx) );
+                % save_multiplePlots(figs, save_dir); %save as FIG and PNG
+
+            end
+        end
+        clearvars figs   
+end
+
 if figures.encoding_model
     %For each model
     mdlNames = params.encoding.modelName;
     for i = 1:numel(mdlNames)
         load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','pSignificant','metaData');
-        load(mat_file.summary.behavior(subjectID), 'sessions');
+        load(mat_file.summary.imgBehavior(subjectID), 'sessions');
 
         if figures.encoding_hypothesisTest
             
