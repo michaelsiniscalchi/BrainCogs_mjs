@@ -1,6 +1,13 @@
-function subjects_out = filterSessionStats( subjects )
-%%
+function subjects_out = filterSessionStats( subjects, ruleNames, includeShaping )
 
+if nargin<2
+    ruleNames = ["visual","tactile","tactileCS","visualCS","leftCS","rightCS"];
+    includeShaping = true;
+elseif nargin<3
+    includeShaping = true;
+end
+
+%%
 fields.params = ["taskRule","level","reward_scale","maxSkidAngle","lCue","lMem","lMaze"];
 fields.counts = ["nTrials","nCompleted","nForward"];
 fields.mean = ["pCorrect","pCorrect_congruent","pCorrect_conflict",...
@@ -17,10 +24,9 @@ for i = 1:numel(subjects)
         
         disp(['Filtering session data from ' char(S.session_date)]) %Temp DEVO
 
-        ruleNames = ["visual","tactile","tactileCS","visualCS","leftCS","rightCS"];
         inclBlockIdx = ismember(S.taskRule, ruleNames);
         inclBlockIdx(S.excludeBlocks) = false;
-        if ~isempty(S.taskRule) && all(S.taskRule=="forcedChoice")
+        if ~isempty(S.taskRule) && all(S.taskRule=="forcedChoice") && includeShaping
             inclBlockIdx = S.taskRule=="forcedChoice" & S.nCompleted==max(S.nCompleted); %Just use majority block for shaping
         elseif any(S.taskRule(inclBlockIdx)=="visual") &&...
                 any(S.taskRule(inclBlockIdx)=="tactile") %check for any mixed sessions and flag for block exclusion

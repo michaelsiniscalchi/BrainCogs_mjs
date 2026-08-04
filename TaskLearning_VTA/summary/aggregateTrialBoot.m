@@ -5,6 +5,10 @@ for i = 1:numel(Img)
     trigger = string(fieldnames(Img(i).bootAvg));
     for tr = trigger'
         trial_subset = string(fieldnames(Img(i).bootAvg.(tr)));
+        domainNames = ["t", "position"];
+        domainMask = ismember(domainNames,trial_subset);
+        bootAvg.(tr).(domainNames(domainMask)) =... %Domain of dF/F: "t" or "position" 
+            Img(i).bootAvg.(tr).(domainNames(domainMask));
         trial_subset = trial_subset(~ismember(trial_subset,["t","position"]));
         for ts = trial_subset'
             cells = Img(i).bootAvg.(tr).(ts).cells; %abbreviate
