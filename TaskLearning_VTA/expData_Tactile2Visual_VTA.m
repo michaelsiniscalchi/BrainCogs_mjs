@@ -307,6 +307,11 @@ expData(i).subjectID = "mjs20_33";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+expData(i).sub_dir = '241114-m33-maze7'; 
+expData(i).subjectID = "mjs20_33";
+expData(i).mainMaze = 7;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 expData(i).sub_dir = '241206-m33-maze7'; 
 expData(i).subjectID = "mjs20_33";
 expData(i).mainMaze = 7;
@@ -721,6 +726,12 @@ i = i+1;
 %% ------- Pavlovian Linear Track -----------------------------------------
 %m37
 expData(i).sub_dir = '260406-m37-plt7'; 
+expData(i).subjectID = "mjs20_37";
+expData(i).mainMaze = 7;
+expData(i).session_number = 1; %Idx from BrainCogs Database/braininit cup
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '260406-m37-plt7-test'; 
 expData(i).subjectID = "mjs20_37";
 expData(i).mainMaze = 7;
 expData(i).session_number = 1; %Idx from BrainCogs Database/braininit cup
