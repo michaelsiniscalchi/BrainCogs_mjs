@@ -26,12 +26,12 @@ for i = 1:numel(subjects)
         nPuffsRight = trialData.nPuffs(~exclIdx,2);
 
         %Choice
-        rightChoice = trials.right(~exclIdx)';
-        rightPriorChoice = trials.priorRight';
+        rightChoice = double(trials.right(~exclIdx))';
+        rightPriorChoice = double(trials.priorRight)';
         rightPriorChoice(priorExclIdx) = NaN;
         rightPriorChoice = rightPriorChoice(~exclIdx);
         %Outcome
-        reward = trials.correct(~exclIdx)'; %Trial outcome
+        reward = double(trials.correct(~exclIdx))'; %Trial outcome
 
         %Code predictors as {-1,1}
         effectCode = @(X) 2*(X-0.5);
