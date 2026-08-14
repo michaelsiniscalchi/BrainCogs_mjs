@@ -32,5 +32,5 @@ end
 %End up with a struct like this:
 %(trigger).(trial_subset).cells(:).sessions(:).(bootFields)
 
-%Collect behavioral data
-bootAvg.sessions = Beh.sessions;
+% %Collect behavioral data (seems unnecessary here...)
+% bootAvg.sessions = Beh.sessions;

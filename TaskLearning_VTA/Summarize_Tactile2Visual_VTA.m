@@ -82,10 +82,10 @@ end
 %Summarize Longitudinal Trial-Averaged Fluorescence by Subject
 if summarize.trialAvgFluo
     for i = 1:numel(expData)
-        Beh(i) = load(mat_file.img_beh(i),'sessions','trialData','trials');
+        % Beh(i) = load(mat_file.img_beh(i),'sessions','trialData','trials');
         Img(i) = load(mat_file.results.cellFluo(i));
     end
-    S = aggregateTrialBoot(Img, Beh); %Structure containing bootAvg stats as terminal fields, with cellIDs and behavioral session stats
+    S = aggregateTrialBoot(Img); %Structure containing bootAvg stats as terminal fields, with cellIDs and behavioral session stats
     save(mat_file.summary.trialAvgFluo(subjectID),"-struct","S","-v7.3");
     clearvars S;
 end
@@ -250,19 +250,24 @@ end
 
 if figures.trial_avg_dFF
 
-      %Load data from all sessions
-      %bootStruct = load("X:\michael\tactile2visual-vta\summary\m913\trialAvgFluo.mat"); %DEVO
-      bootStruct = load(mat_file.summary.trialAvgFluo(subjectID));
-      cellIDs = bootStruct.cellIDs;
-      bootStruct = rmfield(bootStruct,'cellIDs');
-      %Save directory
-      save_dir = fullfile(dirs.figures,'Cellular fluorescence', subjectID);
-      create_dirs(save_dir); %Create dir for these figures
-        
+    %Load data from all sessions
+    bootStruct = load(mat_file.summary.trialAvgFluo(subjectID));
+    cellIDs = bootStruct.cellIDs;
+    bootStruct = rmfield(bootStruct,'cellIDs');
+    expIDs = string(cellfun(@(C) C(1:6),{expData.sub_dir},'UniformOutput',false));
+    %Behavioral data for reference
+    load(mat_file.summary.behavior(subjectID),'sessions');
+    
+    %Save directory
+    save_dir = fullfile(dirs.figures,'Cellular fluorescence', subjectID);
+    create_dirs(save_dir); %Create dir for these figures
+
+    if figures.summary_bootAvg
         comparisons = unique([params.figs.summaryBootAvg.panels.comparison],'stable');
         % comparisons = ["cueRegion-zeroCues-cueType"];%DEVO
+
         for j = 1:numel(comparisons)
-            
+
             %Isolate set of panels for each figure
             panelIdx = find([params.figs.summaryBootAvg.panels.comparison]==comparisons(j));
             event = [params.figs.summaryBootAvg.panels(panelIdx(1)).trigger]; %All panels in comparison need to have same trigger
@@ -271,28 +276,52 @@ if figures.trial_avg_dFF
             %Generate figures
             if ~isempty(panelIdx)
                 %One or more figure per session (all cells)
-                for k = 1:numel(expData)
-                    figs = fig_trialAvgDFF_summaryBySession(  bootStruct.(event),...
-                        k, expData(k).sub_dir, cellIDs,...
-                        params.figs.summaryBootAvg.panels(panelIdx),...
-                        params.figs.summaryBootAvg);
-                    save_multiplePlots(figs, save_dir); %save as FIG and PNG
-                end
-                
-                % %One or more figures per cell (all sessions)
                 % for k = 1:numel(expData)
-                %     figs(k) = fig_trialAvgDFF_summaryBySession( bootStruct, expID, cellIDs, panels )
-                %     figs = plot_trialAvgDFF(bootAvg.(event), cellID, expData(i).sub_dir,...
-                %         params.figs.bootAvg.panels(panelIdx));
+                %     figs = fig_trialAvgDFF_summaryBySession(  bootStruct.(event),...
+                %         k, expData(k).sub_dir, cellIDs,...
+                %         params.figs.summaryBootAvg.panels(panelIdx),...
+                %         params.figs.summaryBootAvg);
+                %     save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                %     clearvars figs
                 % end
-                % save_multiplePlots(figs, save_dir); %save as FIG and PNG
-                %Plot individual trials
-                % figs = plot_trialDFF( trialDFF.(event), cellID, expData(i).sub_dir, params.figs.bootAvg.panels(panelIdx) );
-                % save_multiplePlots(figs, save_dir); %save as FIG and PNG
 
             end
         end
-        clearvars figs   
+    end
+
+    %One figure per cell (all sessions)
+    if figures.summary_bootAvg_longitudinal
+        %Save directory
+        save_dir = fullfile(dirs.figures,'Cellular fluorescence', subjectID, 'By Cell Across Sessions');
+        create_dirs(save_dir); %Create dir for these figures
+
+        P = params.figs.summaryBootAvgLongitudinal;
+        comparisons = unique([P.panels.comparison],'stable');
+        % comparisons = ["cueRegion-zeroCues-cueType"];%DEVO
+
+        for j = 1:numel(comparisons)
+
+            %Isolate set of panels for each figure
+            panelIdx = find([P.panels.comparison]==comparisons(j));
+            event = [P.panels(panelIdx(1)).trigger]; %All panels in comparison need to have same trigger
+            %Exclude panels with no signal (eg, nTrials==0)
+            panelIdx = filterBootPanels(P.panels, panelIdx, bootStruct.(event));
+            %Generate figures
+            for k = 1:numel(panelIdx)
+                for kk = 1:numel(cellIDs)
+                    cellIdx = find(cellIDs==cellIDs(kk));
+                    figs(kk) = fig_trialAvgDFF_summaryByCell(...
+                        bootStruct.(event),...
+                        cellIdx, cellIDs(kk),...
+                        sessions,...
+                        P.panels(panelIdx(k)),...
+                        P);
+                end
+                save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                clearvars figs
+            end
+        end
+    end
 end
 
 if figures.encoding_model

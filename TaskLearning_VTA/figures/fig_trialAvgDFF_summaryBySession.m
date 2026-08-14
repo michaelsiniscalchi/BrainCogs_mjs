@@ -26,8 +26,9 @@ cellIdx = find(cellIdx(singleCellIdx)); %Convert to int for sequential indexing 
 gridSize = [panels(1).gridSize]; %Should be same for all panels specified; one grid per cell in this case, in grid could consist of multiple panels
 nCellsPerFig = gridSize(1)*gridSize(2)-1; %one grid unit per cell; save last space for legend
 
-nFigures = floor(numel(cellIDs)/nCellsPerFig)...
-    + (mod(numel(cellIDs), (gridSize(1)*gridSize(2)))>0);
+% nFigures = floor(numel(cellIDs)/nCellsPerFig)...
+%     + (mod(numel(cellIDs), (gridSize(1)*gridSize(2)))>0);
+nFigures = ceil(numel(cellIDs)/nCellsPerFig);
 figs = gobjects(nFigures,1); %Initialize
 
 %% Plot event-aligned dF/F for each cell

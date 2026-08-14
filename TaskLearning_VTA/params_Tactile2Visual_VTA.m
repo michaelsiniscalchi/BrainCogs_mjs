@@ -56,8 +56,8 @@ figures.summary_neuroBehCorr            = false; %Neurobehavioral correlates
 figures.summary_population_nbCorr       = false; %Summaries across cells, by subject
 figures.summary_selectivity_heatmap     = false; %Heatmap of time- or position-locked selectivity
 figures.summary_selectivity_histogram   = false; %Histogram of time-locked selectivity
-
-figures.summary_modulation				= false; %Box/line plots of selectivity results grouped by rule/learning stage for comparison
+figures.summary_bootAvg                 = false;
+figures.summary_bootAvg_longitudinal    = false;
 
 % Validation
 figures.validation_ROIs                 = false;
@@ -231,7 +231,7 @@ params.figs.summary_performance = struct(...
 
 %% SUMMARY FIGURE: Trial-Averaged dF/F
 %Panel specification
-P = params.figs.bootAvg.panels;
+P = specBootAvgPanels( params.figs );
 comparisons = ["cue-region", "cueRegion-puffSide", "cueRegion-towerSide", "cueRegion-zeroCues-cueType"];
 P = P(ismember([P.comparison],comparisons));
 [P.gridSize] = deal([6,8]); %General grid layout
@@ -242,7 +242,18 @@ params.figs.summaryBootAvg.panels = P;
 params.figs.summaryBootAvg.tickLabelFormat = '%.2f';
 params.figs.summaryBootAvg.lineWidth = 0.5;
 params.figs.summaryBootAvg.fontSize = 6;
+clearvars P
 
+%Summary by cell (longitudinal layout)
+params.figs.summaryBootAvgLongitudinal = params.figs.summaryBootAvg; %Copy summary boot fig params
+P = specBootAvgPanels( params.figs ); %Get panels
+comparisons = ["cueRegion-priorOutcome", "cueRegion-outcome", "cueRegion-puffSide", "cueRegion-towerSide", "cueRegion-zeroCues-cueType"];
+P = P(ismember([P.comparison],comparisons));
+[P.gridSize] = deal([7,10]); %General grid layout
+[P.yLabel] = deal("Cell. fluo. (dF/F)");
+params.figs.summaryBootAvgLongitudinal.panels = P;
+%Other settings
+params.figs.summaryBootAvgLongitudinal.minNumSessions = 3; %Minimum number of tracked sessions
 clearvars P
 
 %% SUMMARY FIGURE: Behavior vs. Imaging/Encoding Across Sessions

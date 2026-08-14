@@ -1,4 +1,4 @@
-function [ ax, leg ] = layout_trialAvgTimeseries( tiledLayoutObj, panels, titleStr, xLabel, yLabel, legend_loc, params )
+function [ ax, leg ] = layout_trialAvgTimeseries( tiledLayoutObj, panels, titleCell, xLabel, yLabel, legend_loc, params )
 %%% plot_trialAvgTimeseries
 %PURPOSE:   Plot bootstrapped timeseries (eg cellular fluorescence) time-locked to behavioral event.
 %
@@ -67,8 +67,8 @@ for i = 1:numel(panels)
     if ~isempty(xLabel)
         xlabel(xLabel);
     end
-    if ~isempty(titleStr)
-        title(titleStr{i});
+    if ~isempty(titleCell)
+        title(titleCell{i}); %Indexed in case of multiple panels in one row
     end
     axis square tight;
 end
@@ -90,4 +90,6 @@ for i=1:numel(panels)
 end
 
 % YLabel for panel 1
-ax(1).YLabel.String = yLabel;
+if ~isempty(yLabel)
+    ax(1).YLabel.String = yLabel;
+end
