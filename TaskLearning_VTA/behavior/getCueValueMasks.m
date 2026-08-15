@@ -1,29 +1,19 @@
-function trialMasks = getCueValueMasks( leftPuffs, rightPuffs, leftTowers, rightTowers, rewarded, trialMasks )
-
-%Initialize output struct if not provided
-if ~exist("trialMasks", "var")
-    trialMasks = struct();
-end
-
-trials = struct(...
-    'leftPuffs',leftPuffs,'rightPuffs',rightPuffs,...
-    'leftTowers',leftTowers,'rightTowers',rightTowers,...
-    'rewarded',rewarded);
+function trialMasks = getCueValueMasks( trialMasks )
 
 %Get masks for each previously rewarded (and previously unrewarded) cue 
 for f = ["leftPuffs","rightPuffs","leftTowers","rightTowers"]
        
-    priorRewardedCue = false(size(rewarded)); %Initialize
-    priorUnrewardedCue = false(size(rewarded)); %Initialize
+    priorRewardedCue = false(size(trialMasks.rewarded)); %Initialize
+    priorUnrewardedCue = false(size(trialMasks.rewarded)); %Initialize
     
-    cueIdx = find(trials.(f));
+    cueIdx = find(trialMasks.(f));
     if ~isempty(cueIdx)
         for i = 1:numel(cueIdx)-1
-            priorRewardedCue(cueIdx(i)+1:cueIdx(i+1)) = rewarded(cueIdx(i)); %Was previous presentation of this cue type rewarded?
+            priorRewardedCue(cueIdx(i)+1:cueIdx(i+1)) = trialMasks.rewarded(cueIdx(i)); %Was previous presentation of this cue type rewarded?
         end
 
         %Complete prev rew cue mask for last cue presentation
-        priorRewardedCue(cueIdx(end)+1:end) = rewarded(cueIdx(end)); %Was previous presentation of this cue type rewarded?
+        priorRewardedCue(cueIdx(end)+1:end) = trialMasks.rewarded(cueIdx(end)); %Was previous presentation of this cue type rewarded?
 
         %Prev unrew cue mask is inverse, except for prior to first cue presentation
         priorUnrewardedCue = ~priorRewardedCue;
@@ -39,7 +29,7 @@ end
 for f = ["Towers", "Puffs"]
     for ff = ["Valued", "Devalued"]
     trialMasks.([lower(f{:}(1:end-1)),'Side', ff{:}]) =...
-        (trials.(['right',f{:}]) & trialMasks.(['right', f{:}, ff{:}])) |...
-        (trials.(['left',f{:}]) & trialMasks.(['left', f{:}, ff{:}]));
+        (trialMasks.(['right',f{:}]) & trialMasks.(['right', f{:}, ff{:}])) |...
+        (trialMasks.(['left',f{:}]) & trialMasks.(['left', f{:}, ff{:}]));
     end
 end
