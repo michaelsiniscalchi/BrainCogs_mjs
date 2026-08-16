@@ -477,7 +477,7 @@ i=i+1;
 
 %Cue Value
 ax(i).title         = 'Puff Side (Prior Correct)';
-ax(i).comparison    = "cueSideValue";
+ax(i).comparison    = "puffSideValue";
 ax(i).trigger       = "firstPuff";
 ax(i).trialType     = ["repeatPuffSide_priorRewarded", "switchPuffSide_priorRewarded"];
 ax(i).window        = [-1, 2];
@@ -486,7 +486,7 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from first cue (s)';  % XLabel
 i=i+1;
 ax(i).title         = 'Tower Side (Prior Correct)';
-ax(i).comparison    = "cueSideValue";
+ax(i).comparison    = "towerSideValue";
 ax(i).trigger       = "firstTower";
 ax(i).trialType     = ["repeatTowerSide_priorRewarded", "switchTowerSide_priorRewarded"];
 ax(i).window        = [-1, 2];
