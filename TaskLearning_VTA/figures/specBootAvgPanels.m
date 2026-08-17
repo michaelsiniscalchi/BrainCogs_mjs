@@ -553,14 +553,14 @@ i=i+1;
 
 %%---POSITION (omit for now)-----------------------------------------------
 
-% ax(i).title         = "Position";
-% ax(i).comparison    = "position";
-% ax(i).trigger       = "cueRegion";
-% ax(i).trialType     = "forward";
-% ax(i).window        = [-50, 300];
-% ax(i).color         = {colors.data}; %Choice: left/hit/sound vs right/hit/sound
-% ax(i).lineStyle     = {'-'};
-% ax(i).xLabel        = 'Distance (cm)';  % XLabel
+ax(i).title         = "Position";
+ax(i).comparison    = "position";
+ax(i).trigger       = "cueRegion";
+ax(i).trialType     = "forward";
+ax(i).window        = [-inf, inf];
+ax(i).color         = {colors.data}; %Choice: left/hit/sound vs right/hit/sound
+ax(i).lineStyle     = {'-'};
+ax(i).xLabel        = 'Distance (cm)';  % XLabel
 
 [ax(:).tickLabelFormat] = deal('%.2f');
 [ax(:).yLabel]          = deal('Cellular Fluorescence (dF/F)');
