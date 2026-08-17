@@ -289,8 +289,8 @@ ax(i).trigger       = "cueRegion";
 ax(i).trialType     = "forward";
 ax(i).varName       = []; %Empty if non-event
 ax(i).window        = [-inf, inf];
-ax(i).color         = {colors.data}; 
-ax(i).lineStyle     = ["-"]; 
+ax(i).color         = {colors.data2, colors.data}; 
+ax(i).lineStyle     = ["-","-"]; 
 ax(i).xLabel        = 'Position (cm)';
 i=i+1;
 
