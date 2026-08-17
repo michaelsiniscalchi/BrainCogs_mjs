@@ -282,5 +282,17 @@ ax(i).lineStyle     = ["-","-"];
 ax(i).xLabel        = 'Position (cm)';
 i=i+1;
 
+%Overall Position-Related
+ax(i).title         = "Position";
+ax(i).comparison    = "position";
+ax(i).trigger       = "cueRegion";
+ax(i).trialType     = "forward";
+ax(i).varName       = []; %Empty if non-event
+ax(i).window        = [-inf, inf];
+ax(i).color         = {colors.data}; 
+ax(i).lineStyle     = ["-"]; 
+ax(i).xLabel        = 'Position (cm)';
+i=i+1;
+
 [ax(:).tickLabelFormat] = deal('%.3f');
 [ax(:).yLabel]          = deal('Cellular Fluorescence (dF/F)');
