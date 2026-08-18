@@ -15,7 +15,14 @@ bootParams(i).trialSpec = {...
     };
 i = i+1;
 
-
+% --- Entry into Cue Region ------------------------------------------------------
+bootParams(i).trigger = "cueEntry";
+bootParams(i).subtractBaseline = true;
+bootParams(i).getScalarEstimates = true; %Indicator for time-averaging and peak estimation
+bootParams(i).trialSpec = {...
+    ["forward"],...
+    };
+i = i+1;
 
 % --- Cue Responses -------------------------------------------------------
 %Do cue responses or selectivity differ on correct vs. error trials?
