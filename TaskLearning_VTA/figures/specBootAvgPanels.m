@@ -140,7 +140,7 @@ i=i+1;
 
 %Cue Value
 ax(i).title         = 'Puff Side (Prior Correct)';
-ax(i).comparison    = "cueRegion-cueSideValue";
+ax(i).comparison    = "cueRegion-puffSideValue";
 ax(i).trigger       = "cueRegion";
 ax(i).trialType     = ["repeatPuffSide_priorRewarded", "switchPuffSide_priorRewarded"];
 ax(i).window        = [-inf, inf];
@@ -149,7 +149,7 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Distance (cm)';  % XLabel
 i=i+1;
 ax(i).title         = 'Tower Side (Prior Correct)';
-ax(i).comparison    = "cueRegion-cueSideValue";
+ax(i).comparison    = "cueRegion-towerSideValue";
 ax(i).trigger       = "cueRegion";
 ax(i).trialType     = ["repeatTowerSide_priorRewarded", "switchTowerSide_priorRewarded"];
 ax(i).window        = [-inf, inf];
@@ -285,7 +285,7 @@ i=i+1;
 
 %Cue Value
 ax(i).title         = 'Puffs (Correct/Prior Correct)';
-ax(i).comparison    = "outcome-cueSideValue";
+ax(i).comparison    = "rewarded-puffSideValue";
 ax(i).trigger       = "outcome";
 ax(i).trialType     = ["repeatPuffSide_priorRewarded_rewarded", "switchPuffSide_priorRewarded_rewarded"];
 ax(i).window        = [-inf, inf];
@@ -294,7 +294,7 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from outcome (s)';  % XLabel
 i=i+1;
 ax(i).title         = 'Towers (Correct/Prior Correct)';
-ax(i).comparison    = "outcome-cueSideValue";
+ax(i).comparison    = "rewarded-towerSideValue";
 ax(i).trigger       = "outcome";
 ax(i).trialType     = ["repeatTowerSide_priorRewarded_rewarded", "switchTowerSide_priorRewarded_rewarded"];
 ax(i).window        = [-inf, inf];
@@ -303,7 +303,7 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from outcome (s)';  % XLabel
 i=i+1;
 ax(i).title         = 'Puffs (Error/Prior Correct)';
-ax(i).comparison    = "outcome-cueSideValue";
+ax(i).comparison    = "unrewarded-puffSideValue";
 ax(i).trigger       = "outcome";
 ax(i).trialType     = ["repeatPuffSide_priorRewarded_unrewarded", "switchPuffSide_priorRewarded_unrewarded"];
 ax(i).window        = [-inf, inf];
@@ -312,7 +312,7 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from outcome (s)';  % XLabel
 i=i+1;
 ax(i).title         = 'Towers (Error/Prior Correct)';
-ax(i).comparison    = "outcome-cueSideValue";
+ax(i).comparison    = "unrewarded-towerSideValue";
 ax(i).trigger       = "outcome";
 ax(i).trialType     = ["repeatTowerSide_priorRewarded_unrewarded", "switchTowerSide_priorRewarded_unrewarded"];
 ax(i).window        = [-inf, inf];
@@ -343,85 +343,15 @@ ax(i).xLabel        = 'Time from start (s)';  % XLabel
 i=i+1;
 
 %--- CUE ENTRY RESPONSES---------------------------------------------------
-% ax(i).title         = 'Cue Entry';
-% ax(i).comparison    = "cue-entry";
-% ax(i).trigger       = "cueEntry";
-% ax(i).trialType     = "forward";
-% ax(i).window        = [-1, 5];
-% ax(i).color         = {colors.data}; %Outcome: hit/priorHit vs err/priorHit
-% ax(i).lineStyle     = {'-','-'};
-% ax(i).xLabel        = 'Time from entry (s)';  % XLabel
-% i=i+1;
-% 
-% ax(i).title         = 'Cue Entry';
-% ax(i).comparison    = "cue-entry";
-% ax(i).trigger       = "cueEntry";
-% ax(i).trialType     = ["left", "right"];
-% ax(i).window        = [-1, 5];
-% ax(i).color         = {colors.left, colors.right};
-% ax(i).lineStyle     = {'-','-'};
-% ax(i).xLabel        = 'Time from start (s)';  % XLabel
-% i=i+1;
-
-%---TURN ENTRY RESPONSES---------------------------------------------------
-% ax(i).title         = 'Choice';
-% ax(i).comparison    = "choice-turn";
-% ax(i).trigger       = "turnEntry";
-% ax(i).trialType     = ["left", "right"];
-% ax(i).window        = [-1, 5];
-% ax(i).color         = {colors.left, colors.right};
-% ax(i).lineStyle     = {'-','-'};
-% ax(i).xLabel        = 'Time from turn (s)';  % XLabel
-% i=i+1;
-% 
-% ax(i).title         = 'Accuracy';
-% ax(i).comparison    = "accuracy-turn";
-% ax(i).trigger       = "turnEntry";
-% ax(i).trialType     = ["correct", "error"];
-% ax(i).window        = [-1, 5];
-% ax(i).color         = {colors.correct, colors.err};
-% ax(i).lineStyle     = {'-','-'};
-% ax(i).xLabel        = 'Time from turn (s)';  % XLabel
-% i=i+1;
-% 
-% ax(i).title         = "Congruent Trials";
-% ax(i).comparison    = "choice-turn-conflict";
-% ax(i).trigger       = "turnEntry";
-% ax(i).trialType     = ["left_congruent", "right_congruent"];
-% ax(i).window        = [-1, 5];
-% ax(i).color         = {colors.left, colors.right};
-% ax(i).lineStyle     = {'-','-'};
-% ax(i).xLabel        = 'Time from turn (s)';  % XLabel
-% i=i+1;
-% ax(i).title         = "Conflict Trials";
-% ax(i).comparison    = "choice-turn-conflict";
-% ax(i).trigger       = "turnEntry";
-% ax(i).trialType     = ["left_conflict", "right_conflict"];
-% ax(i).window        = [-1, 5];
-% ax(i).color         = {colors.left, colors.right};
-% ax(i).lineStyle     = {'-','-'};
-% ax(i).xLabel        = 'Time from turn (s)';  % XLabel
-% i=i+1;
-% 
-% ax(i).title         = "All Trials";
-% ax(i).comparison    = "conflict-turnEntry";
-% ax(i).trigger       = "turnEntry";
-% ax(i).trialType     = ["congruent", "conflict"];
-% ax(i).window        = [-1, 5];
-% ax(i).color         = {colors.congruent, colors.conflict}; 
-% ax(i).lineStyle     = {'-','-'};
-% ax(i).xLabel        = 'Time from turn (s)';  % XLabel
-% i=i+1;
-% 
-% ax(i).title         = "Correct Trials";
-% ax(i).comparison    = "conflict-turnEntry";
-% ax(i).trigger       = "turnEntry";
-% ax(i).trialType     = ["congruent_correct", "conflict_correct"];
-% ax(i).window        = [-1, 5];
-% ax(i).color         = {colors.congruent, colors.conflict}; 
-% ax(i).lineStyle     = {'-','-'};
-% ax(i).xLabel        = 'Time from turn (s)';  % XLabel
-% i=i+1;
+ax(i).title         = 'Cue Entry';
+ax(i).comparison    = "cue-entry";
+ax(i).trigger       = "cueEntry";
+ax(i).trialType     = "forward";
+ax(i).window        = [-1, 5];
+ax(i).color         = {colors.data}; %Outcome: hit/priorHit vs err/priorHit
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = 'Time from entry (s)';  % XLabel
+i=i+1;
 
 %---CUE RESPONSES----------------------------------------------------------
 
@@ -495,6 +425,42 @@ ax(i).lineStyle     = {'-','-'};
 ax(i).xLabel        = 'Time from first cue (s)';  % XLabel
 i=i+1;
 
+%---Sticky Wall Collisions
+ax(i).title         = 'Stuck Onset';
+ax(i).comparison    = "stickyWalls";
+ax(i).trigger       = "stuckOnset";
+ax(i).trialType     = ["forward"];
+ax(i).window        = [-1, 2];
+ax(i).color         = {colors.red};
+ax(i).lineStyle     = {'-'};
+ax(i).xLabel        = 'Time from collision onset (s)';  % XLabel
+i=i+1;
+ax(i).title         = 'Stuck Offset';
+ax(i).comparison    = "stickyWalls";
+ax(i).trigger       = "stuckOffset";
+ax(i).trialType     = ["forward"];
+ax(i).window        = [-1, 2];
+ax(i).color         = {colors.green};
+ax(i).lineStyle     = {'-'};
+ax(i).xLabel        = 'Time from collision offset (s)';  % XLabel
+i=i+1;
+
+%%--- POSITION -----------------------------------------------
+
+ax(i).title         = "Position";
+ax(i).comparison    = "position";
+ax(i).trigger       = "cueRegion";
+ax(i).trialType     = "forward";
+ax(i).window        = [-inf, inf];
+ax(i).color         = {colors.data}; %Choice: left/hit/sound vs right/hit/sound
+ax(i).lineStyle     = {'-'};
+ax(i).xLabel        = 'Distance (cm)';  % XLabel
+
+[ax(:).tickLabelFormat] = deal('%.2f');
+[ax(:).yLabel]          = deal('Cellular Fluorescence (dF/F)');
+[ax(:).verboseLegend]   = deal(false);
+
+%---------------------------------------------
 % ax(i).title         = 'Puff Side Value';
 % ax(i).comparison    = "puffSideValue";
 % ax(i).trigger       = "firstPuff";
@@ -550,18 +516,3 @@ i=i+1;
 % ax(i).lineStyle     = {'-','-'};
 % ax(i).xLabel        = 'Time from first cue (s)';  % XLabel
 % i=i+1;
-
-%%---POSITION (omit for now)-----------------------------------------------
-
-ax(i).title         = "Position";
-ax(i).comparison    = "position";
-ax(i).trigger       = "cueRegion";
-ax(i).trialType     = "forward";
-ax(i).window        = [-inf, inf];
-ax(i).color         = {colors.data}; %Choice: left/hit/sound vs right/hit/sound
-ax(i).lineStyle     = {'-'};
-ax(i).xLabel        = 'Distance (cm)';  % XLabel
-
-[ax(:).tickLabelFormat] = deal('%.2f');
-[ax(:).yLabel]          = deal('Cellular Fluorescence (dF/F)');
-[ax(:).verboseLegend]   = deal(false);
