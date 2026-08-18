@@ -8,7 +8,7 @@ for f = string(fieldnames(trialMasks))'
 end
 
 %Previous rewarded trialType and opposite-side trialType
-if isfield(trialMasks,'priorLeftPuffs') && any(trialMasks.priorLeftPuffs)
+if isfield(trialMasks,'priorLeftPuffs')
    for f = ["Towers", "Puffs"]
     trialMasks.(['repeat',f{:}(1:end-1),'Side']) = ...
         (trialMasks.(['left',f{:}]) & trialMasks.(['priorLeft',f{:}])) |... 
@@ -16,5 +16,5 @@ if isfield(trialMasks,'priorLeftPuffs') && any(trialMasks.priorLeftPuffs)
     trialMasks.(['switch',f{:}(1:end-1),'Side']) = ...
         (trialMasks.(['left',f{:}]) & trialMasks.(['priorRight',f{:}])) |... 
         (trialMasks.(['right',f{:}]) & trialMasks.(['priorLeft',f{:}]));
-    end
+   end
 end

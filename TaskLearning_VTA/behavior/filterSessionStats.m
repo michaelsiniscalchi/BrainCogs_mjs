@@ -12,7 +12,7 @@ fields.params = ["taskRule","level","reward_scale","maxSkidAngle","lCue","lMem",
 fields.counts = ["nTrials","nCompleted","nForward"];
 fields.mean = ["pCorrect","pCorrect_congruent","pCorrect_conflict",...
     "pLeftTowers","pLeftPuffs","pLeftCues","pOmit","pStuck"];
-fields.other = ["median_velocity","median_pSkid","median_stuckTime",...
+fields.other = ["median_velocity","median_pSkid","median_pStuckDuration",...
     "median_duration_cueRegion","bias"];
 
 for i = 1:numel(subjects)
@@ -105,7 +105,7 @@ for i = 1:numel(subjects)
         forwardMask = trials.forward & ~trials.omit;
         S.median_velocity = median(trialData.mean_velocity(forwardMask,2)); %Median Y-velocity across all completed trials
         S.median_pSkid = median(trialData.pSkid(forwardMask)); %Median proportion of maze where mouse skidded along walls
-        S.median_stuckTime = median(trialData.stuck_time,'omitnan'); %Median proportion of time spent stuck as result of friction
+        S.median_pStuckDuration = median(trialData.stuck_duration,'omitnan'); %Median proportion of time spent stuck as result of friction
 
         %Perceptual bias
         leftSensitivity = sum(trials.leftCues(trials.left & ~trials.exclude))...
