@@ -1,8 +1,10 @@
 function bootParams = specBootAvgParams( generalParams )
 
 i = 1;
+
 % ----- Fluorescence Temporally Aligned to Maze Segments ------------------
-%Start of trial
+
+% --- Start of trial ------------------------------------------------------
 bootParams(i).trigger = "start";
 bootParams(i).subtractBaseline = false;
 bootParams(i).getScalarEstimates = true; %Indicator for time-averaging and peak estimation
@@ -12,6 +14,8 @@ bootParams(i).trialSpec = {...
     ["right"],...
     };
 i = i+1;
+
+
 
 % --- Cue Responses -------------------------------------------------------
 %Do cue responses or selectivity differ on correct vs. error trials?
@@ -198,6 +202,23 @@ bootParams(i).trialSpec = {...
     "forward",...
     ["puffs","noTowers"],... %Trials with >0 puffs
     ["towers","noPuffs"],... %Trials with >0 towers (for comparisons between unisensory and 5--20% zero-cue variants or PLT)
+    };
+i = i+1;
+
+% --- Virtual Friction ----------------------------------------------------
+bootParams(i).trigger = "stuckOnset";
+bootParams(i).subtractBaseline = true;
+bootParams(i).getScalarEstimates = true; %Indicator for time-averaging and peak estimation
+bootParams(i).trialSpec = {...
+    ["forward"],...
+    };
+i = i+1;
+
+bootParams(i).trigger = "stuckOffset";
+bootParams(i).subtractBaseline = true;
+bootParams(i).getScalarEstimates = true; %Indicator for time-averaging and peak estimation
+bootParams(i).trialSpec = {...
+    ["forward"],...
     };
 i = i+1;
  
