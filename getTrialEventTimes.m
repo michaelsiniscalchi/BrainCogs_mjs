@@ -38,7 +38,8 @@ trials = log.block(blockIdx).trial;
     'firstCue',deal(NaN),...
     'cueEntry',deal(NaN),'turnEntry',deal(NaN),'armEntry',deal(NaN),...
     'licks',deal(NaN),...
-    'choice',deal(NaN),'outcome',deal(NaN)); % Initialize
+    'stuckOnset',deal(NaN), 'stuckOffset',deal(NaN),... %Engagement of virtual friction
+    'outcome',deal(NaN)); % Initialize
 
 for i = 1:numel(trials)
     %Trial start times
@@ -114,8 +115,22 @@ for i = 1:numel(trials)
         end
         % plot(eventTimes(i).licks, zeros(1,numel(eventTimes(i).licks)),'|','LineStyle','none');
     end
-    
-    
+
+    %Engagement of virtual friction
+    % eventTimes(i).stuckOnset
+    % eventTimes(i).stuckOffset
+    stuckIdx = trials(i).frictionEngagedVec'; %Exclude any entries registered to first iteration (from ITI)
+    onsetIter = find([0, diff(stuckIdx)]==1)+2; %Add +2 iterations for same reason as tower onset times
+    offsetIter = find([0, diff(stuckIdx)]==-1)+2;
+    if any(stuckIdx)
+        for j = 1:numel(onsetIter)
+            eventTimes(i).stuckOnset(j) = getTrialIterationTime(log, blockIdx, i, onsetIter(j))';
+        end
+        for j = 1:numel(offsetIter)
+            eventTimes(i).stuckOffset(j) = getTrialIterationTime(log, blockIdx, i, offsetIter(j))';
+        end
+    end
+
 end
 
 %FUTURE: could clean up to only include 2 input args: time and {'cueOnset' or 'puffOnset'}
