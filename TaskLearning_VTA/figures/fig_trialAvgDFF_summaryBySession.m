@@ -19,9 +19,9 @@ setup_figprops('GoogleSlides');  %set up default figure plotting parameters
 for i=1:numel(cellIDs)
     cellIdx(i,:) = ~isnan(sum(bootAvg.(panels(1).trialType(1)).cells(i).sessions(expIdx).signal));
 end
-singleCellIdx = ~ismember(cellIDs,["fov","allCells"]); %restrict to actual cells (not aggregates)
-cellIDs = cellIDs(cellIdx & singleCellIdx);
-cellIdx = find(cellIdx(singleCellIdx)); %Convert to int for sequential indexing below
+tempCellIdx = ~ismember(cellIDs,["allCells"]); %restrict to desired cells (or aggregates)
+cellIDs = cellIDs(cellIdx & tempCellIdx);
+cellIdx = find(cellIdx(tempCellIdx)); %Convert to int for sequential indexing below
 
 gridSize = [panels(1).gridSize]; %Should be same for all panels specified; one grid per cell in this case, in grid could consist of multiple panels
 nCellsPerFig = gridSize(1)*gridSize(2)-1; %one grid unit per cell; save last space for legend
@@ -55,6 +55,7 @@ for i = 1:numel(cellIDs)
             T = tiledlayout(gridSize(1), gridSize(2)*numel(panels),...
                 'TileIndexing','columnmajor','TileSpacing','tight','Padding','tight');
         end
+        nRows = min([mod(numel(cellIDs), nCellsPerFig), gridSize(1)]);
     end
     %Row and Column Indices
     tileIdx = mod(i,nCellsPerFig);
@@ -110,7 +111,7 @@ for i = 1:numel(cellIDs)
     end
     %Add xlabel only to bottom row
     xLabel = [];
-    if rowIdx==gridSize(1)
+    if rowIdx==nRows
         xLabel = panels(1).xLabel; %Specified in params.panels
     end
     %Add yLabel only to leftmost column

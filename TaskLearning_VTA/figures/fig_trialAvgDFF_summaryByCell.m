@@ -57,6 +57,7 @@ for i = 1:numel(sessionIdx)
         figs(f_idx).Position = [100,100, 960, 480]; %Full Google Slide, 5 x 10
         T = tiledlayout(gridSize(1), gridSize(2),...
             'TileIndexing','rowmajor','TileSpacing','tight','Padding','tight');
+        nRows = ceil(mod(numel(sessionIdx), nSessionsPerFig)/gridSize(2));
     end
     %Row and Column Indices
     tileIdx = mod(i, nSessionsPerFig);
@@ -65,7 +66,7 @@ for i = 1:numel(sessionIdx)
     colIdx = mod(tileIdx, gridSize(2)); %Row position; ROW & COL idx reversed because this figure uses a rowmajor tiled layout
     colIdx(colIdx==0) = gridSize(2); %Correct last row idx: goes back to zero with mod() approach
 
-    rowIdx = mod(ceil(tileIdx/gridSize(1)), gridSize(2)); %Row position; 0 if only one row
+    rowIdx = mod(ceil(tileIdx/gridSize(2)), gridSize(2)); %Row position; 0 if only one row
     rowIdx(rowIdx==0)=gridSize(1); %Correct last row idx: goes back to zero with mod() approach
 
     % rowIdx = mod(tileIdx, gridSize(1)); %Row position; ROW & COL idx reversed because this figure uses a rowmajor tiled layout
@@ -116,7 +117,7 @@ for i = 1:numel(sessionIdx)
   
     %Add xlabel only to bottom row
     xLabel = [];
-    if rowIdx==gridSize(1)
+    if rowIdx==nRows
         xLabel = panel.xLabel; %Specified in params.panels
     end
     %Add yLabel only to leftmost column

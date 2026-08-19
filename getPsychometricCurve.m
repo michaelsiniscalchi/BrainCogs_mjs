@@ -63,7 +63,7 @@ for f = string(fieldnames(diffCues))'
 %     psychStruct.(f).diffCues = diffCues.(f);
 
     %Logistic fit
-    [~,~,stats] = glmfit(diffCues.(f)(~omitMask), choiceMask', 'binomial', 'link', 'logit');
+    [~,~,stats] = glmfit(diffCues.(f)(~omitMask), choiceMask', 'binomial', 'link', 'logit','LikelihoodPenalty','jeffreys-prior');
     L = max(psychStruct.(f).pRight);
     psychStruct.(f).curvefit = logistic(psychStruct.(f).counts,stats.beta(2),stats.beta(1),L);
 

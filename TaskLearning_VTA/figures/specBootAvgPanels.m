@@ -427,7 +427,7 @@ i=i+1;
 
 %---Sticky Wall Collisions
 ax(i).title         = 'Stuck Onset';
-ax(i).comparison    = "stickyWalls";
+ax(i).comparison    = "frictionOnset";
 ax(i).trigger       = "stuckOnset";
 ax(i).trialType     = ["forward"];
 ax(i).window        = [-1, 2];
@@ -436,7 +436,7 @@ ax(i).lineStyle     = {'-'};
 ax(i).xLabel        = 'Time from collision onset (s)';  % XLabel
 i=i+1;
 ax(i).title         = 'Stuck Offset';
-ax(i).comparison    = "stickyWalls";
+ax(i).comparison    = "frictionOffset";
 ax(i).trigger       = "stuckOffset";
 ax(i).trialType     = ["forward"];
 ax(i).window        = [-1, 2];
