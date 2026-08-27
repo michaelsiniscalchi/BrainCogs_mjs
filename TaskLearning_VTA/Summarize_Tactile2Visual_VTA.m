@@ -262,12 +262,12 @@ if figures.trial_avg_dFF
     save_dir = fullfile(dirs.figures,'Cellular fluorescence', subjectID);
     create_dirs(save_dir); %Create dir for these figures
 
+    %Generate figs for each contrast/comparison
+ 
     if figures.summary_bootAvg
+        
         comparisons = unique([params.figs.summaryBootAvg.panels.comparison],'stable');
-        % comparisons = ["cueRegion-zeroCues-cueType"];%DEVO
-
         for j = 1:numel(comparisons)
-
             %Isolate set of panels for each figure
             panelIdx = find([params.figs.summaryBootAvg.panels.comparison]==comparisons(j));
             event = [params.figs.summaryBootAvg.panels(panelIdx(1)).trigger]; %All panels in comparison need to have same trigger
@@ -276,15 +276,14 @@ if figures.trial_avg_dFF
             %Generate figures
             if ~isempty(panelIdx)
                 %One or more figure per session (all cells)
-                % for k = 1:numel(expData)
-                %     figs = fig_trialAvgDFF_summaryBySession(  bootStruct.(event),...
-                %         k, expData(k).sub_dir, cellIDs,...
-                %         params.figs.summaryBootAvg.panels(panelIdx),...
-                %         params.figs.summaryBootAvg);
-                %     save_multiplePlots(figs, save_dir); %save as FIG and PNG
-                %     clearvars figs
-                % end
-
+                for k = 1:numel(expData)
+                    figs = fig_trialAvgDFF_summaryBySession(  bootStruct.(event),...
+                        k, expData(k).sub_dir, cellIDs,...
+                        params.figs.summaryBootAvg.panels(panelIdx),...
+                        params.figs.summaryBootAvg);
+                    save_multiplePlots(figs, save_dir); %save as FIG and PNG
+                    clearvars figs
+                end
             end
         end
     end

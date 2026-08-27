@@ -1,18 +1,14 @@
-function lgd = plotPsychometric(psychStruct, cueName, colors, title_str)
+function lgd = plotPsychometric(psychStruct, cueName, responseName, params)
 
-c.all = colors.black;
-c.congruent = colors.gray;
-c.conflict = colors.red;
-
-c.data = colors.black;
-c.model = colors.green;
+c.data = params.colors.black;
+c.model = params.colors.green;
 
 f = string(fieldnames(psychStruct))';
 if ~isempty(f)
     for i = 1:numel(f)
         %Plot p(right) as f(nCuesR-nCuesL)
         X = psychStruct.(f(i)).(cueName).counts;
-        Y = psychStruct.(f(i)).(cueName).pRight;
+        Y = psychStruct.(f(i)).(cueName).pResponse;
 
         if isempty(X)
            p(i) = plot(NaN,NaN,"Color", c.(f(i))); hold on;
@@ -23,7 +19,7 @@ if ~isempty(f)
 
         %Plot binned frequencies
         X = psychStruct.(f(i)).(cueName).bins;
-        Y = psychStruct.(f(i)).(cueName).pRight_binned;
+        Y = psychStruct.(f(i)).(cueName).pResponse_binned;
         err = psychStruct.(f(i)).(cueName).se_binned;
 
         %Plot line between values
@@ -45,7 +41,7 @@ if ~isempty(f)
 
 end
 
-title(title_str);
-xlabel('nRightCues-nLeftCues');
-ylabel('P(chose right)');
+title(params.title_str);
+xlabel(params.xLabel);
+ylabel(params.yLabel);
 axis square;

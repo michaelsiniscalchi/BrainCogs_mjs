@@ -151,7 +151,9 @@ for i = 1:numel(subjects)
         
         if ~isnan(S.pLeftCues)
             %Psychometric
-            S.psychometric = getPsychometricCurve(trialData, trials, forwardMask, 4); %All trials
+            S.psychometric.choice = getPsychometricCurve("right", trialData, trials, forwardMask, 4); %All trials
+            %Logistic regression of correct choice
+            S.psychometric.outcome = getPsychometricCurve("correct", trialData, trials, forwardMask, 4); %All trials
   
             %Cue histogram
             edges = -max(abs(trialData.nTowers(:))):max(abs(trialData.nTowers(:))+1);

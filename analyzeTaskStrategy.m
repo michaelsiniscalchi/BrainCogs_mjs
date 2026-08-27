@@ -4,7 +4,8 @@ for i = 1:numel(subjects)
     for j = 1:numel(subjects(i).sessions)
 
         %Skip forced choice (L-Maze) sessions
-        if ismember(subjects(i).sessions(j).taskRule,...
+        taskRule = subjects(i).sessions(j).taskRule;
+        if ismember(taskRule,...
                 ["forcedChoice","tactileCS","visualCS","leftCS","rightCS"])
             continue
         end
@@ -12,29 +13,49 @@ for i = 1:numel(subjects)
         %Trial masks for predictors and response variable
         trials = subjects(i).trials(j);
         trialData = subjects(i).trialData(j);
-        exclIdx = trials.omit | ~trials.forward;
-        priorExclIdx = [true, exclIdx(1:end-1)];
+        exclIdx = trials.omit(:) | ~trials.forward(:);
+        priorExclIdx = [true; exclIdx(1:end-1)];
+        noCuesIdx = trials.noCues(:);
 
         %Cue Side
-        rightTowers = trials.rightTowers(~exclIdx)'; %Exclude omissions and ~forward trials
-        rightPuffs = trials.rightPuffs(~exclIdx)'; %Exclude omissions for all
+        rightTowers = trials.rightTowers(:); %Exclude omissions and ~forward trials
+        leftTowers  = trials.leftTowers(:); 
+        rightPuffs  = trials.rightPuffs(:); %Exclude omissions for all
+        leftPuffs   = trials.leftPuffs(:); 
+        
+        %Effects code with zero cue trials
+        towerSide = zeros(size(rightTowers)); 
+        towerSide(leftTowers) = -1;
+        towerSide(rightTowers) = 1;
+        puffSide = zeros(size(rightPuffs)); 
+        puffSide(leftPuffs) = -1;
+        puffSide(rightPuffs) = 1;
 
-        %Number of Cues
-        nTowersLeft = trialData.nTowers(~exclIdx,1);
-        nTowersRight = trialData.nTowers(~exclIdx,2);
-        nPuffsLeft = trialData.nPuffs(~exclIdx,1);
-        nPuffsRight = trialData.nPuffs(~exclIdx,2);
+        %Number of Puffs | Towers
+        nPuffsLeft = trialData.nPuffs(:,1);
+        nPuffsRight = trialData.nPuffs(:,2);
+        nTowersLeft = trialData.nTowers(:,1);
+        nTowersRight = trialData.nTowers(:,2);
+        
+        %Number of Cues | Distractors
+        if taskRule=="tactile"
+            nCues = sum([nPuffsLeft, nPuffsRight],2);
+            nDistractors = sum([nTowersLeft, nTowersRight],2);
+        elseif taskRule=="visual"
+            nCues = sum([nTowersLeft, nTowersRight],2);
+            nDistractors = sum([nPuffsLeft, nPuffsRight],2);
+        end
 
-        %Choice
-        rightChoice = double(trials.right(~exclIdx))';
-        rightPriorChoice = double(trials.priorRight)';
-        rightPriorChoice(priorExclIdx) = NaN;
-        rightPriorChoice = rightPriorChoice(~exclIdx);
-        %Outcome
-        reward = double(trials.correct(~exclIdx))'; %Trial outcome
-
+        %Rule Conflict
+        congruent = trials.congruent(:);
+        conflict = trials.conflict(:);
+        ruleConflict = trials.conflict(:);
+        
+        %Prior Choice
+        rightPriorChoice = double(trials.priorRight(:));
+        
         %Code predictors as {-1,1}
-        effectCode = @(X) 2*(X-0.5);
+        effectCode = @(X) 2*(X-0.5); %No longer viable for cue-side after inclusion of zero-cue trials
         normCode = @(X) X./max(X,[],"omitnan");
         meanCenter = @(X) X-mean(X,1,"omitnan");
 
@@ -43,16 +64,13 @@ for i = 1:numel(subjects)
         % Y = Bias + towerSide(n)*X + puffSide(n)*X + Choice(n-1)*X + error
         X = struct(...
             'bias', ones(size(rightTowers)),... %Need field, but column of ones not used for glmfit(); used previously with fitglm()
-            'towers', effectCode(rightTowers),... %Cueside(n)
-            'puffs', effectCode(rightPuffs),...
+            'towers', towerSide,... %Cueside(n)
+            'puffs', puffSide,...
             'priorChoice', effectCode(rightPriorChoice)...
             );
-        response = rightChoice;
-
-        %**If history terms are included**
-        if isfield(X,'priorChoice')
-            exclIdx = exclIdx | priorExclIdx;
-        end
+        responseName = "rightChoice";
+        trials.rightChoice = trials.right; %For labels/readability and for flexibility to regress other output vars (eg outcome in glm3)
+        exclude = exclIdx | priorExclIdx;   %**If history terms are included**
 
         %Skip sessions with missing predictors
         f = fieldnames(X);
@@ -60,7 +78,7 @@ for i = 1:numel(subjects)
             continue
         end
 
-        subjects(i).sessions(j).glm1 = logisticStats(X, response, trials, trialData, exclIdx, nBins_psychometric);
+        subjects(i).sessions(j).glm1 = logisticStats(X, responseName, trials, trialData, exclude, nBins_psychometric);
         b0 = subjects(i).sessions(j).glm1.bias.beta;
         subjects(i).sessions(j).glm1_bias = exp(b0)/(1+exp(b0)); %P = odds/(1+odds)
         
@@ -74,42 +92,35 @@ for i = 1:numel(subjects)
             'nPuffsRight', normCode(nPuffsRight),...
             'priorChoice', rightPriorChoice...
             );
-       
-        %**If history terms are included**
-        if isfield(X,'priorChoice')
-            exclIdx = exclIdx | priorExclIdx;
-        end
+        responseName = "rightChoice";
+        trials.rightChoice = trials.right; %For labels/readability and for flexibility to regress other output vars (eg outcome in glm3)
+        exclude = exclIdx | priorExclIdx; %**If history terms are included* 
+              
+        subjects(i).sessions(j).glm2 = logisticStats(X, responseName, trials, trialData, exclude, nBins_psychometric);
         
-        response = rightChoice;
-        subjects(i).sessions(j).glm2 = logisticStats(X, response, trials, trialData, exclIdx, nBins_psychometric);
         b0 = subjects(i).sessions(j).glm2.bias.beta;
         subjects(i).sessions(j).glm2_bias = exp(b0)/(1+exp(b0)); %P = odds/(1+odds)
 
-%         %Append psychometric curve based on model parameters
-%         trials.right(~exclIdx) = subjects(i).sessions(j).glm2.predictedChoice; %Model/curve based on right-choice trials, omitted trials excluded within function
-%         subjects(i).sessions(j).glm2.psychometric = getPsychometricCurve(trialData, trials, ~exclIdx);
-%         
-%         %Side-specific cue sensitivity (similar to "slope" in Garcia, Lak et al., bioRxiv 2023)
-%         %Absolute difference between eg (pRight|rightCue) and pRight (approx by bias)
-%         b0 = subjects(i).sessions(j).glm1.bias.beta; %ln(odds)
-%         subjects(i).sessions(j).glm1.sensitivity.puffs = calcSensitivity(b0, rightChoice, rightPuffs);
-%         subjects(i).sessions(j).glm1.sensitivity.towers = calcSensitivity(b0, rightChoice, rightTowers);
+        %% GLM 3: Logistic regression of Outcomes based on nCues & nDistractors
+        %         % Y = B0 + X*nCues + X*nDistractors + X*ruleConflict + X*(nCues*ruleConflict) + X*(nDistractors*ruleConflict) + error
+                X = struct(...
+                    'bias', ones(size(nCues)),...
+                    'nCues', nCues,... %Cueside(n)
+                    'nDistractors', nDistractors,...
+                    'nCuesXConflict', nCues.*ruleConflict,...
+                    'nDistractorsXConflict', nDistractors.*ruleConflict...
+                    ); 
+                % 'ruleConflict', ruleConflict,... 
+                
+                responseName = "correct";
+                exclude = exclIdx | noCuesIdx;
+                subjects(i).sessions(j).glm3 =...
+                    logisticStats(X, responseName, trials, trialData, exclude, nBins_psychometric);
 
-        %% GLM 3: Logistic regression of Choices based on nCues_L, nCues_R, and cueSide
-        %         % Y = B0 + nTowers_L*X + nTowers_R*X + nPuffs_L*X + nPuffs_R*X + error
-        %         X = struct(...
-        %             'bias',ones(size(rightTowers)),...
-        %             'towers', rightTowers,... %Cueside(n)
-        %             'puffs', rightPuffs,...
-        %             'nTowersLeft', nTowersLeft,...
-        %             'nTowersRight', nTowersRight,...
-        %             'nPuffsLeft', nPuffsLeft,...
-        %             'nPuffsRight', nPuffsRight,...
-        %             'priorChoice', rightPriorChoice...
-        %             );
-        %         response = rightChoice;
-        %         subjects(i).sessions(j).glm3 = logisticStats(X, response, trials, exclIdx);
-        %         subjects(i).sessions(j).glm3_bias = subjects(i).sessions(j).glm3.bias.beta;
+                  b0 = subjects(i).sessions(j).glm3.bias.beta;
+                  subjects(i).sessions(j).glm3_bias =... 
+                            exp(b0)/(1+exp(b0)); %P = odds/(1+odds)
+           
 
     end
 end
@@ -124,16 +135,17 @@ end
 
 %---------------------------------------------------------------------------------------------------
 
-function regStruct = logisticStats( X, response, trials, trialData, exclIdx, nBins_psychometric)
+function regStruct = logisticStats( X, responseName, trials, trialData, exclIdx, nBins_psychometric)
 
 %% Regress
 
 %Format the predictors and append name of response variable
 [predictors, pNames ] = formatPredictors(X, trials, exclIdx);
-varNames = [pNames, "choice"]; %Append response name
+varNames = [pNames, responseName]; %Append response name
 
 %Regress based on specified terms
-[mdl, condNum, warnMsg, warnId] = logistic(predictors, response, varNames);
+response = trials.(responseName)(~exclIdx);
+[mdl, condNum, warnMsg, warnId] = logistic(predictors, response(:), varNames);
 
 %If regression algorithm does not converge within time limit, etc.
 if ~isempty(warnMsg)
@@ -147,7 +159,7 @@ regStruct.model             = mdl;
 
 %Regression stats: beta, p, se
 for pName = string(fieldnames(X))' %pName = string(mdl.CoefficientNames)
-    if ismember(pName,mdl.Coefficients.Properties.RowNames)
+    if ismember(pName, mdl.Coefficients.Properties.RowNames)
         regStruct.(pName) = struct(...
             'beta', mdl.Coefficients{pName,'Estimate'},...
             'se', mdl.Coefficients{pName,'Estimate'} + mdl.Coefficients{pName,'SE'}*[-1;1],... %B -/+ SE
@@ -158,16 +170,18 @@ for pName = string(fieldnames(X))' %pName = string(mdl.CoefficientNames)
 end
 
 %Predicted choice
-regStruct.predictedChoice   = mdl.Fitted.Response>0.5; %choose_R if P(choose_R)>0.5
+regStruct.predictedResponse   = mdl.Fitted.Response>0.5; %choose_R or choose_correct if P(choose_R)>0.5
 
 %Psychometric curve based on model parameters
-trials.right(~exclIdx) = regStruct.predictedChoice; %Model/curve based on right-choice trials, omitted trials excluded within function
-regStruct.psychometric = getPsychometricCurve(trialData, trials, ~exclIdx, nBins_psychometric);
+trials.(responseName)(~exclIdx) = regStruct.predictedResponse; %Model/curve based on right- or correct-choice trials, omitted trials excluded within function
+regStruct.psychometric = getPsychometricCurve(responseName, trialData, trials, ~exclIdx, nBins_psychometric);
 
 %Side-specific cue sensitivity (similar to "slope" in Garcia, Lak et al., bioRxiv 2023)
-regStruct.sensitivity.puffs = ...
-    calcSensitivity(regStruct.bias.beta, response, trials.rightPuffs(~exclIdx)'); %[sensitivity_L, sensitivity_R]
-regStruct.sensitivity.towers = calcSensitivity(regStruct.bias.beta, response, trials.rightTowers(~exclIdx)');
+if responseName=="rightChoice"
+    regStruct.sensitivity.puffs = ...
+        calcSensitivity(regStruct.bias.beta, response, trials.rightPuffs(~exclIdx)'); %[sensitivity_L, sensitivity_R]
+    regStruct.sensitivity.towers = calcSensitivity(regStruct.bias.beta, response, trials.rightTowers(~exclIdx)');
+end
 
 %Additional outputs
 regStruct.R2                = mdl.Rsquared.Ordinary;
@@ -209,9 +223,9 @@ end
 
 %Predictor matrix
 pNames = string(fieldnames(X))'; %Output as string array
-predictors = NaN(size(X.bias,1), numel(pNames));
+predictors = NaN(sum(~exclIdx), numel(pNames));
 for k = 1:numel(pNames)
-    predictors(:,k) = X.(pNames{k});
+    predictors(:,k) = X.(pNames{k})(~exclIdx);
 end
 
 %---------------------------------------------------------------------------------------------------
@@ -245,8 +259,7 @@ end
 %Calculate condition number for GLM
 X = predictors; %Design matrix
 X = X(~isnan(sum(X,2)),:); %Omit nan rows, which are also omitted in regression
-moment = X'*X; %Moment matrix of regressors
-condNum = cond(moment); %Condition number
+condNum = cond(X); %Condition number: Ilana says take this condition number because SVD is used (rather than matrix inversion)
 
 %---------------------------------------------------------------------------------------------------
 

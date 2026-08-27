@@ -1,6 +1,6 @@
 %For manual exclusion of sessions in which data were compromised by rig problems, etc.
 
-function [ logs, excludeBlocks ] = excludeBadBlocks( logs )
+function [ logs, excludeBlocks, excludeTrials ] = excludeBadBlocks( logs )
 
 % switch experiment
 %     case 'mjs_memoryMaze_NAc_DREADD_performance'
@@ -135,6 +135,7 @@ function [ logs, excludeBlocks ] = excludeBadBlocks( logs )
             "mjs20_569",datetime('06-May-2024'),'all';...   %changed fields in logs.block for second block (could amend code to accommodate)
 
             "mjs20_40",datetime('10-Apr-2025'),'all';...   %Different task: variable reward
+            "mjs20_37",datetime('30-Apr-2026'),'all';...   %Lick counter function not ready for prime time
             }; 
 
 % "mjs20_103",datetime('03-Oct-2023'), 1;... %Restarted

@@ -63,7 +63,7 @@ end
 
 if exe.model_strategy
     nBins_psychometric = 4;
-    subjects = analyzeTaskStrategy2(subjects, nBins_psychometric);
+    subjects = analyzeTaskStrategy(subjects, nBins_psychometric);
 end
 
 %Save experimental data to matfiles by subject
@@ -172,25 +172,36 @@ if plots.session_summary
     saveDir = fullfile(dirs.results,'session-summary');
     for i = 1:numel(subjects)
         subject = loadExperData(subjects(i).ID, dirs);
-        if any(ismember([subject.sessions.taskRule],...
-                ["visualCS","tactileCS","leftCS","rightCS"]))
+        % if any(ismember([subject.sessions.taskRule],...
+        %         ["visualCS","tactileCS","leftCS","rightCS"]))
+        %Pavlovian Track
             for j = 1:numel(subject.sessions)
+                if ismember(subject.sessions(j).taskRule,...
+                ["visualCS","tactileCS","leftCS","rightCS"])
                 figs(j) = fig_pltSession_summary(subject.sessions(j),...
                     subject.trialData(j), subject.trials(j), subject.ID, colors);
+                end
             end
+            if exist("figs") && ~isempty(figs)
             save_multiplePlots(figs, saveDir);
-        end
+            end
+        % end
 
         %Rule switching task (operant)
         if any(ismember([subject.sessions.taskRule],["visual","tactile"]))
-        %GLM2
-        %(nTowersLeft_nTowersRight_nPuffsLeft_nPuffsRight_priorChoice_bias)
-        figs = fig_session_summary( subject, 'glm2', colors );
-        save_multiplePlots(figs,saveDir);
-        %GLM1 towers_puffs_bias
-        saveDir = fullfile(dirs.results,'session-summary','glm1');
-        figs = fig_session_summary( subject, 'glm1', colors );
-        save_multiplePlots(figs,saveDir);
+            %GLM1 towers_puffs_bias
+            % saveDir = fullfile(dirs.results,'session-summary','glm1');
+            figs = fig_session_summary( subject, 'glm1', colors );
+            save_multiplePlots(figs,saveDir);
+            %GLM2
+            %(nTowersLeft_nTowersRight_nPuffsLeft_nPuffsRight_priorChoice_bias)
+            % saveDir = fullfile(dirs.results,'session-summary','glm2');
+            figs = fig_session_summary( subject, 'glm2', colors );
+            save_multiplePlots(figs,saveDir);
+            %GLM3: Regress accuracy as function of nCues, nDistractors, ruleConflict
+            % saveDir = fullfile(dirs.results,'session-summary','glm3');
+            figs = fig_session_summary( subject, 'glm3', colors );
+            save_multiplePlots(figs,saveDir);
         end
     end
 end

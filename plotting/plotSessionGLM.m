@@ -1,28 +1,29 @@
-function p = plotSessionGLM( session_struct, glmName, colors )
-
-%Abbreviate
-S = session_struct;
+function p = plotSessionGLM( glmStruct, colors )
 
 %Extract data
-factors = S.(glmName).predictors;
+factors = glmStruct.predictors;
 for i = 1:numel(factors)
-    data(i) = S.(glmName).(factors(i)).beta;
-    sem(:,i) = S.(glmName).(factors(i)).se(2); %Upper se bar
+    data(i) = glmStruct.(factors(i)).beta;
+    sem(:,i) = glmStruct.(factors(i)).se(2); %Upper se bar
 end
 
 %Make bar graph 
 bar(1:numel(factors),data,'FaceColor',colors.blue,'LineStyle','none'); hold on
 errorbar(data, sem, 'Color', colors.blue, 'LineWidth', 1, 'LineStyle','none'); %symmetric error bars
-% ylim([-4,4]);
-% if string(glmName)=="glm1"
-%     ylim([-1.5,1.5]);
-% end
+
+%Stars for significance 
+for i = 1:numel(factors)
+    ticklabels(i) = factors(i);
+    if glmStruct.(factors(i)).p<0.05
+        ticklabels(i) = join([factors{i},"*"],'');
+    end
+end
 
 %Title and Axis Labels
 title('Logistic Regression');
 ylabel('Regression Coef.');
 ax = gca;
-ax.XTickLabels = factors;
+ax.XTickLabels = ticklabels;
 xlim([0,numel(factors)+1]);
 
 axis square tight;

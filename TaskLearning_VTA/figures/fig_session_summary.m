@@ -60,30 +60,42 @@ for i = 1:numel(subject.sessions)
 
         %--- GLM ------------------------------------------------------
     ax(4)=nexttile;
-    if isfield(S(i), glmName) && ~isempty(S(i).(glmName))
-        plotSessionGLM(S(i), glmName, colors);
+
+    glm = S(i).(glmName);
+
+    if ~isempty(glm)
+        plotSessionGLM(glm, colors);
     end
 
     %--- Psychometric curves for Towers -- all/congruent/conflict trials
     ax(5)=nexttile;
-    S(i).psychometric.data = S(i).psychometric; %Rename field for all (congruent|conflict) to "data"
-    try
-    S(i).psychometric = rmfield(S(i).psychometric,{'towers','puffs','all'});
-    catch 
-        disp('Warning: No psychometric for towers/puffs.');
+    %Modify panel params wrt specific regression model
+    params.colors = colors;
+    if glm.model.ResponseName=="rightChoice"
+        psychField = "choice";
+        params.title_str = '';
+        params.xLabel = 'nRightCues-nLeftCues';
+        params.yLabel = 'P(chose right)';
+    elseif glm.model.ResponseName=="correct"
+        psychField = "outcome";
+        params.title_str = '';
+        params.xLabel = 'nCues';
+        params.yLabel = 'P(correct choice)';
     end
-    if ~isempty(S(i).psychometric)
-        if isfield(S(i), glmName) && ~isempty(S(i).(glmName)) && ~isempty(S(i).(glmName).psychometric)
-            S(i).psychometric.model = S(i).(glmName).psychometric;
+
+    %Move psychometric data to psychStruct.data to make room for psychStruct.model
+    psychometric.data = S(i).psychometric.(psychField); %Rename field for all (congruent|conflict) to "data"
+    if ~isempty(S(i).psychometric.(psychField))
+        if ~isempty(glm) && ~isempty(glm.psychometric)
+            psychometric.model = glm.psychometric;
         end
-    lgd = plotPsychometric(S(i).psychometric, "towers", colors, ""); %p = plotPsychometric(psychStruct, cueName, colors, title_str)
-    lgd.Visible='off';
+        lgd = plotPsychometric(psychometric, "towers", glm.model.ResponseName, params); %p = plotPsychometric(psychStruct, cueName, responseName, params)
     end
     
     %--- Psychometric curves for Air Puffs -- all/congruent/conflict trials
     ax(6) = nexttile;
-    if ~isempty(S(i).psychometric)
-        lgd = plotPsychometric(S(i).psychometric, "puffs", colors, "");
+    if ~isempty(psychometric)
+        lgd = plotPsychometric(psychometric, "puffs", glm.model.ResponseName, params);
         lgd.Location="eastoutside";
     end
 

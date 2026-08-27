@@ -11,6 +11,7 @@ calculate.cellF                     = false; %Extract cellf and neuropilf from R
 calculate.dFF                       = false; %Calculate dF/F, with optional neuropil subtraction
 calculate.align_signals             = false; %Interpolate dF/F and align to behavioral events
 calculate.trial_average_dFF         = false; %dF/F averaged over specified subsets of trials
+calculate.kinematic_average_dFF     = false; %dF/F averaged over binned running speed and acceleration
 calculate.encoding_model            = false; %Encoding model
 calculate.encoding_stats            = false; %Stats, eg pValues for each regressor and pSignificant neurons
 
@@ -232,7 +233,12 @@ params.figs.summary_performance = struct(...
 %% SUMMARY FIGURE: Trial-Averaged dF/F
 %Panel specification
 P = specBootAvgPanels( params.figs );
-comparisons = ["cue-region", "cueRegion-puffSide", "cueRegion-towerSide", "cueRegion-zeroCues-cueType"];
+% comparisons = ["cue-region", "cueRegion-puffSide", "cueRegion-towerSide", "cueRegion-zeroCues-cueType"]; "cueRegion-puffSideValue"
+comparisons = [...
+    "cueRegion-puffSideValue", "cueRegion-towerSideValue",...
+    "rewarded-towerSideValue", "rewarded-puffSideValue",...
+    "unrewarded-towerSideValue", "unrewarded-puffSideValue",...
+    "puffSideValue","towerSideValue"];
 P = P(ismember([P.comparison],comparisons));
 [P.gridSize] = deal([6,8]); %General grid layout
 [P([P.comparison]=="cue-region").gridSize] = deal([6,1]); %Specify for figs with multiple subplots
@@ -247,7 +253,12 @@ clearvars P
 %Summary by cell (longitudinal layout)
 params.figs.summaryBootAvgLongitudinal = params.figs.summaryBootAvg; %Copy summary boot fig params
 P = specBootAvgPanels( params.figs ); %Get panels
-comparisons = ["cueRegion-priorOutcome", "cueRegion-outcome", "cueRegion-puffSide", "cueRegion-towerSide", "cueRegion-zeroCues-cueType"];
+% comparisons = ["cueRegion-priorOutcome", "cueRegion-outcome", "cueRegion-puffSide", "cueRegion-towerSide", "cueRegion-zeroCues-cueType"];
+comparisons = [...
+    "cueRegion-puffSideValue", "cueRegion-towerSideValue",...
+    "rewarded-towerSideValue", "rewarded-puffSideValue",...
+    "unrewarded-towerSideValue", "unrewarded-puffSideValue",...
+    "puffSideValue","towerSideValue"];
 P = P(ismember([P.comparison],comparisons));
 [P.gridSize] = deal([7,10]); %General grid layout
 [P.yLabel] = deal("Cell. fluo. (dF/F)");
