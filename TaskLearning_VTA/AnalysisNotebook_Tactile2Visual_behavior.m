@@ -18,24 +18,24 @@ matfiles = struct(...
 
 %Hyperparams
 dataSource = struct(...
-    'remoteLogData',        true,...
-    'experimentData',       false...
+    'remoteLogData',        false,...
+    'experimentData',       true...
     );
 exe = struct(...
     'reloadData',           true,...
-    'updateExperData',      true,...
+    'updateExperData',      false,...
     'motor_trajectory',     false,... %Running into error 260108 (skip for now)
-    'model_strategy',       true);
+    'model_strategy',       false);
 plots = struct(...
     'motor_trajectory',                 false,... 
     'collision_locations',              false,...
     'alignedKinematics',                false,...
     'lickRaster',                       false,...
     'trial_duration',                   false,...
-    'longitudinal_performance',         true,...
+    'longitudinal_performance',         false,...
     'longitudinal_licking',             false,...
     'longitudinal_glm',                 true,...
-    'session_summary',                  true,...
+    'session_summary',                  false,...
     'group_performance',                false);
 
 %Subject info
@@ -169,7 +169,7 @@ if plots.longitudinal_licking && numel(subjects.sessions)>1
 end
 
 if plots.session_summary
-    saveDir = fullfile(dirs.results,'session-summary');
+    % saveDir = fullfile(dirs.results,'session-summary');
     for i = 1:numel(subjects)
         subject = loadExperData(subjects(i).ID, dirs);
         % if any(ismember([subject.sessions.taskRule],...
@@ -190,16 +190,16 @@ if plots.session_summary
         %Rule switching task (operant)
         if any(ismember([subject.sessions.taskRule],["visual","tactile"]))
             %GLM1 towers_puffs_bias
-            % saveDir = fullfile(dirs.results,'session-summary','glm1');
+            saveDir = fullfile(dirs.results,'session-summary','glm1');
             figs = fig_session_summary( subject, 'glm1', colors );
             save_multiplePlots(figs,saveDir);
             %GLM2
             %(nTowersLeft_nTowersRight_nPuffsLeft_nPuffsRight_priorChoice_bias)
-            % saveDir = fullfile(dirs.results,'session-summary','glm2');
+            saveDir = fullfile(dirs.results,'session-summary','glm2');
             figs = fig_session_summary( subject, 'glm2', colors );
             save_multiplePlots(figs,saveDir);
             %GLM3: Regress accuracy as function of nCues, nDistractors, ruleConflict
-            % saveDir = fullfile(dirs.results,'session-summary','glm3');
+            saveDir = fullfile(dirs.results,'session-summary','glm3');
             figs = fig_session_summary( subject, 'glm3', colors );
             save_multiplePlots(figs,saveDir);
         end
@@ -212,19 +212,26 @@ if plots.longitudinal_glm && numel(subjects.sessions)>1
     figs = fig_longitudinal_glm( subjects, vars, 'glm1', colors );
     save_multiplePlots(figs,saveDir);
 
-    %All terms
+    %Choice ~ nCues model: All terms
     saveDir = fullfile(dirs.results,'GLM_nTowers_nPuffs');
     vars = {'nTowersLeft','nTowersRight','nPuffsLeft','nPuffsRight','bias'};
     figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
     save_multiplePlots(figs,saveDir);
 
-    %Towers/Puffs separately
-    vars = {'nTowersLeft','nTowersRight','bias'};
-    figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
-    save_multiplePlots(figs,saveDir);
+    %FUTURE: Use errorshade() for the error bars, like in psytrack
+    % %Towers/Puffs separately
+    % vars = {'nTowersLeft','nTowersRight','bias'};
+    % figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
+    % save_multiplePlots(figs,saveDir);
+    % 
+    % vars = {'nPuffsLeft','nPuffsRight','bias'};
+    % figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
+    % save_multiplePlots(figs,saveDir);
 
-    vars = {'nPuffsLeft','nPuffsRight','bias'};
-    figs = fig_longitudinal_glm( subjects, vars, 'glm2', colors );
+    %Accuracy ~ nCues model: All terms
+    saveDir = fullfile(dirs.results,'GLM_accuracy_nCues_nDistractors');
+    vars = {'nCues','nDistractors','nCuesXconflict','nDistractorsXconflict'};  
+    figs = fig_longitudinal_glm( subjects, vars, 'glm3', colors );
     save_multiplePlots(figs,saveDir);
 
 end

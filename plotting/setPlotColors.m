@@ -17,7 +17,8 @@ switch experiment
             'predictor',struct('towers', cbrew.black, 'puffs', cbrew.black,'bias', cbrew.black,... %GLM Predictors
             'nTowersLeft', cbrew.red, 'nTowersRight', cbrew.blue,...
             'nPuffsLeft', cbrew.red, 'nPuffsRight', cbrew.blue,...
-            'nCues', cbrew.black, 'nDistractors', cbrew.red, 'ruleConflict', cbrew.red,... %GLM3
+            'nCues', cbrew.black, 'nDistractors', cbrew.black, 'ruleConflict', cbrew.red,... %GLM3
+            'nCuesXconflict', cbrew.red, 'nDistractorsXconflict', cbrew.red,...
             'priorChoice', cbrew.black, 'priorRewChoice',cbrew.green,'priorUnrewChoice',cbrew.pink),...%GLM Predictors
             'pCorrect',cbrew.black,'pCorrect_congruent',cbrew.black,'pCorrect_conflict',cbrew.red,... %Proportions
             'pLeftTowers',cbrew.black,'pLeftPuffs',cbrew.black,'pLeftCues',cbrew.black,... %Proportion trials for each stim

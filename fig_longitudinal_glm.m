@@ -116,10 +116,15 @@ for i = 1:numel(subjects)
         faceColor{j} = colors.predictor.(vars{j}); %#ok<AGROW> 
         switch vars{j}
             case {'nTowersLeft','nTowersRight','towers'} 
+            
             case {'nPuffsLeft','nPuffsRight','puffs'} 
                 faceColor{j} = 'none'; %#ok<AGROW> 
             case 'priorChoice'
                 symbols(j) = "<";
+            case {'nCues','nCuesXconflict'}
+
+            case {'nDistractors','nDistractorsXconflict'}
+                 faceColor{j} = 'none'; %#ok<AGROW> 
             case 'bias'
                 symbols(j) = "_";
         end
@@ -132,12 +137,12 @@ for i = 1:numel(subjects)
 
     %Axes scale
     ax.PlotBoxAspectRatio = [3,2,1];
-    if ismember(vars{j},...
-            {'pRightChoice','pRightCue'})
+    if any(ismember(vars,...
+            {'pRightChoice','pRightCue'}))
         ylim([0,1]);
-    elseif ismember(vars{j},{'R_predictors', 'R_cue_choice', 'R_priorChoice_choice'})
+    elseif any(ismember(vars,{'R_predictors', 'R_cue_choice', 'R_priorChoice_choice'}))
         ylim([-1, 1]);
-    elseif ismember(vars{j}, predictorNames)
+    elseif any(ismember(vars, ["towers","puffs","nTowers","nPuffs"]))
         ylim([-5, 5]);
     else
         rng = max(cellfun(@max,data))-min(cellfun(@min,data));
