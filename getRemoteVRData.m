@@ -725,11 +725,11 @@ end
 
 function speed = calcRunningSpeed( sensorDots )
 
-sensorDots = cellfun(@double, sensorDots, 'UniformOutput', false);
+sensorDots = cellfun(@double, sensorDots, 'UniformOutput', false);  %Displacement matrix of size nIterations x 5: [??, ??, -dY, dX, dT]
 dotsPerRev = 26059/10;
 cmPerRev = 63.5; %**Check Rig for measurement**
 for i = 1:numel(sensorDots)
-    dYdX = double(sensorDots{i}(:,3:4)).*[-1,1]; %Displacement matrix of size nIterations x 3: [-dY, dX, dT]
+    dYdX = double(sensorDots{i}(:,3:4)).*[-1,1]; %Displacement matrix of size nIterations x 2: [-dY, dX]
     dT = double(sensorDots{i}(:,5))./1000; %Elapsed time since last iteration (ms-->s)
     dMagnitude = vecnorm(dYdX,2,2).*[sign(dYdX(:,1))]; %Assign speed the sign of Y
     dotsPerSecond = dMagnitude./dT;
