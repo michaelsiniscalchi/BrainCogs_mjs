@@ -29,24 +29,16 @@ for i = 1:numel(subjects)
     hold on;
     
     % Shade according to different phases of training
-    sessions = sessions([sessions.taskRule]~="forcedChoice"); %Exclude L-maze data
-    sessionType = [sessions.taskRule];
+    %Omit shaping levels (and anything other than visual/tactile)
+    sessions = sessions(ismember([sessions.taskRule],["visual","tactile"]));
+    taskRule = [sessions.taskRule];
 
-    levels = cellfun(@(L) L(end),{sessions.level});
-    levels(sessionType=="alternation")=98; %**TEMPORARY for mixed Alt/Tactile/Vis cohort
-    levels(sessionType=="visual" & levels==6)=99; %**TEMPORARY for mixed Alt/Tactile/Vis cohort
-    values = unique(levels);
+    rules = unique(taskRule,'stable');
     shading = gobjects(0);
-    for j = 1:numel(values)
-        sameType = unique(sessionType(levels==values(j)));
-        pastLevels = levels>=values(j) & sessionType==sameType;% Sessions at each level
-        alpha = transparency;
-        if unique(levels(sessionType==sameType))==values(j)
-        	alpha = 2*transparency;
-        end
-        patches = shadeDomain(find(pastLevels),...
-            ylim, shadeOffset, colors.taskRule.(sameType), alpha);
-        shading(numel(shading)+(1:numel(patches))) = patches; 
+    for j = 1:numel(rules)
+        patches = shadeDomain(find(taskRule==rules(j)),...
+            ylim, shadeOffset, colors.taskRule.(rules(j)), transparency);
+        shading(numel(shading)+(1:numel(patches))) = patches;
     end
     
     %Performance as a function of training day
@@ -148,24 +140,24 @@ for i = 1:numel(subjects)
         rng = max(cellfun(@max,data))-min(cellfun(@min,data));
         ylim([min(cellfun(@min,data)),max(cellfun(@max,data))] + 0.1*rng*[-1,1]);
     end
-    xlim([find(ismember(sessionType,["visual","tactile","sensory","alternation"]),1,'first')-shadeOffset,...
+    xlim([find(ismember(taskRule,["visual","tactile","sensory","alternation"]),1,'first')-shadeOffset,...
         max(xlim)]); %Truncate L-maze data
    
     %Figure legend
     legend(p,vars,'Location','best','Interpreter','none');
 
      %Labels for maze-type/rule
-    typeLabels = unique(sessionType,'stable');
-    txtX = arrayfun(@(idx) find(sessionType==typeLabels(idx),1,'first'), 1:numel(typeLabels));
-    txtY = min(ylim)+[1,2,1].*...
-        0.1*(max(ylim)-min(ylim));
+    typeLabels = unique(taskRule,'stable');
+    txtX = arrayfun(@(idx) find(taskRule==typeLabels(idx),1,'first'), 1:numel(typeLabels));
+    txtY = min(ylim)+0.1*(range(ylim)).*ones(size(txtX));
+    txtY(2:2:end) = txtY(2:2:end) + 0.1*(range(ylim));
     for j = 1:numel(typeLabels)
         txt(j) = text(txtX(j),txtY(j),typeLabels(j),...
             'Color',colors.taskRule.(typeLabels(j)),...
             'HorizontalAlignment','left');
     end
     txt(end).HorizontalAlignment='right';
-    txt(end).Position(1) = find(sessionType==typeLabels(end),1,'last');
+    txt(end).Position(1) = find(taskRule==typeLabels(end),1,'last');
        
     %Adjust height of shading as necessary
     if numel(ax.YAxis)==2

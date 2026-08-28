@@ -2,7 +2,8 @@ function figs = fig_session_summary(subject, glmName, colors)
 
 figs = gobjects(numel(subject.sessions),1);
 S = subject.sessions;
-for i = 1:numel(subject.sessions)
+S = S(ismember([S.taskRule],["tactile","visual"]));
+for i = 1:numel(S)
     if S(i).taskRule=="forcedChoice" || S(i).nTrials<100
         continue
     end
@@ -65,11 +66,16 @@ for i = 1:numel(subject.sessions)
 
     if ~isempty(glm)
         plotSessionGLM(glm, colors);
+    else
+        t.Padding = "loose";
+        t.TileSpacing = "loose";
+        continue
     end
 
     %--- Psychometric curves for Towers -- all/congruent/conflict trials
     ax(5)=nexttile;
     %Modify panel params wrt specific regression model
+
     params.colors = colors;
     if glm.model.ResponseName=="rightChoice"
         psychField = "choice";
@@ -82,7 +88,6 @@ for i = 1:numel(subject.sessions)
         params.xLabel = 'nCues';
         params.yLabel = 'P(correct choice)';
     end
-
     %Move psychometric data to psychStruct.data to make room for psychStruct.model
     psychometric.data = S(i).psychometric.(psychField); %Rename field for all (congruent|conflict) to "data"
     if ~isempty(S(i).psychometric.(psychField))
@@ -91,7 +96,7 @@ for i = 1:numel(subject.sessions)
         end
         lgd = plotPsychometric(psychometric, "towers", glm.model.ResponseName, params); %p = plotPsychometric(psychStruct, cueName, responseName, params)
     end
-    
+
     %--- Psychometric curves for Air Puffs -- all/congruent/conflict trials
     ax(6) = nexttile;
     if ~isempty(psychometric)
