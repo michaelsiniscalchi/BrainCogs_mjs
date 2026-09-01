@@ -104,7 +104,7 @@ if figures.trial_average_dFF
     for i = 1:numel(expData)
         %Load data
         load(mat_file.results.cellFluo(i),'bootAvg','cellID');
-        load(mat_file.img_beh(i),'trialDFF','sessions','trials');
+        load(mat_file.img_beh(i),'trialDFF','sessions','trials'); %For plotting individual trials
         save_dir = fullfile(dirs.figures,'Cellular fluorescence', expData(i).sub_dir);   %Figures directory: single units
         create_dirs(save_dir); %Create dir for these figures
         
@@ -130,6 +130,18 @@ if figures.trial_average_dFF
             end
         end
         clearvars figs
+    end
+end
+
+%Cellular Fluorescence as a function of running speed
+if figures.kinematic_average_dFF
+    for i = 1:numel(expData)
+        %Load data
+        load(mat_file.results.cellFluo(i), 'kinematicAvg', 'cellID');
+        save_dir = fullfile(dirs.figures,'Cellular fluorescence', expData(i).sub_dir);   %Figures directory: single units
+        create_dirs(save_dir); %Create dir for these figures
+        figs = plot_kinematicAvgDFF( kinematicAvg, cellID, expData(i).sub_dir, params.figs.kinematicAvg);
+        save_multiplePlots(figs, save_dir); %save as FIG and PNG
     end
 end
 

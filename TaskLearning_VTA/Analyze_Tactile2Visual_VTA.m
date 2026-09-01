@@ -179,6 +179,13 @@ if calculate.fluorescence
             clearvars trialDFF trialData trials cellID bootAvg
         end
 
+        if calculate.kinematic_average_dFF
+            cells = load(mat_file.img_beh(i),'dFF','t','cellID');
+            load(mat_file.img_beh(i),'trialData','trials');
+            kinematicAvg = calc_kinematicAvgDFF(cells, trialData, trials, params.kinematicAvg);
+            save(mat_file.results.cellFluo(i),'kinematicAvg','-append');
+        end
+
         % Encoding model
         if calculate.encoding_model && strcmp(options.experiment, 'tactile2visual')
             %Load combined imaging & behavioral data

@@ -39,7 +39,7 @@ figures.FOV_mean_projection             = false;
 figures.timeseries                      = false; %Plot all timeseries for each session
 % Combined
 figures.trial_average_dFF               = false;  %Overlay traces for distinct choices, outcomes, and rules (CO&R)
-
+figures.kinematic_average_dFF           = false;  %Fluorescence as a function of running speed, heading, etc
 figures.encoding_observedVsPredicted        = false;   %Observed vs. predicted dFF, etc.
 figures.encoding_predictedTrialAvg          = false;   %Predicted dFF, contrasting trial subsets
 figures.encoding_eventKernels               = false;   %Stimulus kernel estimates
@@ -89,6 +89,7 @@ calculate.fluorescence = false;
 if any([calculate.cellF, calculate.dFF,... 
         calculate.align_signals,...
         calculate.trial_average_dFF,...
+        calculate.kinematic_average_dFF,...
 		calculate.encoding_model,...
         calculate.encoding_stats])
 	calculate.fluorescence = true;
@@ -160,8 +161,14 @@ params.bootAvg.smoothWin        = 6; %Smoothing window in samples for peak findi
 params.bootAvg.avgWin           = 2; %Time interval (s) post-cue, or surrounding peak, for averaging
 params.bootAvg                  = specBootAvgParams(params.bootAvg); %params.bootAvg.trigger(1:3) = "start","firstcue","outcome", etc...
 
+% Kinematic correlates
+params.kinematicAvg.binWidth            = struct("speed", 10, "acceleration", 25, "heading", 0.1); %In cm/s or rad
+params.kinematicAvg.smoothing_window    = 25; %In samples
+params.kinematicAvg.extreme_cutoff      = 99; %Percentile of speed, heading, etc.
+
 % Encoding model defaults (more spec for multiuple models in specEncodingParams)
 params.encoding.dsFactor            = 1; %Downsample from interpolated rate of 1/params.interdt
+params.encoding.smoothing_window    = 3; %In samples
 params.encoding.regularization      = "ridge";
 params.encoding.lambda              = [0 logspace(-3, 6, 19)]; %series of lambda values for cross-validation
 params.encoding.lambda_kfolds       = 5;
@@ -218,6 +225,15 @@ p.panels = specBootAvgPanels( params.figs );
 
 params.figs.bootAvg = p;
 clearvars p
+
+%% FIGURE: CELLULAR FLUORESCENCE AS A FUNCTION OF RUNNING SPEED
+% i=1;
+% p(i).title = "Running Speed";
+% p(i).color = ;
+params.figs.kinematicAvg = struct(...
+    'colors', struct('speed', colors.green, 'acceleration', colors.green2, 'heading', colors.orange),...
+    'xLabel', struct('speed', "Running speed (cm/s)", 'acceleration', "Acceleration (cm*s^-2)", 'heading', "Heading (rad)"),...
+    'tickLabelFormat', '%.2f');
 
 %% FIGURE: Single-unit encoding model
 

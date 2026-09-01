@@ -1,4 +1,4 @@
-function fig = plot_trialAvgTimeseries(panels, ax_titles, xLabel, yLabel, tickLabelFormat, legend_loc)
+function fig = plot_trialAvgTimeseries(panels, ax_titles, xLabels, yLabel, tickLabelFormat, legend_loc)
 %%% plot_trialAvgTimeseries
 %PURPOSE:   Plot bootstrapped timeseries (eg cellular fluorescence) time-locked to behavioral event.
 %
@@ -67,7 +67,7 @@ for i = 1:nPanels
     % Axis labels & title
     ax(i).YAxis.TickLabelFormat = tickLabelFormat;
     ax(i).YAxis.Exponent = 0;
-    xlabel(xLabel);
+    xlabel(xLabels(i));
     title(ax_titles{i});    
     axis square tight;
 end
