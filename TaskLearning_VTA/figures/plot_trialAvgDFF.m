@@ -76,8 +76,8 @@ for i = 1:numel(cellIdx)
         end
 
         %Labels
-        xLabel = panels(j).xLabel;
-        yLabel = panels(j).yLabel;
+        xLabel(j) = panels(j).xLabel;
+        yLabel = panels(j).yLabel; %Common y-label
     end
 
     ax_titles = {panels(:).title}'; %Specified in params.panels
