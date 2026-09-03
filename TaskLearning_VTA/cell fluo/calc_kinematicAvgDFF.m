@@ -8,7 +8,7 @@ for f = fields
 
     %Pre-condition kinematic data: include only cue region in completed "forward" trials
     exclIdx = ...
-        kinematics.position>0 & (kinematics.position < trialData.length_cueRegion) |... %Include only cue region
+        kinematics.position(:,2)>0 & (kinematics.position(:,2) < trialData.length_cueRegion) |... %Include only cue region
         ismember(kinematics.trialIdx, find(~trials.forward | trials.omit)) |... %Include only straight-and-narrow, completed trials
         kinematics.(f)>prctile(kinematics.(f), params.extreme_cutoff, 1) |...  %Exclude extreme values to avoid poorly represented bins
         kinematics.(f)<prctile(kinematics.(f), 100-params.extreme_cutoff, 1); % values > cutoff percentile (all dim for extreme velocity components)
