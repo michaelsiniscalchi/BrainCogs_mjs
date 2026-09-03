@@ -86,7 +86,8 @@ for i = 1:numel(subjects)
         %Truncate field 'trialData'
         fieldStr = string(fieldnames(trialData));
         fieldStr = fieldStr(~ismember(fieldStr,... Exclude fields where D1 is not trial number
-            {'session_date','x_trajectory','theta_trajectory','time_trajectory','alignedKinematics','positionRange'}));
+            {'session_date','x_trajectory','theta_trajectory','time_trajectory',...
+            'alignedKinematics','positionRange','length_cueRegion'}));
         for f = fieldStr'
             trialData.(f) = trialData.(f)(blockIdx,:);
         end

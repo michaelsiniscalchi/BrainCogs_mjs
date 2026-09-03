@@ -6,19 +6,14 @@ kinematics = getTrialDataByTime(trialData, cells.t, params.smoothing_window, @na
 fields = ["heading","speed","acceleration"];
 for f = fields
 
-    %Exclude ITI for kinematic variables
-    kinematics.(f)(kinematics.ITI==1,:) = NaN;
-    
-    %Exclude extreme values
+    %Pre-condition kinematic data: include only cue region in completed "forward" trials
     exclIdx = ...
-        kinematics.(f)>prctile(kinematics.(f), params.extreme_cutoff, 1) |...
-        kinematics.(f)<prctile(kinematics.(f), 100-params.extreme_cutoff, 1); %Exclude values > cutoff percentile (all dim for extreme velocity components)
+        kinematics.position>0 & (kinematics.position < trialData.length_cueRegion) |... %Include only cue region
+        ismember(kinematics.trialIdx, find(~trials.forward | trials.omit)) |... %Include only straight-and-narrow, completed trials
+        kinematics.(f)>prctile(kinematics.(f), params.extreme_cutoff, 1) |...  %Exclude extreme values to avoid poorly represented bins
+        kinematics.(f)<prctile(kinematics.(f), 100-params.extreme_cutoff, 1); % values > cutoff percentile (all dim for extreme velocity components)
     kinematics.(f)(exclIdx,:) = NaN;
-    
-    %Include only straight-and-narrow, completed trials
-    exclIdx = ismember(kinematics.trialIdx, find(~trials.forward | trials.omit));
-    kinematics.(f)(exclIdx,:) = NaN;
-
+       
     %Discretize kinematic variables
     leadEdge = params.binWidth.(f)*(floor((min(kinematics.(f))/params.binWidth.(f))));
     trailEdge = params.binWidth.(f)*(floor((max(kinematics.(f))/params.binWidth.(f)))+1);
