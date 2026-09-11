@@ -25,15 +25,14 @@ dt = mean(diff(t),'omitnan'); %Use mean dt
 rel_idx = round(params.timeWindow(1)/dt) : round(params.timeWindow(end)/dt); %In number of samples
 
 events = fieldnames(eventTimes);
+% events = "start"; %**DEVO**
 for i = 1:numel(events)
     event_times = [eventTimes.(events{i})]'; %Event times as column vector
     idx = NaN(numel(event_times),numel(rel_idx)); %Indices for all frames in row corresponding to each event
     frameDelay = NaN(size(event_times)); %Time delay between event and next frame time
     for j = 1:numel(event_times)
-        % idx_t0 = find(t >= event_times(j), 1, 'first'); %First frametime after event
-        % if idx_t0<numel(t) && ~isempty(idx_t0)
-        idx_t0 = sum(t < event_times(j))+1; %First frametime after event
-        if idx_t0 < numel(t)
+        idx_t0 = sum(t < event_times(j)) + 1; %First imaging frame after event
+        if idx_t0 < numel(t) && idx_t0 > 1 %All events within imaging time range
             idx(j,:) = idx_t0 + rel_idx;
             frameDelay(j) = t(idx_t0) - event_times(j);
         end
@@ -41,8 +40,7 @@ for i = 1:numel(events)
 
     % Handle idxs for out-of-range timepoints
     nanIdx = idx < 1 | idx > numel(t) | isnan(idx); %Idx for out-of-range timepoints
-    idx(idx < 1 | isnan(idx)) = 1;
-    idx(idx > numel(t)) = numel(t);
+    idx(nanIdx) = 1; %Temporary to generate valid idxs
 
     % Align signals
     aligned.(events{i}) = cell(numel(cells.dFF),1); %Initialize
@@ -50,7 +48,7 @@ for i = 1:numel(events)
         %Populate matrix of dimensions nEvents  x nTimepoints
         cell_dFF = dFF(:,j);
         aligned.(events{i}){j} = cell_dFF(idx);  
-        aligned.(events{i}){j}(nanIdx) = NaN; %Exclude out-of-range timepoints
+        aligned.(events{i}){j}(nanIdx) = NaN; %Exclude out-of-range timepoints temporarily populated with data from t(1)
         
         %Split rows into trial-wise cell arrays if multiple instances per trial
         if numel(event_times) > numel(eventTimes)
