@@ -1,7 +1,7 @@
 function fig = fig_encodingPSignificantHeatmap( population, sessions, subjectID)
 
 fig = figure('Name',strjoin([subjectID, "-encoding-p-significant"],''),...
-    'Position',[100,100,1000,600]);
+    'Position',[100,100,500,300]);
 
 pSig = population.pSignificant;
 N = population.N;

@@ -69,12 +69,6 @@ for i = 1:numel(sessionIdx)
     rowIdx = mod(ceil(tileIdx/gridSize(2)), gridSize(2)); %Row position; 0 if only one row
     rowIdx(rowIdx==0)=gridSize(1); %Correct last row idx: goes back to zero with mod() approach
 
-    % rowIdx = mod(tileIdx, gridSize(1)); %Row position; ROW & COL idx reversed because this figure uses a rowmajor tiled layout
-    % rowIdx(rowIdx==0)=gridSize(1); %Correct last row idx: goes back to zero with mod() approach
-    % 
-    % colIdx = mod(ceil(tileIdx/gridSize(1)), gridSize(2)); %Column position; 0 if only one column
-    % colIdx(colIdx==0)=gridSize(2); %Correct last col idx: goes back to zero with mod() approach
-
     % Assign specified signals to each structure in the array 'panels'
     disp(['Plotting trial-averaged dF/F for ' cellID '...']);
     %Time/position axis
