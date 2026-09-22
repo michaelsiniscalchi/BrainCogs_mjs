@@ -14,7 +14,7 @@ ax(i).varName       = "start";
 ax(i).window        = [-1, 2];
 ax(i).color         = {colors.data, colors.data2}; % {pred1,pred2,obs1,obs2}
 ax(i).lineStyle     = ["-","-"]; % {pred1,pred2,obs1,obs2}
-ax(i).xLabel        = 'Time from start (s)';
+ax(i).xLabel        = "Time from start (s)";
 i=i+1;
 
 %First Tower
@@ -23,7 +23,7 @@ ax(i).varName       = ["firstLeftTower", "firstRightTower"];
 ax(i).window        = [-1, 2];
 ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).xLabel        = 'Time from cue (s)';
+ax(i).xLabel        = "Time from cue (s)";
 i=i+1;
 
 %First Puff
@@ -32,7 +32,7 @@ ax(i).varName       = ["firstLeftPuff", "firstRightPuff"];
 ax(i).window        = [-1, 2];
 ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).xLabel        = 'Time from cue (s)';
+ax(i).xLabel        = "Time from cue (s)";
 i=i+1;
 
 %All Towers
@@ -41,7 +41,7 @@ ax(i).varName       = ["leftTowers", "rightTowers"];
 ax(i).window        = [-1, 2];
 ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).xLabel        = 'Time from cue (s)';
+ax(i).xLabel        = "Time from cue (s)";
 i=i+1;
 
 %All Puffs
@@ -50,7 +50,7 @@ ax(i).varName       = ["leftPuffs", "rightPuffs"];
 ax(i).window        = [-1, 2];
 ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).xLabel        = 'Time from cue (s)';
+ax(i).xLabel        = "Time from cue (s)";
 i=i+1;
  
 %Outcome
@@ -59,7 +59,7 @@ ax(i).varName       = ["reward", "noReward"];
 ax(i).window        = [-1, 5];
 ax(i).color         = {colors.correct, colors.err}; 
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).xLabel        = 'Time from outcome (s)';
+ax(i).xLabel        = "Time from outcome (s)";
 i=i+1;
 
 %Position x trialType Interactions
@@ -69,28 +69,28 @@ ax(i).varName       = ["leftPuffs_position", "rightPuffs_position"];
 ax(i).window        = [-inf, inf];
 ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).xLabel        = 'Position (cm)';
+ax(i).xLabel        = "Position (cm)";
 i=i+1;
 ax(i).title         = "Position x Tower Side";
 ax(i).varName       = ["leftTowers_position", "rightTowers_position"];
 ax(i).window        = [-inf, inf];
 ax(i).color         = {colors.left, colors.right}; 
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).xLabel        = 'Position (cm)';
+ax(i).xLabel        = "Position (cm)";
 i=i+1;
 ax(i).title         = "Position x Left CueType";
 ax(i).varName       = ["leftPuffs_position", "leftTowers_position"];
 ax(i).window        = [-inf, inf];
 ax(i).color         = {colors.left, colors.left2}; 
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).xLabel        = 'Position (cm)';
+ax(i).xLabel        = "Position (cm)";
 i=i+1;
 ax(i).title         = "Position x Right CueType";
 ax(i).varName       = ["rightPuffs_position", "rightTowers_position"];
 ax(i).window        = [-inf, inf];
 ax(i).color         = {colors.right, colors.right2}; 
 ax(i).lineStyle     = ["-","-"]; 
-ax(i).xLabel        = 'Position (cm)';
+ax(i).xLabel        = "Position (cm)";
 i=i+1;
 
 %Plot position interactions with main effect
@@ -99,14 +99,14 @@ ax(i).varName       = ["leftPuffs_position", "rightPuffs_position", "position"];
 ax(i).window        = [-inf, inf];
 ax(i).color         = {colors.left, colors.right, colors.gray}; 
 ax(i).lineStyle     = ["-","-","--"];
-ax(i).xLabel        = 'Position (cm)';
+ax(i).xLabel        = "Position (cm)";
 i=i+1;
 ax(i).title         = "Position x Tower Side + Position";
 ax(i).varName       = ["leftTowers_position", "rightTowers_position", "position"];
 ax(i).window        = [-inf, inf];
 ax(i).color         = {colors.left, colors.right, colors.gray}; 
 ax(i).lineStyle     = ["-","-","--"]; 
-ax(i).xLabel        = 'Position (cm)';
+ax(i).xLabel        = "Position (cm)";
 i=i+1;
 
 %Plot only main effect of position, for troubleshooting
@@ -115,7 +115,7 @@ ax(i).varName       = ["position"];
 ax(i).window        = [-inf, inf];
 ax(i).color         = {colors.data}; 
 ax(i).lineStyle     = ["-"];
-ax(i).xLabel        = 'Position (cm)';
+ax(i).xLabel        = "Position (cm)";
 i=i+1;
 
 % ax(i).title         = "Position";
@@ -126,7 +126,7 @@ i=i+1;
 % ax(i).window        = [-30, 250];
 % ax(i).color         = {colors.data}; 
 % ax(i).lineStyle     = ["-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 
 % %Left vs. Right Choice
@@ -140,7 +140,7 @@ i=i+1;
 % ax(i).window        = [-1, 3];
 % ax(i).color         = {colors.data2,colors.left}; 
 % ax(i).lineStyle     = ["-","-"]; % {pred1,pred2,obs1,obs2}
-% ax(i).xLabel        = 'Time from turn (s)';
+% ax(i).xLabel        = "Time from turn (s)";
 % i=i+1;
 % 
 % ax(i).title         = "Right Choice";
@@ -151,7 +151,7 @@ i=i+1;
 % ax(i).window        = [-1, 3];
 % ax(i).color         = {colors.data2,colors.right}; 
 % ax(i).lineStyle     = ["-","-"]; % {pred1,pred2,obs1,obs2}
-% ax(i).xLabel        = 'Time from turn (s)';
+% ax(i).xLabel        = "Time from turn (s)";
 % i=i+1;
 % 
 % %Outcome
@@ -163,7 +163,7 @@ i=i+1;
 % ax(i).window        = [-1, 3];
 % ax(i).color         = {colors.data2,colors.correct}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Time from outcome (s)';
+% ax(i).xLabel        = "Time from outcome (s)";
 % i=i+1;
 % ax(i).title         = "No Reward";
 % ax(i).comparison    = "outcome";
@@ -173,7 +173,7 @@ i=i+1;
 % ax(i).window        = [-1, 3];
 % ax(i).color         = {colors.data2,colors.err}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Time from outcome (s)';
+% ax(i).xLabel        = "Time from outcome (s)";
 % i=i+1;
 % 
 % %Cue Region, split by cue-type
@@ -185,7 +185,7 @@ i=i+1;
 % ax(i).window        = [-50, 300];
 % ax(i).color         = {colors.data2,colors.left}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 % ax(i).title         = "Right Puffs";
 % ax(i).comparison    = "cueRegion-cueType";
@@ -195,7 +195,7 @@ i=i+1;
 % ax(i).window        = [-50, 300];
 % ax(i).color         = {colors.data2,colors.right}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 % ax(i).title         = "Left Towers";
 % ax(i).comparison    = "cueRegion-cueType";
@@ -205,7 +205,7 @@ i=i+1;
 % ax(i).window        = [-50, 300];
 % ax(i).color         = {colors.data2,colors.left}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 % ax(i).title         = "Right Towers";
 % ax(i).comparison    = "cueRegion-cueType";
@@ -215,7 +215,7 @@ i=i+1;
 % ax(i).window        = [-50, 300];
 % ax(i).color         = {colors.data2,colors.right}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 % 
 % %Cue Region, split by outcome
@@ -227,7 +227,7 @@ i=i+1;
 % ax(i).window        = [-50, 300];
 % ax(i).color         = {colors.data2,colors.correct}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 % ax(i).title         = "Error";
 % ax(i).comparison    = "cueRegion-outcome";
@@ -237,7 +237,7 @@ i=i+1;
 % ax(i).window        = [-50, 300];
 % ax(i).color         = {colors.data2,colors.err}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 % ax(i).title         = "Prior Reward";
 % ax(i).comparison    = "cueRegion-outcome";
@@ -247,7 +247,7 @@ i=i+1;
 % ax(i).window        = [-50, 300];
 % ax(i).color         = {colors.data2,colors.correct}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 % ax(i).title         = "Prior Error";
 % ax(i).comparison    = "cueRegion-outcome";
@@ -257,7 +257,7 @@ i=i+1;
 % ax(i).window        = [-50, 300];
 % ax(i).color         = {colors.data2,colors.err}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 % 
 % %Cue Region, split by Choice
@@ -269,7 +269,7 @@ i=i+1;
 % ax(i).window        = [-50, 300];
 % ax(i).color         = {colors.data2,colors.left}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 % ax(i).title         = "Right Choice";
 % ax(i).comparison    = "cueRegion-choice";
@@ -279,7 +279,7 @@ i=i+1;
 % ax(i).window        = [-50, 300];
 % ax(i).color         = {colors.data2,colors.right}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 % ax(i).title         = "Prior Left Choice";
 % ax(i).comparison    = "cueRegion-choice";
@@ -289,7 +289,7 @@ i=i+1;
 % ax(i).window        = [-50, 300];
 % ax(i).color         = {colors.data2,colors.left}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 % ax(i).title         = "Prior Right Choice";
 % ax(i).comparison    = "cueRegion-choice";
@@ -299,8 +299,8 @@ i=i+1;
 % ax(i).window        = [-50, 300];
 % ax(i).color         = {colors.data2,colors.right}; 
 % ax(i).lineStyle     = ["-","-"]; 
-% ax(i).xLabel        = 'Position (cm)';
+% ax(i).xLabel        = "Position (cm)";
 % i=i+1;
 
 [ax(:).tickLabelFormat] = deal('%.3f');
-[ax(:).yLabel]          = deal('Cellular Fluorescence (dF/F)');
+[ax(:).yLabel]          = deal("Cellular Fluorescence (dF/F)");
