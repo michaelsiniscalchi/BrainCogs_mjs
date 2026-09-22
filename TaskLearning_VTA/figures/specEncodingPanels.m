@@ -87,7 +87,7 @@ ax(i).xLabel        = "Time from cue (s)";
 i=i+1;
 
 %All Puffs
-ax(i).title         = "Puff Onset (Left)";
+ax(i).title         = "Puffs (Left)";
 ax(i).comparison    = "puffs";
 ax(i).trigger       = "puffs";
 ax(i).trialType       = "leftPuffs";
@@ -97,7 +97,7 @@ ax(i).color         = {colors.data2,colors.left};
 ax(i).lineStyle     = ["-","-"]; 
 ax(i).xLabel        = "Time from cue (s)";
 i=i+1;
-ax(i).title         = "Puff Onset (Right)";
+ax(i).title         = "Puffs (Right)";
 ax(i).comparison    = "puffs";
 ax(i).trigger       = "puffs";
 ax(i).trialType     = "rightPuffs";

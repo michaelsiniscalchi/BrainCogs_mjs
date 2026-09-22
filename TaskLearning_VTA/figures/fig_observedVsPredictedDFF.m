@@ -24,10 +24,10 @@ cellIdx = 1:numel(bootAvg_encoding.(trialTypes{1}).cells);
 
 % Initialize figures
 figs = gobjects(numel(cellIdx),1); %Initialize
-fig_pos = [100,400,450,300]; %LBWH
+fig_pos = [100,400,500,300]; %LBWH
 legend_loc = 'bestoutside';
 if numel(panels)>1
-    fig_pos = [100,400,450*(numel(panels)),300]; %LBWH
+    fig_pos = [100,400,500*(numel(panels)), 300]; %LBWH
 end
 
 %% Plot event-aligned dF/F for each cell
@@ -68,13 +68,13 @@ for i = 1:numel(cellIdx)
         end
 
         %Labels
-        xLabel = panels(j).xLabel;
         yLabel = panels(j).yLabel;
     end
+    xLabels = [panels.xLabel];
 
     ax_titles = {panels(:).title}'; %Specified in params.panels
 
-    figs(i) = plot_trialAvgTimeseries(panels, ax_titles, xLabel, yLabel, panels(1).tickLabelFormat, legend_loc);
+    figs(i) = plot_trialAvgTimeseries(panels, ax_titles, xLabels, yLabel, panels(1).tickLabelFormat, legend_loc);
 
     figName = join([panels(j).comparison,'_', expID, '_cell', cellIDs{idx}],''); %Figure name
     figs(i).Name = figName;
