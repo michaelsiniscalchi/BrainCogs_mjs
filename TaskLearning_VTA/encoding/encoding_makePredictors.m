@@ -36,7 +36,7 @@ predictors.accuracy = init.categorical;
 predictors.accuracy(ismember(trialIdx, find(trials.correct))) = 1; %Image frames from correct trials
 
 predictors.priorOutcome = init.categorical;
-predictors.priorOutcome(ismember(trialIdx, find(trials.priorCorrect))) = 1; %Image frames from trials following correct choice
+predictors.priorOutcome(ismember(trialIdx, find(trials.priorRewarded))) = 1; %Image frames from trials following rewarded choice
 
 predictors.choice = init.choice;
 predictors.choice(ismember(trialIdx, find(trials.right))) = 1; %Frames from prior-right choice trials
@@ -134,7 +134,9 @@ if ~isempty(params.positionVars)
     %Store position spline
     bSpline.position = bSp;
 
-    for f = ["leftTowers","rightTowers","leftPuffs","rightPuffs"]
+    for f = ["leftTowers","rightTowers","leftPuffs","rightPuffs",...
+            "noTowers","noPuffs",...
+            "priorRewarded"]
         pName = strjoin([f,"position"],'_'); %Predictor name, eg "leftPuffs_position"
         predictors.(pName) = zeros(size(predictors.position)); %Initialize as zeroes
         idx = ismember(predictors.trialIdx, find(trials.(f)));
@@ -146,8 +148,9 @@ if ~isempty(params.positionVars)
     predictors.puffSide_position  = predictors.puffSide.*predictors.position; %Zero-cues trials coded as NaN
 end
 
-%Choice x Outcome Interaction terms
-
+%Start event interactions
+predictors.priorOutcome_start = zeros(size(t)); %Initialize
+predictors.priorOutcome_start = predictors.priorOutcome.*predictors.start; 
 
 %Restrict all predictors to forward trials
 exclIdx = ismember(predictors.trialIdx, find(~trials.forward)); % | trials.noPuffs | trials.noTowers));

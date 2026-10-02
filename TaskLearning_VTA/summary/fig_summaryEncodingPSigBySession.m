@@ -35,31 +35,48 @@ end
     %Left (behavioral) axis
     yyaxis left; hold on
     ax=gca;
-    
+
+    %Mark Rule Switch with break in lineseries
+    ruleOrder = unique([sessions.taskRule], 'stable');
+    switchX = find([sessions.taskRule]==ruleOrder(2),1,'first')-0.5;
+       
     %Behavioral variable, eg, PsyTrack weight or %correct
-    behVar = [sessions.(P.behVar)];
+    behVar = [sessions.(P.behVar)];    
+    % idx = {X<switchX, X>switchX};
     if ~isempty(P.behVarSE)
         behVarSE = [sessions.(P.behVarSE)];
         errorshade(X, behVarSE(2,:), behVarSE(1,:), P.color{1}, 0.3); hold on;
+        % errorshade(X(idx{1}), behVarSE(2,idx{1}), behVarSE(1,idx{1}), P.color{1}, 0.3); 
+        % errorshade(X(idx{2}), behVarSE(2,idx{2}), behVarSE(1,idx{2}), P.color{1}, 0.3); 
     end
-    plot(X, behVar);
+    % plot(X(idx{1}), behVar(idx{1}),'LineStyle','-');
+    % plot(X(idx{2}), behVar(idx{2}),'LineStyle','-');
+    plot(X, behVar,'LineStyle','-');
+
 
     xlabel(P.xLabel);
     ylabel(P.yLabel(1));
 
     %Right (neural) axis
     yyaxis right;
-    plot(X, imgVar);
+    % plot(X(idx{1}), imgVar(idx{1}),'LineStyle','-');
+    % plot(X(idx{2}), imgVar(idx{2}),'LineStyle','-'); 
+    plot(X, imgVar,'LineStyle','-');
     set(gca,'XTick',X);
     xlim([0.5,max(X)+0.5]);
-    ylim([0,1]);
+    %Shade below the significance interval
+    a = population.alpha;
+    fill([min(xlim),min(xlim),max(xlim),max(xlim)],...
+        [0,a,a,0],'k','FaceAlpha',0.05,'LineStyle','none');
     ylabel(['Proportion of cells with p<' num2str(population.alpha)]);
+    %Prevent shading of whole plot if pSignificant==0
+     if all(imgVar==0)
+        ylim([0,1]);
+    end
     box off;
 
-    %Mark Rule Switch
-    ruleOrder = unique([sessions.taskRule], 'stable');
-    switchX = find([sessions.taskRule]==ruleOrder(2),1,'first')-0.5;
-    plot([switchX,switchX],[min(ylim),max(ylim)],':','Color',colors.gray);
+    %Annotate Rule Switch
+    plot([switchX, switchX], ylim, 'LineStyle',':','Color',colors.gray);
     txtY = min(ylim)+0.05*range(ylim);
     text(switchX,txtY,strjoin(ruleOrder,'->'),'HorizontalAlignment','center','Color',colors.gray);
 

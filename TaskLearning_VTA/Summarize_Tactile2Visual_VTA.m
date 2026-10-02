@@ -153,8 +153,7 @@ if summarize.neuroBehCorr
         load(mat_file.summary.encoding(subjectID, mdlNames(i)),'cells','metaData');    
         params.imgField = [metaData.cueVars', metaData.outcomeVars'];
         [nbCorr, cells] = calcNeuroBehCorr(cells, sessions, params);
-        %***NEXT: Incorporate pSignificant into nbCorr***
-        
+                
         %Save correlation structures
         save(mat_file.summary.neuroBehCorr(subjectID, mdlNames(i)),'-struct','nbCorr','-v7.3');
         save(mat_file.summary.neuroBehCorr(subjectID, mdlNames(i)),'cells','-append');

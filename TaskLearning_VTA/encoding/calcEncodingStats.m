@@ -108,6 +108,8 @@ end
 %Get the proportion of cells p<alpha for each variable
 %Convert matrix of p-values to struct
 for p = 1:numel(pNames)
-    pSignificant.(pNames(p)) = mean(pValues_mat(:,p)<params.alpha);
+    % pSignificant.(pNames(p)) = mean(pValues_mat(:,p)<params.alpha);
+    % %moved to the summary analysis to prevent any confusion over ROIs
+    % that are aggregates, eg cellFOV or allCells
     pValues.(pNames(p)) = pValues_mat(:, p)';
 end
