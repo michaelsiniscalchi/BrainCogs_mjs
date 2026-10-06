@@ -35,8 +35,9 @@ predictors.puffSide(ismember(trialIdx, find(trials.rightPuffs)))   = 1;
 predictors.accuracy = init.categorical;
 predictors.accuracy(ismember(trialIdx, find(trials.correct))) = 1; %Image frames from correct trials
 
-predictors.priorOutcome = init.categorical;
+predictors.priorOutcome = init.num;
 predictors.priorOutcome(ismember(trialIdx, find(trials.priorRewarded))) = 1; %Image frames from trials following rewarded choice
+predictors.priorOutcome(ismember(trialIdx, find(trials.priorUnrewarded))) = -1; %Image frames from trials following rewarded choice
 
 predictors.choice = init.choice;
 predictors.choice(ismember(trialIdx, find(trials.right))) = 1; %Frames from prior-right choice trials
