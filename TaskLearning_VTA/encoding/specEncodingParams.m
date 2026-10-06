@@ -35,7 +35,7 @@ switch modelName
             "reward","noReward",...
             "heading","speed","acceleration",...
             "noPuffs_position", "noTowers_position",... %Interaction terms
-            "priorOutcome_position", "priorOutcome_start",... %May be overly correlated...check!
+            "priorOutcome_position", "priorOutcome_start",... %Interaction terms
             ];
         params.positionSpline = true;
 
