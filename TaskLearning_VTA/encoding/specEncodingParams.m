@@ -13,12 +13,12 @@ params.initFcn_position = @nan; %ITI position
 %Position
 bSpline.position.degree      = 3; %degree for position splines
 bSpline.position.binWidth    = 1; %bin width in cm
-bSpline.position.df          = 5; %number of terms for position splines
+bSpline.position.df          = 7; %number of terms for position splines
 
 %Cues
 bSpline.cue.degree      = 3; %degree of each (Bernstein polynomial) term
-bSpline.cue.nSamples    = 60; %N time points for spline basis set;
-bSpline.cue.df          = 7; %number of terms:= order + N internal knots
+bSpline.cue.nSamples    = 90; %N time points for spline basis set;
+bSpline.cue.df          = 9; %number of terms:= order + N internal knots
 
 %Reward
 bSpline.outcome.degree      = 3; %degree of each (Bernstein polynomial) term

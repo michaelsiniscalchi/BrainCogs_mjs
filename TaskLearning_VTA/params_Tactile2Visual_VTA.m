@@ -166,9 +166,9 @@ params.kinematicAvg.binWidth            = struct("speed", 10, "acceleration", 25
 params.kinematicAvg.smoothing_window    = 25; %In samples
 params.kinematicAvg.extreme_cutoff      = 99; %Percentile of speed, heading, etc.
 
-% Encoding model defaults (more spec for multiuple models in specEncodingParams)
+% Encoding model defaults (more specs for multiple models in specEncodingParams)
 params.encoding.dsFactor            = 1; %Downsample from interpolated rate of 1/params.interdt
-params.encoding.smoothing_window    = 3; %In samples
+params.encoding.smoothing_window    = 3; %In samples; for speed/heading/acceleration
 params.encoding.regularization      = "ridge";
 params.encoding.lambda              = [0 logspace(-3, 6, 19)]; %series of lambda values for cross-validation
 params.encoding.lambda_kfolds       = 5;
