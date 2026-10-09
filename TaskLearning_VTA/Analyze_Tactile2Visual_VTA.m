@@ -198,6 +198,7 @@ if calculate.fluorescence
                 [ X, encodingData ] = encoding_makePredictors( trialData, trials, t, params.encoding );
 
                 %Run encoding model
+                % dFF = dFF(end-1); cellID = cellID(end-1);%***DEVO
                 encodingMdl = encodingModel(X, dFF, cellID, encodingData);
 
                 %Align model-predicted dFF

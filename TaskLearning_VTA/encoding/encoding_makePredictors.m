@@ -136,8 +136,7 @@ if ~isempty(params.positionVars)
     bSpline.position = bSp;
 
     for f = ["leftTowers","rightTowers","leftPuffs","rightPuffs",...
-            "noTowers","noPuffs",...
-            "priorRewarded"]
+            "noTowers","noPuffs"]
         pName = strjoin([f,"position"],'_'); %Predictor name, eg "leftPuffs_position"
         predictors.(pName) = zeros(size(predictors.position)); %Initialize as zeroes
         idx = ismember(predictors.trialIdx, find(trials.(f)));
@@ -147,6 +146,7 @@ if ~isempty(params.positionVars)
     %Cue-side x position
     predictors.towerSide_position = predictors.towerSide.*predictors.position; %Interaction: cue-side * position
     predictors.puffSide_position  = predictors.puffSide.*predictors.position; %Zero-cues trials coded as NaN
+    predictors.priorOutcome_position = predictors.priorOutcome.*predictors.position; %Interaction: priorOutcome * position
 end
 
 %Start event interactions

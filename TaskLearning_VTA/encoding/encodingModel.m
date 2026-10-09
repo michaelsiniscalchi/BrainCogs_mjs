@@ -90,7 +90,10 @@ for i = 1:numel(dFF)
         glm.kernel(i).(varName) = kernelEstimates(estimate, mse, bSpline, binWidth, x_min);
 
         %Kernel for position interaction terms expressed as sum of main and interaction effects
-        if ismember(varName, ["towerSide_position", "puffSide_position"])
+        if ismember(varName,...
+                ["towerSide_position", "puffSide_position",...
+                "zeroPuffs_position", "zeroTowers_position",...
+                "priorOutcome_position"])
             %Main effect estimates
             positionIdx = encodingData.termIdx.position;
             positionSD = encodingData.predictorSD(encodingData.predictorIdx.position); %predictorIdx does not include B0
@@ -100,19 +103,25 @@ for i = 1:numel(dFF)
                 (mdl.Coefficients.SE(positionIdx)./positionSD).^2; %Calculate MSE, which is SE^2
             
             %Kernel names
-            if varName=="towerSide_position"
+            predictorSign = [-1,1]; %for binaries coded as {-1,1} eg, ["left","right"] or ["unrewarded","rewarded"]
+            switch varName
+                case "towerSide_position"
                     kernelNames = ["leftTowers_position", "rightTowers_position"];
-            elseif varName=="puffSide_position"
+                case "puffSide_position"
                     kernelNames = ["leftPuffs_position", "rightPuffs_position"];
+                case "priorOutcome_position"
+                    kernelNames = ["priorUnrewarded_position", "priorRewarded_position"];
+                otherwise
+                    kernelNames = varName;  % case {"zeroPuffs_position", "zeroTowers_position"}
+                    predictorSign = 1;
             end
-            
+
             %Derive kernels
-            cueSide = [-1,1]; %["left","right"]
-            for j = 1:numel(kernelNames) 
-               sideEstimate = mainEffectPos + cueSide(j).*estimate; %Sum of main and interaction kernels
-               sideMSE = msePos+mse; %Sum of main and interaction MSE
+            for j = 1:numel(kernelNames)
+               signedEstimate = mainEffectPos + predictorSign(j).*estimate; %Sum of main and interaction kernels
+               signedMSE = msePos+mse; %Sum of main and interaction MSE
                glm.kernel(i).(kernelNames(j)) =...
-                   kernelEstimates(sideEstimate, sideMSE, bSpline, binWidth, x_min);
+                   kernelEstimates(signedEstimate, signedMSE, bSpline, binWidth, x_min);
             end
         end
 
