@@ -89,6 +89,30 @@ for i = 1:numel(dFF)
         %Spatial/temporal kernels
         glm.kernel(i).(varName) = kernelEstimates(estimate, mse, bSpline, binWidth, x_min);
 
+        %Temporal kernel interaction terms expressed as sum of main and interaction effects
+        if varName=="priorOutcome_start"
+            %Main effect estimates
+            eventIdx = encodingData.termIdx.start;
+            eventSD = encodingData.predictorSD(encodingData.predictorIdx.start); %predictorIdx does not include B0
+            mainEffectEvent = ...
+                bSpline * (mdl.Coefficients.Estimate(eventIdx)./eventSD); 
+            mseEvent = ...
+                (mdl.Coefficients.SE(eventIdx)./eventSD).^2; %Calculate MSE for base event, eg 'start' or 'cue' which is SE^2
+            
+            %Kernel names
+            predictorSign = [-1,1]; %for binaries coded as {-1,1} eg, ["left","right"] or ["unrewarded","rewarded"]
+            kernelNames = ["priorUnrewarded_start","priorRewarded_start"]; %**Be careful to order by [-1,1] coded predictors
+                
+            %Derive kernels
+            for j = 1:numel(kernelNames)
+               signedEstimate = mainEffectEvent + predictorSign(j).*estimate; %Sum of main and interaction kernels
+               signedMSE = mseEvent+mse; %Sum of main and interaction MSE
+               glm.kernel(i).(kernelNames(j)) =...
+                   kernelEstimates(signedEstimate, signedMSE, bSpline, binWidth, x_min);
+            end
+        end
+
+
         %Kernel for position interaction terms expressed as sum of main and interaction effects
         if ismember(varName,...
                 ["towerSide_position", "puffSide_position",...
@@ -112,7 +136,7 @@ for i = 1:numel(dFF)
                 case "priorOutcome_position"
                     kernelNames = ["priorUnrewarded_position", "priorRewarded_position"];
                 otherwise
-                    kernelNames = varName;  % case {"zeroPuffs_position", "zeroTowers_position"}
+                    kernelNames = varName;  % case {"noPuffs_position", "noTowers_position"} or "leftTowers_position"
                     predictorSign = 1;
             end
 
