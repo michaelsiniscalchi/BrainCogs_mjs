@@ -26,7 +26,7 @@
 %
 %--------------------------------------------------------------------------
 
-function [ pValues, pSignificant ] = calcEncodingStats( img_beh, params )
+function pValues = calcEncodingStats( img_beh, params )
 
 %Full Design Matrix
 [X, encodingData] = ...
