@@ -50,7 +50,7 @@ pValues_mat = NaN(numel(dFF), numel(pNames));
 lastwarn('', '');
 for i = 1:numel(dFF)
 
-    disp(['Calculating predictor stats for cell i=', num2str()]);
+    disp(['Calculating predictor stats for cell i=', num2str(i)]);
 
     % Calculate F-statistic for Full vs. Reduced model
     
