@@ -60,12 +60,10 @@ for i = 1:numel(dFF)
     [ rss_full, df_full ] = ...
         cvRidge(X, y, lambda, trialIdx, lambda_kfolds);
 
-    if  i==1 && ~isempty(lastwarn)
+    if  i==1
         %Provide msg, predictor name, and note if it's for the full or reduced
         %model and if it's in the shuffle...
-        disp(lastwarn);
         disp("full model");
-        lastwarn('', '');
     end
 
     %Reduced model
@@ -79,12 +77,10 @@ for i = 1:numel(dFF)
             cvRidge(X_reduced, y, lambda, trialIdx, lambda_kfolds);
         
         %***DEVO***
-        if i==1 && ~isempty(lastwarn) 
+        if i==1
             %Provide msg, predictor name, and note if it's for the full or reduced
             %model and if it's in the shuffle...
-            disp(lastwarn);
             disp(["Reduced model, omitting", pNames(p)]);
-            lastwarn('', '');
         end
 
         %F-statistic for Full vs. Reduced Model
@@ -103,12 +99,10 @@ for i = 1:numel(dFF)
             cvRidge(X_null, y, lambda, pseudoIdx, lambda_kfolds);
 
         %***DEVO***
-        if  i==1 && j==1 && ~isempty(lastwarn)
+        if  i==1 && j==1
             %Provide msg, predictor name, and note if it's for the full or reduced
             %model and if it's in the shuffle...
-            disp(lastwarn);
             disp("full model, shuffle #1");
-            lastwarn('', '');
         end
 
         %Reduced models - shuffled trials
@@ -122,16 +116,13 @@ for i = 1:numel(dFF)
                 cvRidge(X_reduced, y, lambda, pseudoIdx, lambda_kfolds);
 
             %***DEVO***
-            if i==1 && j==1 && ~isempty(lastwarn)
+            if i==1 && j==1
                 %Provide msg, predictor name, and note if it's for the full or reduced
                 %model and if it's in the shuffle...
-                disp(lastwarn);
                 disp(["Reduced model, omitting", pNames(p)]);
-                lastwarn('', '');
             end
 
             %Null Distribution for the F-statistic (size: nShuffles x nPredictors)
-            % F_null(j, p) = ((rss_reduced-rss_full)/(df_reduced-df_full)) / (rss_full/df_full);
             F_null_temp(p) = ((rss_reduced-rss_full)/(df_reduced-df_full)) / (rss_full/df_full); %Null F-stat for each reduced model
         end
 
