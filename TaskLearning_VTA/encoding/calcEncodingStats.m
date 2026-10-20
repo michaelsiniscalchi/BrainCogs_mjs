@@ -49,22 +49,15 @@ pValues_mat = NaN(numel(dFF), numel(pNames));
 %***DEVO*** clear last warning to capture and diagnose any current one
 lastwarn('', '');
 for i = 1:numel(dFF)
-
-    disp(['Calculating predictor stats for cell i=', num2str(i)]);
-
+   
     % Calculate F-statistic for Full vs. Reduced model
+    disp(['Calculating predictor stats for cell i=', num2str(i)]);
     
     %Full model
     F = NaN(1,numel(pNames)); %Initialize
     y = dFF{i};
     [ rss_full, df_full ] = ...
         cvRidge(X, y, lambda, trialIdx, lambda_kfolds);
-
-    if  i==1
-        %Provide msg, predictor name, and note if it's for the full or reduced
-        %model and if it's in the shuffle...
-        disp("full model");
-    end
 
     %Reduced model
     for p = 1:numel(pNames)   
@@ -76,13 +69,6 @@ for i = 1:numel(dFF)
         [ rss_reduced, df_reduced ] = ...
             cvRidge(X_reduced, y, lambda, trialIdx, lambda_kfolds);
         
-        %***DEVO***
-        if i==1
-            %Provide msg, predictor name, and note if it's for the full or reduced
-            %model and if it's in the shuffle...
-            disp(["Reduced model, omitting", pNames(p)]);
-        end
-
         %F-statistic for Full vs. Reduced Model
         F(p) = ((rss_reduced-rss_full)/(df_reduced-df_full)) / (rss_full/df_full);
     end
@@ -98,13 +84,6 @@ for i = 1:numel(dFF)
         [ rss_full, df_full ] = ...
             cvRidge(X_null, y, lambda, pseudoIdx, lambda_kfolds);
 
-        %***DEVO***
-        if  i==1 && j==1
-            %Provide msg, predictor name, and note if it's for the full or reduced
-            %model and if it's in the shuffle...
-            disp("full model, shuffle #1");
-        end
-
         %Reduced models - shuffled trials
         F_null_temp = NaN(1,numel(pNames));
         for p = 1:numel(pNames)
@@ -114,13 +93,6 @@ for i = 1:numel(dFF)
 
             [ rss_reduced, df_reduced ] = ...
                 cvRidge(X_reduced, y, lambda, pseudoIdx, lambda_kfolds);
-
-            %***DEVO***
-            if i==1 && j==1
-                %Provide msg, predictor name, and note if it's for the full or reduced
-                %model and if it's in the shuffle...
-                disp(["Reduced model, omitting", pNames(p)]);
-            end
 
             %Null Distribution for the F-statistic (size: nShuffles x nPredictors)
             F_null_temp(p) = ((rss_reduced-rss_full)/(df_reduced-df_full)) / (rss_full/df_full); %Null F-stat for each reduced model

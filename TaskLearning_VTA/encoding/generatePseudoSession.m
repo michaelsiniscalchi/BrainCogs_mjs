@@ -20,15 +20,27 @@ eventTimes = img_beh.trialData.eventTimes;
         trialData.(f) = img_beh.trialData.(f)(trialIdx);
     end
 
-    % Re-assign event times 
+    %Re-assign event times 
     startTimes(2:end) = startTimes(1) + cumsum(durations(trialIdx(1:end-1)));
-    for j = 1:nTrials
+    for i = 1:nTrials
         for f = string(fieldnames(eventTimes))'
-            idx = trialIdx(j); %Original trial index
+            idx = trialIdx(i); %Original trial index
             tempTimes = eventTimes(idx).(f) - eventTimes(idx).logStart; %recover relative times
-            trialData.eventTimes(j).(f) = tempTimes + startTimes(j); %store as pseudo-session time
+            trialData.eventTimes(i).(f) = tempTimes + startTimes(i); %store as pseudo-session time
         end
     end
+
+    %Re-assign history-dependent trial-wide predictors
+    trialTypes = string(fieldnames(trials));
+    idx = ~cellfun(@isempty,regexp(trialTypes,'prior')); %Get all history-dependent terms
+    if any(idx)
+        historyMasks = trialTypes(idx);
+        for i = 1:numel(historyMasks)
+            trialType = [lower(historyMasks{i}(6)), historyMasks{i}(7:end)];
+            trials.(historyMasks(i)) =  [false, trials.(trialType)(1:end-1)]; %Trials where prior trial was trials.(trialType) 
+        end
+    end
+
     %Include position range and session date
     trialData.positionRange = img_beh.trialData.positionRange;
     trialData.session_date = img_beh.trialData.session_date;

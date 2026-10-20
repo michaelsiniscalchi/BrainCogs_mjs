@@ -175,7 +175,7 @@ params.encoding.lambda_kfolds       = 5;
 params.encoding.getRidgeTrace       = true;
 
 params.encoding.alpha               = 0.01;
-params.encoding.nShuffles           = 1; %Number of shuffles for generating null distribution
+params.encoding.nShuffles           = 200; %Number of shuffles for generating null distribution
 
 params.encoding.modelName           = "RPE"; %["FM","allCues","RPE"] etc
 if isscalar(params.encoding.modelName)
