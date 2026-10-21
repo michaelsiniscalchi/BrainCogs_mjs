@@ -35,7 +35,7 @@ switch modelName
             "reward","noReward",...
             "heading","speed","acceleration",...
             "noPuffs_position", "noTowers_position",... %Interaction terms
-            "priorOutcome_position", "priorOutcome_start",... %Interaction terms
+            "priorOutcome_position",... %Interaction terms (omit "priorOutcome_start" to test if it adds multicollinearity)
             ];
         params.positionSpline = true;
 
