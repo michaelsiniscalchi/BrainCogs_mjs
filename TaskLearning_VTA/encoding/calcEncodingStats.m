@@ -46,8 +46,10 @@ nShuffles = params.nShuffles;
 %Initialize sliced variables
 pValues_mat = NaN(numel(dFF), numel(pNames));
 
-%***DEVO*** clear last warning to capture and diagnose any current one
-lastwarn('', '');
+%Output for SLURM logfile
+disp(['Predictors in regression model, "', char(params.modelName), '":']);
+disp(strjoin(pNames'));
+
 for i = 1:numel(dFF)
    
     % Calculate F-statistic for Full vs. Reduced model
