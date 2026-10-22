@@ -12,8 +12,15 @@ i=1;
 ax(i).title         = "Start Trial";
 ax(i).varName       = "start";
 ax(i).window        = [-1, 2];
-ax(i).color         = {colors.data, colors.data2}; % {pred1,pred2,obs1,obs2}
-ax(i).lineStyle     = ["-","-"]; % {pred1,pred2,obs1,obs2}
+ax(i).color         = {colors.data}; % {pred1,pred2,obs1,obs2}
+ax(i).lineStyle     = ["-"]; % {pred1,pred2,obs1,obs2}
+ax(i).xLabel        = "Time from start (s)";
+i=i+1;
+ax(i).title         = "Start x Prior Outcome"; %Start event, split by prior outcome
+ax(i).varName       = ["priorRewarded_start","priorUnrewarded_start","start"];
+ax(i).window        = [-1, 2];
+ax(i).color         = {colors.priorRewarded, colors.priorUnrewarded ,colors.data2}; % {pred1,pred2,obs1,obs2}
+ax(i).lineStyle     = ["-","-",":"]; % {pred1,pred2,obs1,obs2}
 ax(i).xLabel        = "Time from start (s)";
 i=i+1;
 
@@ -94,18 +101,41 @@ ax(i).xLabel        = "Position (cm)";
 i=i+1;
 
 %Plot position interactions with main effect
-ax(i).title         = "Position x Puff Side + Position";
+ax(i).title         = "Position x Puff Side";
 ax(i).varName       = ["leftPuffs_position", "rightPuffs_position", "position"];
 ax(i).window        = [-inf, inf];
 ax(i).color         = {colors.left, colors.right, colors.gray}; 
 ax(i).lineStyle     = ["-","-","--"];
 ax(i).xLabel        = "Position (cm)";
 i=i+1;
-ax(i).title         = "Position x Tower Side + Position";
+ax(i).title         = "Position x Tower Side";
 ax(i).varName       = ["leftTowers_position", "rightTowers_position", "position"];
 ax(i).window        = [-inf, inf];
 ax(i).color         = {colors.left, colors.right, colors.gray}; 
 ax(i).lineStyle     = ["-","-","--"]; 
+ax(i).xLabel        = "Position (cm)";
+i=i+1;
+
+ax(i).title         = "No Cues x Position";
+ax(i).varName       = ["noPuffs_position", "noTowers_position", "position"];
+ax(i).window        = [-inf, inf];
+ax(i).color         = {colors.tactile2, colors.visual2, colors.gray}; 
+ax(i).lineStyle     = ["-","-",":"]; 
+ax(i).xLabel        = "Position (cm)";
+i=i+1;
+% ax(i).title         = "No Towers x Position";
+% ax(i).varName       = ["noTowers_position", "position"];
+% ax(i).window        = [-inf, inf];
+% ax(i).color         = {colors.visual2, colors.gray}; 
+% ax(i).lineStyle     = ["-","-","--"]; 
+% ax(i).xLabel        = "Position (cm)";
+% i=i+1;
+
+ax(i).title         = "Position x Prior Outcome";
+ax(i).varName       = ["priorRewarded_position", "priorUnrewarded_position", "position"];
+ax(i).window        = [-inf, inf];
+ax(i).color         = {colors.rewarded, colors.unrewarded, colors.gray}; 
+ax(i).lineStyle     = ["-","-",":"]; 
 ax(i).xLabel        = "Position (cm)";
 i=i+1;
 
