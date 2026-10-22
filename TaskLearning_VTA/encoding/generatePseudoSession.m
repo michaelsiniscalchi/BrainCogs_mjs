@@ -51,11 +51,13 @@ eventTimes = img_beh.trialData.eventTimes;
 % testRank = 0;
 % while testRank < size(X,2) %If not full rank, re-shuffle
 % [ X, encodingData ] = encoding_makePredictors(trialData, trials, img_beh.t, params); 
-% testRank = rank(X(~any(isnan(X),2),:)); %Remove NaN-containing rows (omitted in regression) and compute rank
+% testRank = rank([X(~any(isnan(X),2),:)]); %Remove NaN-containing rows (omitted in regression) and compute rank
 % end
 
+% The following may introduce an edge-artifact (probably doesn't matter,
+% but avoid for now...)
 %Circularly shift design matrix to decorrelate trial start-times from true and pseudo-sessions
-meanSamples = round(size(X,1)/max(encodingData.trialIdx)); %mean samples per trial
-k = randi(meanSamples); %Number of elements to shift, drawn from Uniform(1,meanSamplesPerTrial)
-X = circshift(X, k);
-trialIdx = circshift(encodingData.trialIdx, k); %Also shift trial index to match
+% meanSamples = round(size(X,1)/max(encodingData.trialIdx)); %mean samples per trial
+% k = randi(meanSamples); %Number of elements to shift, drawn from Uniform(1,meanSamplesPerTrial)
+% X = circshift(X, k);
+% trialIdx = circshift(encodingData.trialIdx, k); %Also shift trial index to match
