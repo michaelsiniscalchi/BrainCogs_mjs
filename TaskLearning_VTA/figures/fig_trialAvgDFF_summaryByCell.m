@@ -50,7 +50,7 @@ for i = 1:numel(sessionIdx)
         if numel(sessionIDs)>nSessionsPerFig
             figName = join([join(["cell",cellID],''), panel.comparison, f_idx],'-'); %Figure name
         else
-            figName = join([join(["cell",cellID],''), panel.comparison, panel.trialType],'-'); %Figure name
+            figName = join([join(["cell",cellID],''), panel.comparison],'-'); %Figure name
         end
         figs(f_idx) = figure('Name', figName);
         %Setup tiled layout
