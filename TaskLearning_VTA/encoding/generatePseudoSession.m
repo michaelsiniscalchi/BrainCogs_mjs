@@ -47,6 +47,7 @@ eventTimes = img_beh.trialData.eventTimes;
 
 %Make Predictors
 [ X, encodingData ] = encoding_makePredictors(trialData, trials, img_beh.t, params); 
+trialIdx = encodingData.trialIdx; %Also shift trial index to match
 
 % testRank = 0;
 % while testRank < size(X,2) %If not full rank, re-shuffle
