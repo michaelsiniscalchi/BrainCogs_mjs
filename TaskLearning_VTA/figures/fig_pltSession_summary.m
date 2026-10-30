@@ -33,7 +33,11 @@ for i=1:numel(trialTypes)
     h(i) = plot(x, y, 'Color', C{i}, 'DisplayName', trialTypes(i));
     hold on
 end
+ylim([0,10]); %Set ylim
 plot([0,0],ylim,'k:'); %Cue time, t0
+% plot([3,3],ylim,'k:'); %Reward time
+fill([0,0,3,3],[min(ylim),max(ylim),max(ylim),min(ylim)], colors.pink,...
+    'FaceAlpha',0.1,'EdgeColor','none');
 xlim(win);
 title('Histogram of Licks by Cue Type')
 xlabel('Time from cue (s)');
@@ -76,41 +80,43 @@ axis square
     % axis square
 
 %--- Bar Plot of Lick Counts for each Trial-Type(CS+ vs CS-), Normalized by Post-Reward Licks
-ax(3)=nexttile(2);
-X = 1:numel(trialTypes);
-boxWidth = 0.5;
-for i = 1:numel(trialTypes)
-    data = trialData.nLicksCue(trials.(trialTypes(i)))/session.meanLicksReward;
-    rewLicks = mean(trialData.nLicksReward(trials.rewarded));
-    p(i) = plot_basicBox( i, data, boxWidth, 2, C{i}, 0.5 );
-    p(i).DisplayName = trialTypes(i);
+if any(trials.rewarded)
+    ax(3)=nexttile(2);
+    X = 1:numel(trialTypes);
+    boxWidth = 0.5;
+    for i = 1:numel(trialTypes)
+        data = trialData.nLicksCue(trials.(trialTypes(i)))/session.meanLicksReward;
+        rewLicks = mean(trialData.nLicksReward(trials.rewarded));
+        p(i) = plot_basicBox( i, data, boxWidth, 2, C{i}, 0.5 );
+        p(i).DisplayName = trialTypes(i);
+    end
+
+    title("Normalized Lick Counts by Cue Type");
+    xlabel("Cue type");
+    ylabel("Number of licks (cue/reward)");
+    legend(p,'Location','eastoutside')
+    axis square;
+    clearvars p;
+
+    %--- Number of licks as a function of trial number (CS+ vs CS-) and Reward
+    ax(4)=nexttile;
+    trialTypes = ["csPlus", "csMinus"];
+    C = {colors.green2, colors.pink}; %Add to colors struct in future
+    for i = 1:numel(trialTypes)
+        data = trialData.nLicksCue(trials.(trialTypes(i)));
+        X = find(trials.(trialTypes(i)));
+        p(i) = plot(X,data,'LineWidth',2,'Color', C{i},'DisplayName',trialTypes(i)); hold on;
+    end
+    data = trialData.nLicksReward(trials.rewarded);
+    X = find(trials.rewarded);
+    p(i+1) = plot(X,data,'LineWidth',2,'Color',colors.green);
+    p(i+1).DisplayName = 'reward';
+
+    title("Number of Licks by Trial");
+    xlabel("Trial number");
+    ylabel("Lick count");
+    legend(p,'Location','eastoutside')
 end
-
-title("Normalized Lick Counts by Cue Type");
-xlabel("Cue type");
-ylabel("Number of licks (cue/reward)");
-legend(p,'Location','eastoutside')
-axis square;
-clearvars p;
-
-%--- Number of licks as a function of trial number (CS+ vs CS-) and Reward
-ax(4)=nexttile;
-trialTypes = ["csPlus", "csMinus"];
-C = {colors.green2, colors.pink}; %Add to colors struct in future
-for i = 1:numel(trialTypes)
-    data = trialData.nLicksCue(trials.(trialTypes(i)));
-    X = find(trials.(trialTypes(i)));
-    p(i) = plot(X,data,'LineWidth',2,'Color', C{i},'DisplayName',trialTypes(i)); hold on;
-end
-data = trialData.nLicksReward(trials.rewarded);
-X = find(trials.rewarded);
-p(i+1) = plot(X,data,'LineWidth',2,'Color',colors.green);
-p(i+1).DisplayName = 'reward';
-
-title("Number of Licks by Trial");
-xlabel("Trial number");
-ylabel("Lick count");
-legend(p,'Location','eastoutside')
 
 t.Padding = "loose";
 t.TileSpacing = "loose";

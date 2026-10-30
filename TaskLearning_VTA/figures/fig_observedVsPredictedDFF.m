@@ -48,6 +48,11 @@ for i = 1:numel(cellIdx)
         for k = 1:numel(panels(j).trialType)
 
             trialSpec = panels(j).trialType(k); %Trial specifier, eg {'left','hit','sound'}
+            observedIdx = k + numel(panels(j).trialType);
+            panels(j).legend_names{k} = "predicted";
+            panels(j).legend_names{observedIdx}  = "observed";
+           
+            %Handle missing trial types
             if ~isfield(bootAvg_encoding, trialSpec)
                 panels(j).signal{k} = NaN(size(panels(j).x));
                 panels(j).CI{k} = NaN(2,size(panels(j).x,2));
@@ -58,13 +63,9 @@ for i = 1:numel(cellIdx)
             panels(j).signal{k} = bootAvg_encoding.(trialSpec).cells(idx).signal(wIndex);
             panels(j).CI{k} = bootAvg_encoding.(trialSpec).cells(idx).CI(:,wIndex);
             %Mean observed signal
-            observedIdx = k + numel(panels(j).trialType);
             panels(j).signal{observedIdx} =...
                 bootAvg_img.(trialSpec).cells(idx).signal(wIndex);
             panels(j).CI{observedIdx} = bootAvg_img.(trialSpec).cells(idx).CI(:,wIndex);
-
-            panels(j).legend_names{k} = "predicted";
-            panels(j).legend_names{observedIdx}  = "observed";
         end
 
         %Labels

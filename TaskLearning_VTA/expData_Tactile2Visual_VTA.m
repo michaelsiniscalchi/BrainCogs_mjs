@@ -846,4 +846,37 @@ expData(i).subjectID = "mjs20_9";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+%m50
+expData(i).sub_dir = '261015-m50-plt6'; 
+expData(i).subjectID = "mjs20_50";
+expData(i).mainMaze = 6;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '261019-m50-plt7'; 
+expData(i).subjectID = "mjs20_50";
+expData(i).mainMaze = 6;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '261020-m50-plt7'; 
+expData(i).subjectID = "mjs20_50";
+expData(i).mainMaze = 6;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '261021-m50-plt7'; 
+expData(i).subjectID = "mjs20_50";
+expData(i).mainMaze = 6;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+expData(i).sub_dir = '261022-m50-plt7'; 
+expData(i).subjectID = "mjs20_50";
+expData(i).mainMaze = 6;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+%m52
+%m502
+expData(i).sub_dir = '261026-m502-plt6'; 
+expData(i).subjectID = "mjs20_502";
+expData(i).mainMaze = 6;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 

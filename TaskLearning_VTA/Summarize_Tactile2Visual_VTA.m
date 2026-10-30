@@ -119,7 +119,7 @@ clearvars sessions predictors S f
 
 if summarize.encoding
     mdlNames = params.encoding.modelName;
-    loadVars = {'session_date','coef','kernel','pValues','pSignificant','alpha',...
+    loadVars = {'session_date','coef','kernel','pValues','alpha',...
         'cellID','termIdx','eventVars','kinematicVars'};
     for i = 1:numel(mdlNames)
         for j = 1:numel(expData)
@@ -295,7 +295,6 @@ if figures.trial_avg_dFF
 
         P = params.figs.summaryBootAvgLongitudinal;
         comparisons = unique([P.panels.comparison],'stable');
-        % comparisons = ["cueRegion-zeroCues-cueType"];%DEVO
 
         for j = 1:numel(comparisons)
 

@@ -24,7 +24,11 @@ for i = 1:nTrials
         t0 = trialData.eventTimes(i).firstPuff;
     elseif towerMask(i)
         t0 = trialData.eventTimes(i).firstTower;
+    else %uncued reward
+        outcomeTimes = [trialData.eventTimes(i).reward, trialData.eventTimes(i).noReward];
+        t0 =  outcomeTimes(~isnan(outcomeTimes))-session.rewardDelay;
     end
+
     fieldNames = ["leftPuffs", "rightPuffs", "leftTowers", "rightTowers",...
         "licks","reward","noReward"];
     for f = fieldNames
@@ -55,8 +59,9 @@ for i = 1:nTrials
             hold on;
         end
     end
-
 end
+h = findobj(h,'Type','Line');
+
 %Show only the first 50 trials
 ylim([0,50]);
 xlim(win);
@@ -80,16 +85,12 @@ for i=1:numel(trialTypes)
     h(i) = plot(x, y, 'Color', C{i}, 'DisplayName', trialTypes(i));
     hold on
 end
+ylim([0,10]); %set ylims
 plot([0,0],ylim,'k:'); %Cue time, t0
+fill([0,0,3,3],[min(ylim),max(ylim),max(ylim),min(ylim)], colors.pink,...
+    'FaceAlpha',0.1,'EdgeColor','none');
 xlim(win);
 title('Histogram of Licks by Cue Type')
 xlabel('Time from cue (s)');
 ylabel('Lick frequency (Hz)');
 legend(h,'Location','eastoutside')
-
-% binnedLicks = zeros(nTrials,numel(edges)-1);
-% binIdx = discretize(lickTimes{i}, edges);
-% binIdx = binIdx(~isnan(binIdx));
-% binnedLicks(i, binIdx) = true; %Binary for now: lick or no lick in this bin
-% I = imagesc(binnedLicks); hold on
-% colormap('gray')
