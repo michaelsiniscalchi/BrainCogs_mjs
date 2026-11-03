@@ -38,7 +38,7 @@ figures.FOV_mean_projection             = false;
 figures.timeseries                      = false; %Plot all timeseries for each session
 % Combined
 figures.trial_average_dFF               = false;  %Overlay traces for distinct choices, outcomes, and rules (CO&R)
-
+figures.kinematic_average_dFF           = false;  %Fluorescence as a function of running speed, heading, etc
 figures.encoding_observedVsPredicted        = false;   %Observed vs. predicted dFF, etc.
 figures.encoding_predictedTrialAvg          = false;   %Predicted dFF, contrasting trial subsets
 figures.encoding_eventKernels               = false;   %Stimulus kernel estimates

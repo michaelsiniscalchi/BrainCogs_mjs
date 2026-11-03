@@ -874,6 +874,11 @@ expData(i).npCorrFactor = 0.3;
 i = i+1;
 %m52
 %m376
+expData(i).sub_dir = '261027-m376-plt6'; 
+expData(i).subjectID = "mjs20_376";
+expData(i).mainMaze = 6;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 expData(i).sub_dir = '261028-m376-plt7'; 
 expData(i).subjectID = "mjs20_376";
 expData(i).mainMaze = 7;
@@ -885,4 +890,10 @@ expData(i).subjectID = "mjs20_502";
 expData(i).mainMaze = 6;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+expData(i).sub_dir = '261028-m502-plt8'; 
+expData(i).subjectID = "mjs20_502";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
+
 
