@@ -41,17 +41,19 @@ end
 %Remove timestamps preceeded by missing values
 %   Rationale: Each timestamp contains an error equal to the duration of the associated iteration;
 %       accordingly, "long" iterations > 1 frame in duration are unreliable for sychronization
-missing = ~ismember(1:sum(stackInfo.nFrames),frameNum); %Idxs of frames missing I2C data
+missing = ~ismember(1:sum(stackInfo.nFrames), frameNum); %Idxs of frames missing I2C data
 priorMissIdx = find(diff([0,missing])==-1); %First frame following each run of missing data; inaccurate timing info from long virmen iterations
-droppedIdx = frameNum > sum(stackInfo.nFrames); %frameNumber from ImageDescription in last file of session sometimes exceeds actual frame number
-exclIdx = ismember(frameNum, priorMissIdx) | droppedIdx; %Idx for time values to exclude
+% droppedIdx = frameNum > sum(stackInfo.nFrames); %frameNumber from ImageDescription can exceed actual number of frames
+exclIdx = ismember(frameNum, priorMissIdx); % | droppedIdx; %Idx for time values to exclude
 frameNum = frameNum(~exclIdx);
 meanTime = meanTime(~exclIdx);
 
 %Interpolate missing time values
-stackInfo.t = interp1(frameNum, meanTime, frameNum(1):frameNum(end),...
-    'linear')'; %Truncate to avoid extrapolation
-
+stackInfo.t = NaN(frameNum(end),1); %Initialize; nTimepoints=last framenumber reported in I2C 
+% stackInfo.t = interp1(frameNum, meanTime, frameNum(1):frameNum(end),...
+%     'linear')'; %Truncate to avoid extrapolation **Maybe extrapolation is okay--eg for img samples recorded pre- or post behavior...
+stackInfo.t = interp1(frameNum, meanTime, 1:frameNum(end),...
+    'linear', 'extrap')'; %Try extrapolation to cover timepoints prior to beh start time; previous method caused offset in some cases (probably where img started before beh?)
 
 % %Troubleshooting plot 3
 % missing(priorMissIdx) = true;
