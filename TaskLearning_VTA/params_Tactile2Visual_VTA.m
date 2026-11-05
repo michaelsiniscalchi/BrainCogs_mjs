@@ -145,7 +145,7 @@ params.fluo.exclBorderWidth     = 10; %For calc_cellF: n-pixel border of FOV to 
 params.fluo.F0_duration         = 60; %Window for calculating F0, in seconds
 
 % Interpolation and alignment
-params.align.timeWindow     = [-3 7]; %Also used for bootavg, etc.
+params.align.timeWindow     = [-1 7]; %Also used for bootavg, etc.
 params.align.positionWindow = [-inf inf]; %Also used for bootavg, etc. ***CHECK IF UNUSED HERE***
 params.align.interdt        = []; %Query intervals for interpolation in seconds (must be <0.5x original dt; preferably much smaller.)
 params.align.binWidth       = 10; %Spatial bins in cm
