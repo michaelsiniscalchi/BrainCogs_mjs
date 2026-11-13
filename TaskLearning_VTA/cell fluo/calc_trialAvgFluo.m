@@ -79,7 +79,8 @@ for i = 1:numel(trial_dff)
         end
         
         %Bootstrap dF/F for each subset of trials
-        dff = dff(~isnan(sum(dff,2)),:); %Exclude traces that include NaNs
+        % dff = dff(~isnan(sum(dff,2)),:); %Exclude traces that include NaNs
+        dff = dff(~all(isnan(dff),2),:); %Exclude trials with no imaging data
         [bootAvg.(subset_label).cells(i)] = getTrialBoot(dff, x, subset_label, params);
         
     end %End trial subsets
