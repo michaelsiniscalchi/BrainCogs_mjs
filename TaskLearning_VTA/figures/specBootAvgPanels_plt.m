@@ -51,6 +51,36 @@ ax(i).lineStyle  = {'-','-'};
 ax(i).xLabel = "Time from first cue (s)";  % XLabel
 i=i+1;
 
+%---CUE REGION COMPARISONS-------------------------------------------
+ax(i).title         = 'Cellular Fluorescence by Position';
+ax(i).comparison    = "cue-region-position";
+ax(i).trigger       = "cueRegion";
+ax(i).trialType     = ["forward"];
+ax(i).window        = [-inf, inf];
+ax(i).color         = {colors.data};
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = "Distance (cm)";  % XLabel
+i=i+1;
+
+ax(i).title         = 'Cellular Fluorescence by Position';
+ax(i).comparison    = "cue-region-CS";
+ax(i).trigger       = "cueRegion";
+ax(i).trialType     = ["visualCS", "tactileCS"];
+ax(i).window        = [-inf, inf];
+ax(i).color         = {colors.visual, colors.tactile}; 
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = "Distance (cm)";  % XLabel
+i=i+1;
+
+ax(i).title         = 'Prior Outcome';
+ax(i).comparison    = "cue-region-priorOutcome";
+ax(i).trigger       = "cueRegion";
+ax(i).trialType     = ["priorRewarded", "priorUnrewarded"];
+ax(i).window        = [-inf, inf];
+ax(i).color         = {colors.rewarded, colors.unrewarded}; 
+ax(i).lineStyle     = {'-','-'};
+ax(i).xLabel        = "Distance (cm)";  % XLabel
+i=i+1;
 
 
 %%---OUTCOME RESPONSES-----------------------------------------------------
