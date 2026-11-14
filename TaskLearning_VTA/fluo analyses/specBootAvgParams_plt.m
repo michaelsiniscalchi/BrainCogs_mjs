@@ -12,14 +12,6 @@ bootParams(i).trialSpec = {... %***FUTURE: include priorReward and priorNoReward
     };
 i = i+1;
 
-%cueEntry
-bootParams(i).trigger = "cueEntry";
-bootParams(i).subtractBaseline = true;
-bootParams(i).trialSpec = {...
-    "forward",...
-    };
-i = i+1;
-
 % --- Fluorescence Spatially Aligned to Cue Region ------------------------
 %Aligned to y-position, no baseline subtraction
 bootParams(i).trigger = "cueRegion";

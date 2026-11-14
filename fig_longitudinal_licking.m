@@ -70,6 +70,9 @@ for i = 1:numel(subjects)
 
        %Labels and titles
        ylabel('Mean lick count');
+       if ismember(params.figName,["normLicksbyCueType","normLicksbyCS"])
+           ylabel('Norm. lick count');
+       end
        xlabel('Session number');
 
     title({subjects(i).ID; ''},'interpreter','none'); %Extra text line below title

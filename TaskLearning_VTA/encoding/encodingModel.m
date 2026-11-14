@@ -15,7 +15,7 @@ for i = 1:numel(dFF)
     y = dFF{i};
     
     if encodingData.regularization=="ridge"
-        %10-fold CV with each lambda to find minimum MSE
+        %5-fold CV with each lambda to find minimum MSE
         [lambda, cv] = cvLambda(X, y, encodingData.lambda,...
             encodingData.lambda_kfolds, encodingData.trialIdx); %Find lambda value that minimizes MSE
         

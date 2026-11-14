@@ -535,7 +535,11 @@ for i = 1:numel(subjects)
                 end
             end
 
-            if rule(k)=="visualRule"
+            if mean(rewarded)>0 && mean(csMinus|csPlus)==0
+                rule(k) = "rewardPreExposure";
+            elseif mean(rewarded)==0
+                rule(k) = "csPreExposure";
+            elseif rule(k)=="visualRule"
                 rule(k) = "visual";
             elseif rule(k)=="tactileRule"
                 rule(k) = "tactile";

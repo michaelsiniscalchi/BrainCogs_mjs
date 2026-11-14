@@ -1,7 +1,8 @@
 function subjects_out = filterSessionStats( subjects, ruleNames, includeShaping )
 
 if nargin<2
-    ruleNames = ["visual","tactile","tactileCS","visualCS","leftCS","rightCS"];
+    ruleNames = ["visual","tactile",...
+        "tactileCS","visualCS","leftCS","rightCS","rewardPreExposure","csPreExposure"];
     includeShaping = true;
 elseif nargin<3
     includeShaping = true;
@@ -33,7 +34,9 @@ for i = 1:numel(subjects)
             warning(strjoin(["Session from " subjects(i).ID ", " string(S.session_date) "was mixed between rules. Check!"]));
         elseif all(~inclBlockIdx)
             disp(['Warning: "taskRule" must be one of the following:...' ...
-                ' "forcedChoice","visual","tactile","tactileCS","visualCS","leftCS","rightCS"...']);
+                ' "forcedChoice","visual","tactile",...' ...
+                '"tactileCS","visualCS","leftCS","rightCS",...' ...
+                '"rewardPreExposure","csPreExposure"]...']);
             disp('Excluding all blocks in');
             disp(S.new_remote_path_behavior_file);
             exclSessionIdx(j) = true;

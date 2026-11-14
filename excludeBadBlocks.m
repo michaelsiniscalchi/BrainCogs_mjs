@@ -136,6 +136,7 @@ function [ logs, excludeBlocks, excludeTrials ] = excludeBadBlocks( logs )
 
             "mjs20_40",datetime('10-Apr-2025'),'all';...   %Different task: variable reward
             "mjs20_37",datetime('30-Apr-2026'),'all';...   %Lick counter function not ready for prime time
+            "mjs20_50",datetime('12-Nov-2026'), 2;...   %m502 accidentally assigned to m50
             }; 
 
 % "mjs20_103",datetime('03-Oct-2023'), 1;... %Restarted
@@ -144,14 +145,14 @@ function [ logs, excludeBlocks, excludeTrials ] = excludeBadBlocks( logs )
 
 %Remove specified blocks prior to session data extraction
 excludeBlocks = [];
-for i = 1:size(exclude,1)
+for i = 1:size(exclude,1) %i = size(exclude,1)
     if ismember(logs.animal.name, exclude{i,1}) &&...
             string(datetime(logs.session(1).start,'Format','dd-MMM-yyyy'))==exclude{i,2} &&... %Session idx=1 for multiple sessions with same date
             strcmp(exclude{i,3},'all')
         logs = [];  %Exclude whole session
         return
-    elseif ismember(logs.animal.name,exclude{i,1}) &&...
-            string(datetime(logs.session(1).start,'Format','dd-MMM-yyyy'))==exclude{i,2}
+    elseif ismember(logs.animal.name, exclude{i,1}) &&...
+            string(datetime(logs.session(1).start,'Format','dd-MMM-yyyy'))==string(exclude{i,2})
         excludeBlocks = exclude{i,3};
 %         %Truncate logs.block to match
 %         exclIdx = false(numel(logs.block),1);
