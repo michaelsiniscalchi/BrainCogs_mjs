@@ -373,6 +373,7 @@ for i = 1:numel(subjects)
             level(blockIdx==k) = mazeLevel(k);
             
             %Check for Autopilot version of PLT
+            autoPilot(blockIdx==k) = false;
             if isfield(logs.version(logs.block(k).versionIndex).variables,"cruisingSpeed") &&...
                     str2double(logs.version(logs.block(k).versionIndex).variables.cruisingSpeed)
                 autoPilot(blockIdx==k) = true;
