@@ -365,15 +365,23 @@ for i = 1:numel(subjects)
 
             %Trials where mouse turns greater than pi/2 rad L or R in cue or memory segment
             forward(blockIdx==k) = getStraightNarrowTrials({Trials.position},[0, lCue(k)]);
+            
             %Trials where mouse gets stuck after collision along cue segment
             stuck(blockIdx==k) = stuck_duration(blockIdx==k)>0;
+            
             %Maze level
             level(blockIdx==k) = mazeLevel(k);
+            
+            %Check for Autopilot version of PLT
+            if isfield(logs.version(logs.block(k).versionIndex).variables,"cruisingSpeed") &&...
+                    str2double(logs.version(logs.block(k).versionIndex).variables.cruisingSpeed)
+                autoPilot(blockIdx==k) = true;
+            end
         end
 
         %Derived trial masks
-        if isfield(Trials,"modalityRule") %Pavlovian linear track 
-            omit = ~csPresented & ~rewarded; %Mouse did not run far enough to encounter stim or reward at end of maze
+        if isfield(Trials,"modalityRule") %Pavlovian linear track
+            omit = ~csPresented & ~rewarded & ~autoPilot; %Mouse did not run far enough to encounter stim or reward at end of maze
         end
 
         forward = forward & ~omit; %Exclude forward trials exceeding time limit
