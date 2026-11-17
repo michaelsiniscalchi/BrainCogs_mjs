@@ -156,6 +156,11 @@ params.bootAvg.smoothWin        = 6; %Smoothing window in samples for peak findi
 params.bootAvg.avgWin           = 3; %Time interval (s) post-cue, or surrounding peak, for averaging
 params.bootAvg                  = specBootAvgParams_plt(params.bootAvg); %params.bootAvg.trigger(1:3) = "start","firstcue","outcome", etc...
 
+% Kinematic correlates
+params.kinematicAvg.binWidth            = struct("speed", 10, "acceleration", 25, "heading", 0.1); %In cm/s or rad
+params.kinematicAvg.smoothing_window    = 25; %In samples
+params.kinematicAvg.extreme_cutoff      = 99; %Percentile of speed, heading, etc.
+
 % Encoding model defaults (more spec for multiuple models in specEncodingParams)
 params.encoding.dsFactor            = 1; %Downsample from interpolated rate of 1/params.interdt
 params.encoding.regularization      = "ridge";
@@ -214,6 +219,15 @@ p.panels = specBootAvgPanels_plt( params.figs );
 
 params.figs.bootAvg = p;
 clearvars p
+
+%% FIGURE: CELLULAR FLUORESCENCE AS A FUNCTION OF RUNNING SPEED
+% i=1;
+% p(i).title = "Running Speed";
+% p(i).color = ;
+params.figs.kinematicAvg = struct(...
+    'colors', struct('speed', colors.green, 'acceleration', colors.green2, 'heading', colors.orange),...
+    'xLabel', struct('speed', "Running speed (cm/s)", 'acceleration', "Acceleration (cm*s^-2)", 'heading', "Heading (rad)"),...
+    'tickLabelFormat', '%.2f');
 
 %% FIGURE: Single-unit encoding model
 
