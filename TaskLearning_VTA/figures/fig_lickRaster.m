@@ -86,9 +86,13 @@ for i=1:numel(trialTypes)
     hold on
 end
 ylim([0,10]); %set ylims
+
+%t0 and shading around cue interval
 plot([0,0],ylim,'k:'); %Cue time, t0
-fill([0,0,3,3],[min(ylim),max(ylim),max(ylim),min(ylim)], colors.pink,...
-    'FaceAlpha',0.1,'EdgeColor','none');
+shadeCue = fill([0,0,3,3],[min(ylim),max(ylim),max(ylim),min(ylim)], colors.pink,...
+    'FaceAlpha',0.2,'EdgeColor','none');
+uistack(shadeCue, 'bottom');
+
 xlim(win);
 title('Histogram of Licks by Cue Type')
 xlabel('Time from cue (s)');
