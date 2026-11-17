@@ -39,8 +39,8 @@ for i = 1:nPanels
             errorshade(x,panels(i).CI{j}(1,:),...
                 panels(i).CI{j}(2,:),panels(i).color{j},shadeAlpha);
         end
-    end
-    
+    end   
+
     % Plot mean signals
     hObj = gobjects(nSignals,1);
     for j = 1:nSignals
@@ -48,7 +48,7 @@ for i = 1:nPanels
         hObj(j) = plot(x,panels(i).signal{j},...
             panels(i).lineStyle{j},'Color',panels(i).color{j});
     end
-    
+      
     % Figure legend
     leg = legend(hObj,panels(i).legend_names);
     leg.FontSize = 14;
@@ -86,6 +86,16 @@ for i=1:numel(panels)
     if x_Low<0
         plot(ax(i),[0 0],ax(i).YLim,'k:','LineWidth',get(groot,'DefaultAxesLineWidth'));
     end
+
+    % Shade interval, if specified
+    if isfield(panels(i),'shadeWindow') && ~isempty(panels(i).shadeWindow)
+        w = panels(i).shadeWindow;
+        shade(i) = fill(ax(i), [w(1),w(1),w(2),w(2)],...
+            [ax(i).YLim(1), ax(i).YLim(2), ax(i).YLim(2), ax(i).YLim(1)], panels(i).shadeColor,...
+            'FaceAlpha',0.2,'EdgeColor','none');
+        uistack(shade(i), 'bottom');
+    end
+
 end
 
 % YLabel for panel 1

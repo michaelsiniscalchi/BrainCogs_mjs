@@ -20,6 +20,8 @@ ax(i).trialType  = ["leftPuffs", "rightPuffs"];
 ax(i).window     = [-inf, inf];
 ax(i).color      = {colors.left, colors.right}; 
 ax(i).lineStyle  = {'-','-'};
+ax(i).shadeWindow = [0, 3];
+ax(i).shadeColor =  colors.pink;
 ax(i).xLabel = "Time from first cue (s)";  % XLabel
 i=i+1;
 ax(i).title      = 'Cue Side (Towers)';
@@ -29,6 +31,8 @@ ax(i).trialType  = ["leftTowers", "rightTowers"];
 ax(i).window     = [-inf, inf];
 ax(i).color      = {colors.left, colors.right}; 
 ax(i).lineStyle  = {'-','-'};
+ax(i).shadeWindow = [0, 3];
+ax(i).shadeColor =  colors.pink;
 ax(i).xLabel = "Time from first cue (s)";  % XLabel
 i=i+1;
 
@@ -39,6 +43,8 @@ ax(i).trialType     = ["visualCS", "tactileCS"];
 ax(i).window        = [-inf, inf];
 ax(i).color         = {colors.visual, colors.tactile}; %Choice: left/hit/sound vs right/hit/sound
 ax(i).lineStyle  = {'-','-'};
+ax(i).shadeWindow = [0, 3];
+ax(i).shadeColor =  colors.pink;
 ax(i).xLabel = "Time from first cue (s)";  % XLabel
 i=i+1;
 ax(i).title      = 'Cue Side';
@@ -48,6 +54,8 @@ ax(i).trialType     = ["leftCS", "rightCS"];
 ax(i).window        = [-inf, inf];
 ax(i).color         = {colors.left, colors.right}; %Choice: left/hit/sound vs right/hit/sound
 ax(i).lineStyle  = {'-','-'};
+ax(i).shadeWindow = [0, 3];
+ax(i).shadeColor =  colors.pink;
 ax(i).xLabel = "Time from first cue (s)";  % XLabel
 i=i+1;
 
@@ -147,3 +155,6 @@ i=i+1;
 [ax(:).tickLabelFormat] = deal('%.2f');
 [ax(:).yLabel]          = deal('Cellular Fluorescence (dF/F)');
 [ax(:).verboseLegend]   = deal(false);
+% 
+% %Shading for cue period, prior to reward
+% ax(isempty({ax.shadeWindow})).shadeWindow = [0,0];
