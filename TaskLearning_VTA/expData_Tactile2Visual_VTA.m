@@ -394,6 +394,11 @@ expData(i).subjectID = "mjs20_376";
 expData(i).mainMaze = 7;
 expData(i).npCorrFactor = 0.3;
 i = i+1;
+expData(i).sub_dir = '261106-m376-plt8'; 
+expData(i).subjectID = "mjs20_376";
+expData(i).mainMaze = 8;
+expData(i).npCorrFactor = 0.3;
+i = i+1;
 
 %m502
 expData(i).sub_dir = '261022-m502-plt5';  
